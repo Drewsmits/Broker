@@ -25,48 +25,49 @@
 
 #import "BKEntityPropertiesMap.h"
 
+@interface BKEntityPropertiesMap ()
+@property (nonatomic, copy, readwrite) NSString *entityName;
+@end
+
 @implementation BKEntityPropertiesMap
 
-@synthesize entityName,
-            networkToLocalMap,
-            localToNetworkMap;
+@synthesize entityName;
 
 - (void)dealloc {
-    [entityName release];
-    [networkToLocalMap release];
-    [localToNetworkMap release];
+    [entityName release], entityName = nil;
+    [networkToLocalMap release], networkToLocalMap = nil;
+    [localToNetworkMap release], localToNetworkMap = nil;
     
     [super dealloc];
 }
 
-+ (BKEntityPropertiesMap *)mapFromNetworkProperties:(NSArray *)networkProperties 
-                                  toLocalProperties:(NSArray *)localProperties 
-                                          forEntityName:(NSString *)entityName {
++ (BKEntityPropertiesMap *)propertiesMap {
+    return [[[BKEntityPropertiesMap alloc] init] autorelease];
+}
+
+#pragma mark - Modifiers
+
+- (void)mapFromNetworkProperties:(NSArray *)networkProperties
+               toLocalProperties:(NSArray *)localProperties{
     
     NSAssert((networkProperties.count == localProperties.count), @"Mapping network properties to local properties expects arrays of the same size");
     
-    if (networkProperties.count != localProperties.count) return nil;
+    if (networkProperties.count != localProperties.count) return;
+    if (!networkProperties || !localProperties) return;
     
-    BKEntityPropertiesMap *map = [[[BKEntityPropertiesMap alloc] init] autorelease];
-    
-    NSMutableDictionary *tempNetworkToLocalMap = [[[NSMutableDictionary alloc] init] autorelease];
-    NSMutableDictionary *tempLocalToNetworkMap = [[[NSMutableDictionary alloc] init] autorelease];
-
     for (NSString *networkProperty in networkProperties) {
         
         NSString *localProperty = [localProperties objectAtIndex:[networkProperties indexOfObject:networkProperty]];
         
-        [tempNetworkToLocalMap setValue:localProperty forKey:networkProperty];
+        [self.networkToLocalMap setValue:localProperty forKey:networkProperty];
         
-        [tempLocalToNetworkMap setValue:networkProperty forKey:localProperty];
+        [self.localToNetworkMap setValue:networkProperty forKey:localProperty];
     }
     
-    map.entityName = entityName;
-    map.networkToLocalMap = tempNetworkToLocalMap;
-    map.localToNetworkMap = tempLocalToNetworkMap;
-    
-    return map;
+    NSLog(@"bfreak");
 }
+
+#pragma mark - Accessors
 
 - (NSString *)networkPropertyNameForLocalProperty:(NSString *)localProperty {
     return [self.localToNetworkMap valueForKey:localProperty];
@@ -74,6 +75,18 @@
 
 - (NSString *)localPropertyNameForNetworkProperty:(NSString *)networkProperty {
     return [self.networkToLocalMap valueForKey:networkProperty];
+}
+
+- (NSMutableDictionary *)networkToLocalMap {
+    if (networkToLocalMap) return [[networkToLocalMap retain] autorelease];
+    networkToLocalMap = [[NSMutableDictionary alloc] init];
+    return [[networkToLocalMap retain] autorelease];
+}
+
+- (NSMutableDictionary *)localToNetworkMap {
+    if (localToNetworkMap) return [[localToNetworkMap retain] autorelease];
+    localToNetworkMap = [[NSMutableDictionary alloc] init];
+    return [[localToNetworkMap retain] autorelease];
 }
 
 @end

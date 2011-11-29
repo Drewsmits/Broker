@@ -36,7 +36,6 @@
 
 @property (nonatomic, copy) NSString *dateFormat;
 @property (nonatomic, readonly) NSDateFormatter *dateFormatter;
-
 @property (nonatomic, assign) NSAttributeType attributeType;
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description;

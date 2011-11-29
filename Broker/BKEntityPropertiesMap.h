@@ -32,15 +32,49 @@
     NSMutableDictionary *localToNetworkMap;
 }
 
-@property (nonatomic, copy) NSString *entityName;
-@property (nonatomic, retain) NSMutableDictionary *networkToLocalMap;
-@property (nonatomic, retain) NSMutableDictionary *localToNetworkMap;
+/**
+ The name of the entity the map is associated with
+ */
+@property (nonatomic, copy, readonly) NSString *entityName;
 
-+ (BKEntityPropertiesMap *)mapFromNetworkProperties:(NSArray *)networkProperties 
-                                  toLocalProperties:(NSArray *)localProperties 
-                                          forEntityName:(NSString *)entityName;
+/**
+ A dictionary where the keys are the network property names and the objects are 
+ the local property names.
+ */
+@property (nonatomic, readonly) NSMutableDictionary *networkToLocalMap;
 
+/**
+ A dictionary where the keys are the local property names and the objects are the
+ network property names.
+ */
+@property (nonatomic, readonly) NSMutableDictionary *localToNetworkMap;
+
+
+/**
+ Factory method for building a property map 
+ */
++ (BKEntityPropertiesMap *)propertiesMap;
+
+/**
+ Map the list of network properties to the list of local properties.  This will 
+ add or edit the current map, and not replace or remove any previously mapped 
+ properties.
+ 
+ @param networkProperties The list of network properties to map on the given entity
+ @param localProperties The list of local properties to map to the given network
+ properties for the entity
+ */
+- (void)mapFromNetworkProperties:(NSArray *)networkProperties
+               toLocalProperties:(NSArray *)localProperties;
+
+/**
+ Returns the network property name for the local property name
+ */
 - (NSString *)networkPropertyNameForLocalProperty:(NSString *)localProperty;
+
+/**
+ Returns the local property name for the network property name
+ */
 - (NSString *)localPropertyNameForNetworkProperty:(NSString *)networkProperty;
 
 @end

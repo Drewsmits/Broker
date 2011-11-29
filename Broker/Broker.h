@@ -107,7 +107,7 @@
  
  @param entityName The entity name of the NSManagedObject.
  @param primaryKey The designated primary key of the entity
- @param networkProperties An array of 
+ @param networkProperties An array of network property names 
  @param localProperties An array of local property names that match with the
  networkProperties
 
@@ -153,22 +153,61 @@
 - (void)setRootKeyPath:(NSString *)rootKeyPath 
              forEntity:(NSString *)entity;
 
-//- (void)setRootKeyPath:(NSString *)rootKeyPath 
-//           forProperty:(NSString *)property
-//              onEntity:(NSString *)entity;
+/**
+ Map a network property to a local property for an entity that is already 
+ registered with Broker.
+ 
+ @param networkProperty The name of the network property
+ @param localProperty The name of the local property
+ @param entity The name of the entity, previously registered with Broker
+ */
+- (void)mapNetworkProperty:(NSString *)networkProperty
+           toLocalProperty:(NSString *)localProperty
+                 forEntity:(NSString *)entity;
 
+/**
+ Map several network properties to a local properties for an entity that is already 
+ registered with Broker.
+
+ @param networkProperties An array of network property names 
+ @param localProperties An array of local property names that match with the
+ networkProperties
+ @param entity The name of the entity, previously registered with Broker
+ 
+ @see [Broker registerEntityNamed:withPrimaryKey:andMapNetworkProperties:toLocalProperties]
+ */
+- (void)mapNetworkProperties:(NSArray *)networkProperties
+           toLocalProperties:(NSArray *)localProperties
+                   forEntity:(NSString *)entity;
 
 /** @name Processing */
 
 /**
-
+ Processes a JSON payload returned from an API.  
+ 
+ @param jsonPayload The data returned from the API
+ @param entityURI The URI representation of the managed object to process the
+ JSON for
+ @param CompletionBlock The block to run when the operation is complete
  */
 - (void)processJSONPayload:(id)jsonPayload 
-            targetEntity:(NSURL *)entityURI
-     withCompletionBlock:(void (^)())CompletionBlock;
+              targetEntity:(NSURL *)entityURI
+       withCompletionBlock:(void (^)())CompletionBlock;
 
 /**
-
+ Process a JSON payload returned from an API for a given relationship on an entity.
+ You might have a Department with many Employees.  If your Department object has
+ a method called getEmployees, it would hit the API and return a chunk of JSON that
+ is a list of Employees.  In that case, you would call
+ 
+ [myBrokerInstance processJSONPayload:apiJSONData targetEntity:departmentURI forRelationship:@"employees" withCompletionBlock:myBlock]
+ 
+ @param jsonPayload The data returned from the API
+ @param entityURI The URI representation of the managed object to process the
+ JSON for
+ @param relationshipName The name of the relationship on the entity to recieve the
+ processed JSON objects
+ @param CompletionBlock The block to run when the operation is complete
  */
 - (void)processJSONPayload:(id)jsonPayload 
               targetEntity:(NSURL *)entityURI

@@ -29,7 +29,6 @@
 @interface BKEntityPropertiesDescription ()
 @property (readwrite, nonatomic, copy) NSString *entityName;
 @property (readwrite, nonatomic, retain) NSMutableDictionary *propertiesDescriptions;
-@property (readwrite, nonatomic, retain) BKEntityPropertiesMap *propertiesMap;
 @property (readwrite, nonatomic, retain) NSEntityDescription *entityDescription;
 @end
 
@@ -39,7 +38,6 @@
             primaryKey,
             rootKeyPath,
             propertiesDescriptions,
-            propertiesMap,
             entityDescription;
 
 - (void)dealloc {
@@ -59,14 +57,9 @@
                                       toLocalProperties:(NSArray *)localProperties {
     
     // Build initial description
-    BKEntityPropertiesDescription *description = [[[BKEntityPropertiesDescription alloc] init] autorelease];
-    description.entityDescription = entity;
-    description.entityName = entity.name;
-    
-    // Map any network properties to local properties
-    BKEntityPropertiesMap *map = [BKEntityPropertiesMap mapFromNetworkProperties:networkProperties
-                                                               toLocalProperties:localProperties
-                                                                   forEntityName:entity.name];
+    BKEntityPropertiesDescription *propertiesDescription = [[[BKEntityPropertiesDescription alloc] init] autorelease];
+    propertiesDescription.entityDescription = entity;
+    propertiesDescription.entityName = entity.name;
     
     NSMutableDictionary *tempPropertiesDescriptions = [[[NSMutableDictionary alloc] init] autorelease];
     
@@ -79,7 +72,7 @@
         // Attribute
         if ([description isKindOfClass:[NSAttributeDescription class]]) {
             BKAttributeDescription *attrDescription = [BKAttributeDescription descriptionWithAttributeDescription:(NSAttributeDescription *)description
-                                                                                     andMapToNetworkAttributeName:[map networkPropertyNameForLocalProperty:property]];
+                                                                                     andMapToNetworkAttributeName:[propertiesDescription.propertiesMap networkPropertyNameForLocalProperty:property]];
                         
             [tempPropertiesDescriptions setObject:attrDescription forKey:property];
         }
@@ -92,11 +85,28 @@
         }
     }
     
-    // Set property descriptions
-    description.propertiesDescriptions = tempPropertiesDescriptions;
     
-    return description;
+    // Map any network properties to local properties
+    [propertiesDescription mapNetworkProperties:networkProperties 
+                              toLocalProperties:localProperties];
+    
+    // Set property descriptions
+    propertiesDescription.propertiesDescriptions = tempPropertiesDescriptions;
+    
+    return propertiesDescription;
 }
+
+#pragma mark - Modifiers
+
+- (void)mapNetworkProperties:(NSArray *)networkProperties
+           toLocalProperties:(NSArray *)localProperties {
+
+    [self.propertiesMap mapFromNetworkProperties:networkProperties 
+                               toLocalProperties:localProperties];
+    
+}
+
+#pragma mark - Accessors
 
 - (BKPropertyDescription *)descriptionForLocalProperty:(NSString *)property {
     return (BKPropertyDescription *)[self.propertiesDescriptions objectForKey:property];
@@ -165,6 +175,12 @@
 - (NSString *)destinationEntityNameForRelationship:(NSString *)relationship {
     BKRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship];
     return desc.destinationEntityName;
+}
+
+- (BKEntityPropertiesMap *)propertiesMap {
+    if (propertiesMap) return [[propertiesMap retain] autorelease];
+    propertiesMap = [[BKEntityPropertiesMap propertiesMap] retain];
+    return [[propertiesMap retain] autorelease];
 }
 
 @end

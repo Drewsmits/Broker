@@ -139,6 +139,24 @@
     desc.rootKeyPath = rootKeyPath;
 }
 
+- (void)mapNetworkProperty:(NSString *)networkProperty
+           toLocalProperty:(NSString *)localProperty
+                 forEntity:(NSString *)entity {
+    
+    [self mapNetworkProperties:[NSArray arrayWithObject:networkProperty]
+             toLocalProperties:[NSArray arrayWithObject:localProperty]
+                     forEntity:entity];
+
+}
+
+- (void)mapNetworkProperties:(NSArray *)networkProperties
+           toLocalProperties:(NSArray *)localProperties
+                   forEntity:(NSString *)entity {
+
+    BKEntityPropertiesDescription *desc = [self entityPropertyDescriptionForEntityName:entity];
+    [desc mapNetworkProperties:networkProperties toLocalProperties:localProperties];
+}
+
 #pragma mark - JSON
 
 - (void)processJSONPayload:(id)jsonPayload 

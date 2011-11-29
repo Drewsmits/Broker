@@ -31,7 +31,7 @@
             isToMany;
 
 - (void)dealloc {
-    [destinationEntityName release];
+    [destinationEntityName release], destinationEntityName = nil;
 
     [super dealloc];
 }

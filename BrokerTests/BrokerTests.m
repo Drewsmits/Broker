@@ -144,6 +144,22 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     STAssertEqualObjects(desc.primaryKey, @"employeeID", @"Attribute description should have a primary key");
 }
 
+- (void)testAddSingleEntryToPropertyMapAfterRegistration {
+    
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
+
+    [[Broker sharedInstance] mapNetworkProperty:@"first-name" 
+                                toLocalProperty:@"firstname" 
+                                      forEntity:kEmployee];
+    
+    BKAttributeDescription *desc = [[Broker sharedInstance] attributeDescriptionForProperty:@"firstname"
+                                                                               onEntityName:kEmployee];
+    
+    STAssertEqualObjects(desc.entityName, kEmployee, @"Attribute description entity name should be set correctly");
+    STAssertEqualObjects(desc.localPropertyName, kEmployeeFirstname, @"Attribute description local attribute name should be set correctly");
+    STAssertEqualObjects(desc.networkPropertyName, @"first-name", @"Attribute description network attribute name should be set correctly");
+}
+
 - (void)testRegistrationShouldntLeaveEntitiesInStore {
     // registration creates objects in the store.  These shouldnt be saved.
     // Could even register on a separate thread, using separate MOC to be super
