@@ -370,6 +370,51 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
 }
 
+- (void)testFlatEmployeeWithNetworkPropertyJSONProcessing {
+    
+    NSData *jsonData = DataFromFile(@"employee_network_property.json");
+    
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
+    
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    [[Broker sharedInstance] mapNetworkProperty:@"id" 
+                                toLocalProperty:@"employeeID" 
+                                      forEntity:kEmployee];
+    
+    // Add a new Employee to the store
+    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData
+                                   targetEntity:employeeURI
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    // Re-fetch
+    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
+    
+    [context refreshObject:employee mergeChanges:YES];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:kEmployeeStartDateFormat];
+    NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
+    
+    STAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Attributes should be set correctly");
+    STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Attributes should be set correctly");
+    STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Attributes should be set correctly");
+    STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
+}
+
 - (void)testNestedEmployeeJSONProcessing {
     
     NSData *jsonData = DataFromFile(@"employee_nested.json");

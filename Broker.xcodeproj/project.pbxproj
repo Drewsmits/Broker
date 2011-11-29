@@ -23,8 +23,6 @@
 		DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DB576E0C14572D0F006021CE /* BKJSONOperation.m */; };
 		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
 		DBA5F95C145610C500EBFF68 /* Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB4C0E2A143D2F4F0090F5E3 /* Broker.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DBCD6737143F61ED000FD78D /* BKEntityPropertiesMap.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCD6735143F61EC000FD78D /* BKEntityPropertiesMap.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DBCD6738143F61ED000FD78D /* BKEntityPropertiesMap.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCD6736143F61EC000FD78D /* BKEntityPropertiesMap.m */; };
 		DBCD67521443F47A000FD78D /* BKPropertyDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCD67501443F47A000FD78D /* BKPropertyDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DBCD67531443F47A000FD78D /* BKPropertyDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCD67511443F47A000FD78D /* BKPropertyDescription.m */; };
 		DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */; };
@@ -93,8 +91,6 @@
 		DB4C0E77143D84560090F5E3 /* BKRelationshipDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKRelationshipDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DB576E0B14572D0F006021CE /* BKJSONOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKJSONOperation.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DB576E0C14572D0F006021CE /* BKJSONOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKJSONOperation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		DBCD6735143F61EC000FD78D /* BKEntityPropertiesMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKEntityPropertiesMap.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		DBCD6736143F61EC000FD78D /* BKEntityPropertiesMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKEntityPropertiesMap.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DBCD67501443F47A000FD78D /* BKPropertyDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKPropertyDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DBCD67511443F47A000FD78D /* BKPropertyDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKPropertyDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DBFF95C8143D8D80008511EA /* BrokerTestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BrokerTestModel.xcdatamodel; sourceTree = "<group>"; };
@@ -190,8 +186,6 @@
 				DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */,
 				DB4C0E76143D84560090F5E3 /* BKRelationshipDescription.h */,
 				DB4C0E77143D84560090F5E3 /* BKRelationshipDescription.m */,
-				DBCD6735143F61EC000FD78D /* BKEntityPropertiesMap.h */,
-				DBCD6736143F61EC000FD78D /* BKEntityPropertiesMap.m */,
 				DB576E0B14572D0F006021CE /* BKJSONOperation.h */,
 				DB576E0C14572D0F006021CE /* BKJSONOperation.m */,
 				DB4C0E28143D2F4F0090F5E3 /* Supporting Files */,
@@ -240,7 +234,6 @@
 				DB4C0E56143D334C0090F5E3 /* BKAttributeDescription.h in Headers */,
 				DB4C0E78143D84560090F5E3 /* BKRelationshipDescription.h in Headers */,
 				DBFF95EB143E568C008511EA /* BKEntityPropertiesDescription.h in Headers */,
-				DBCD6737143F61ED000FD78D /* BKEntityPropertiesMap.h in Headers */,
 				DBCD67521443F47A000FD78D /* BKPropertyDescription.h in Headers */,
 				DBA5F95C145610C500EBFF68 /* Broker.h in Headers */,
 				DB576E0D14572D0F006021CE /* BKJSONOperation.h in Headers */,
@@ -375,7 +368,6 @@
 				DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */,
 				DB4C0E79143D84560090F5E3 /* BKRelationshipDescription.m in Sources */,
 				DBFF95EC143E568C008511EA /* BKEntityPropertiesDescription.m in Sources */,
-				DBCD6738143F61ED000FD78D /* BKEntityPropertiesMap.m in Sources */,
 				DBCD67531443F47A000FD78D /* BKPropertyDescription.m in Sources */,
 				DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */,
 			);

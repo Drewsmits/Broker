@@ -1,5 +1,5 @@
 //
-//  BKEntityPropertiesMap.m
+//  BKEntityPropertiesDescription.m
 //  Broker
 //
 //  Created by Andrew Smith on 10/6/11.
@@ -45,7 +45,8 @@
     [primaryKey release], primaryKey = nil;
     [rootKeyPath release], rootKeyPath = nil;
     [propertiesDescriptions release], propertiesDescriptions = nil;
-    [propertiesMap release], propertiesMap = nil;
+    [networkToLocalPropertiesMap release], networkToLocalPropertiesMap = nil;
+    [localToNetworkPropertiesMap release], localToNetworkPropertiesMap = nil;
     [entityDescription release], entityDescription = nil;
     
     [super dealloc];
@@ -72,7 +73,7 @@
         // Attribute
         if ([description isKindOfClass:[NSAttributeDescription class]]) {
             BKAttributeDescription *attrDescription = [BKAttributeDescription descriptionWithAttributeDescription:(NSAttributeDescription *)description
-                                                                                     andMapToNetworkAttributeName:[propertiesDescription.propertiesMap networkPropertyNameForLocalProperty:property]];
+                                                                                     andMapToNetworkAttributeName:[propertiesDescription.localToNetworkPropertiesMap valueForKey:property]];
                         
             [tempPropertiesDescriptions setObject:attrDescription forKey:property];
         }
@@ -85,13 +86,12 @@
         }
     }
     
+    // Set property descriptions
+    propertiesDescription.propertiesDescriptions = tempPropertiesDescriptions;
     
     // Map any network properties to local properties
     [propertiesDescription mapNetworkProperties:networkProperties 
                               toLocalProperties:localProperties];
-    
-    // Set property descriptions
-    propertiesDescription.propertiesDescriptions = tempPropertiesDescriptions;
     
     return propertiesDescription;
 }
@@ -101,37 +101,66 @@
 - (void)mapNetworkProperties:(NSArray *)networkProperties
            toLocalProperties:(NSArray *)localProperties {
 
-    [self.propertiesMap mapFromNetworkProperties:networkProperties 
-                               toLocalProperties:localProperties];
+    NSAssert((networkProperties.count == localProperties.count), @"Mapping network properties to local properties expects arrays of the same size");
     
+    if (networkProperties.count != localProperties.count) return;
+    if (!networkProperties || !localProperties) return;
+    
+    for (NSString *networkProperty in networkProperties) {
+        
+        NSString *localProperty = [localProperties objectAtIndex:[networkProperties indexOfObject:networkProperty]];
+        
+        BKAttributeDescription *attrDescription = [self attributeDescriptionForProperty:localProperty];
+
+        if (!attrDescription) 
+            NSLog(@"shmu?");
+        
+        [self.networkToLocalPropertiesMap setValue:localProperty forKey:networkProperty];
+        
+        [self.localToNetworkPropertiesMap setValue:networkProperty forKey:localProperty];
+                
+        if (attrDescription) {
+            attrDescription.networkPropertyName = networkProperty;
+        }
+    }
 }
 
 #pragma mark - Accessors
+
+- (BKPropertyDescription *)descriptionForProperty:(NSString *)property {
+    BKPropertyDescription *desc = [self descriptionForLocalProperty:property];
+    
+    if (!desc) {
+        desc = [self descriptionForNetworkProperty:property];
+    }
+    
+    if (!desc) {DLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.", property, self.entityName);}
+
+    return desc;
+}
 
 - (BKPropertyDescription *)descriptionForLocalProperty:(NSString *)property {
     return (BKPropertyDescription *)[self.propertiesDescriptions objectForKey:property];
 }
 
 - (BKPropertyDescription *)descriptionForNetworkProperty:(NSString *)property {
-    __block id result = nil;
     
-    [self.propertiesDescriptions enumerateKeysAndObjectsWithOptions:NSEnumerationConcurrent
-                                                         usingBlock:^(id key, id obj, BOOL *stop) {
-                                                             
-                                                             BKPropertyDescription *description = [self descriptionForLocalProperty:key];
-                                                             
-                                                             if (description && [description.networkPropertyName isEqualToString:property]) {
-                                                                 result = obj;
-                                                                 *stop = YES;
-                                                             }
-                                                         }];
-    
-    if (!result) {
+    BKPropertyDescription *desc = [self descriptionForLocalProperty:[self.networkToLocalPropertiesMap objectForKey:property]];
+    if (!desc) {
         DLog(@"\"%@\" is not a known network property on entity \"%@\"", property, self.entityName);
         return nil;
     }
     
-    return (BKPropertyDescription *)result;
+    return desc;
+}
+
+- (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)property {
+    id description = [self descriptionForProperty:property];
+    if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
+        return (BKAttributeDescription *)description;
+    } else {
+        return nil;
+    }
 }
 
 - (BKAttributeDescription *)attributeDescriptionForLocalProperty:(NSString *)property {
@@ -177,10 +206,16 @@
     return desc.destinationEntityName;
 }
 
-- (BKEntityPropertiesMap *)propertiesMap {
-    if (propertiesMap) return [[propertiesMap retain] autorelease];
-    propertiesMap = [[BKEntityPropertiesMap propertiesMap] retain];
-    return [[propertiesMap retain] autorelease];
+- (NSMutableDictionary *)networkToLocalPropertiesMap {
+    if (networkToLocalPropertiesMap) return [[networkToLocalPropertiesMap retain] autorelease];
+    networkToLocalPropertiesMap = [[NSMutableDictionary alloc] init];
+    return [[networkToLocalPropertiesMap retain] autorelease];
+}
+
+- (NSMutableDictionary *)localToNetworkPropertiesMap {
+    if (localToNetworkPropertiesMap) return [[localToNetworkPropertiesMap retain] autorelease];
+    localToNetworkPropertiesMap = [[NSMutableDictionary alloc] init];
+    return [[localToNetworkPropertiesMap retain] autorelease];
 }
 
 @end

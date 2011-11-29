@@ -1,5 +1,5 @@
 //
-//  BKEntityPropertiesMap.h
+//  BKEntityPropertiesDescription.h
 //  Broker
 //
 //  Created by Andrew Smith on 10/6/11.
@@ -27,7 +27,6 @@
 
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"
-#import "BKEntityPropertiesMap.h"
 
 @interface BKEntityPropertiesDescription : NSObject {
 @private
@@ -35,8 +34,9 @@
     NSString *primaryKey;
     NSString *rootKeyPath;
     NSMutableDictionary *propertiesDescriptions;
-    BKEntityPropertiesMap *propertiesMap;
     NSEntityDescription *entityDescription;
+    NSMutableDictionary *networkToLocalPropertiesMap;
+    NSMutableDictionary *localToNetworkPropertiesMap;
 }
 
 /**
@@ -62,9 +62,14 @@
 @property (readonly, nonatomic, retain) NSMutableDictionary *propertiesDescriptions;
 
 /**
- 
+ Dictionary used for fast key finding
  */
-@property (nonatomic, readonly) BKEntityPropertiesMap *propertiesMap;
+@property (nonatomic, readonly) NSMutableDictionary *networkToLocalPropertiesMap;
+
+/**
+ Dictionary used for fast key finding
+ */
+@property (nonatomic, readonly) NSMutableDictionary *localToNetworkPropertiesMap;
 
 /**
  
@@ -94,6 +99,11 @@
            toLocalProperties:(NSArray *)localProperties;
 
 /**
+  Returns the entity property description given the property name
+ */
+- (BKPropertyDescription *)descriptionForProperty:(NSString *)property;
+
+/**
   Returns the entity's property description for the local property name
  */
 - (BKPropertyDescription *)descriptionForLocalProperty:(NSString *)property;
@@ -102,6 +112,11 @@
   Returns the entity's property description for the network property name
  */
 - (BKPropertyDescription *)descriptionForNetworkProperty:(NSString *)property;
+
+/**
+ Returns the entity's attribute description for the property
+ */
+- (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)property;
 
 /**
   Returns the entity's attribute description for the local property name

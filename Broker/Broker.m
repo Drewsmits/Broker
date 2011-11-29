@@ -100,7 +100,7 @@
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     
     if ([self entityPropertyDescriptionForEntityName:entityName]) {
-        WLog(@"Entity named %@ already registered with Broker", entityName);
+        WLog(@"Entity named \"%@\" already registered with Broker", entityName);
         return;
     }
     
@@ -154,6 +154,10 @@
                    forEntity:(NSString *)entity {
 
     BKEntityPropertiesDescription *desc = [self entityPropertyDescriptionForEntityName:entity];
+    
+    NSAssert(desc, @"You must first register entity named \"%@\" before mapping properties.");
+    if (!desc) return;
+    
     [desc mapNetworkProperties:networkProperties toLocalProperties:localProperties];
 }
 
@@ -280,12 +284,8 @@
     for (NSString *property in jsonDictionary) {
         
         // Get the property description
-        BKPropertyDescription *description = [propertiesDescription descriptionForLocalProperty:property];
-        if (!description) {
-            // if no description, it could be a network property
-            description = [propertiesDescription descriptionForNetworkProperty:property];
-            if (!description) {DLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.  Skipping...", property, propertiesDescription.entityName); continue;}
-        }
+        BKPropertyDescription *description = [propertiesDescription descriptionForProperty:property];
+        if (!description) {continue;}
         
         // get the original value
         id value = [jsonDictionary valueForKey:property];

@@ -208,6 +208,10 @@
             }
             
         } else {
+            if ([property isEqualToString:@"id"] || [property isEqualToString:@"celebrityId"]) {
+                NSLog(@"break");
+            }
+            
             [object setValue:[subDictionary valueForKey:property]
                       forKey:property];        
         }
