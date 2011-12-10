@@ -82,8 +82,8 @@
         case NSDateAttributeType:
             
             if (!self.dateFormat) {
-                WLog(@"NSDate attribute on entity %@ requires " 
-                     @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.entityName);
+                WLog(@"NSDate attribute named \"%@\" on entity \"%@\" requires " 
+                     @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.localPropertyName, self.entityName);
                 return nil;
             }
             
