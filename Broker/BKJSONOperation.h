@@ -25,7 +25,7 @@
 
 #import <CoreData/CoreData.h>
 
-#import "CDOperation.h"
+#import "Conductor/CDOperation.h"
 #import "BKEntityPropertiesDescription.h"
 
 @interface BKJSONOperation : CDOperation {
