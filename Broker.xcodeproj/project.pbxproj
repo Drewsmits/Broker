@@ -463,7 +463,7 @@
 				PUBLIC_HEADERS_FOLDER_PATH = include/Broker;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/include/Conductor $(BUILT_PRODUCTS_DIR)/**";
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/include/Conductor";
 			};
 			name = Debug;
 		};
@@ -489,7 +489,7 @@
 				PUBLIC_HEADERS_FOLDER_PATH = include/Broker;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/include/Conductor $(BUILT_PRODUCTS_DIR)/**";
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/include/Conductor";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
