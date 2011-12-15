@@ -50,9 +50,9 @@
         
         NSError *error;
         id jsonObject = [NSJSONSerialization JSONObjectWithData:self.jsonPayload 
-                                                        options:NSJSONReadingMutableContainers 
+                                                        options:NSJSONReadingAllowFragments 
                                                           error:&error];
-        
+
         NSAssert(jsonObject, @"Unable to create JSON object from JSON data. ERROR: %@", error);
         if (!jsonObject) [self finish];
         
