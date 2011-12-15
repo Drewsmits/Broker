@@ -113,7 +113,7 @@
         BKAttributeDescription *attrDescription = [self attributeDescriptionForProperty:localProperty];
 
         if (!attrDescription) 
-            NSLog(@"shmu?");
+            DLog(@"shmu?");
         
         [self.networkToLocalPropertiesMap setValue:localProperty forKey:networkProperty];
         
