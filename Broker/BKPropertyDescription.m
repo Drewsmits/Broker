@@ -32,11 +32,10 @@
             networkPropertyName;
 
 - (void)dealloc {
-    [entityName release], entityName = nil;
-    [localPropertyName release], localPropertyName = nil;
-    [networkPropertyName release], networkPropertyName = nil;
+    entityName = nil;
+    localPropertyName = nil;
+    networkPropertyName = nil;
     
-    [super dealloc];
 }
 
 @end

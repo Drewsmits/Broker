@@ -28,7 +28,7 @@
 #import "BKJSONOperation.h"
 
 @interface Broker ()
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *mainContext;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *mainContext;
 @end
 
 @implementation Broker
@@ -45,16 +45,15 @@
 }
 
 - (void)dealloc {
-    [mainContext release], mainContext = nil;
-    [entityDescriptions release], entityDescriptions = nil;
+    mainContext = nil;
+    entityDescriptions = nil;
         
-    [super dealloc];
 }
 
 #pragma mark - Setup
 
 + (id)brokerWithContext:(NSManagedObjectContext *)context {    
-    Broker *broker = [[[self alloc] init] autorelease];
+    Broker *broker = [[self alloc] init];
     broker.mainContext = context;
     return broker;
 }
@@ -66,8 +65,8 @@
 }
 
 - (void)reset {
-    [mainContext release], mainContext = nil;
-    [entityDescriptions release], entityDescriptions = nil;
+    mainContext = nil;
+    entityDescriptions = nil;
 }
 
 #pragma mark - Registration
@@ -229,7 +228,7 @@
                                                  name:NSManagedObjectContextDidSaveNotification 
                                                object:newContext];
     
-    return [newContext autorelease];
+    return newContext;
 }
 
 #pragma mark - Accessors
@@ -267,15 +266,15 @@
 }
 
 - (NSMutableDictionary *)entityDescriptions {
-    if (entityDescriptions) return [[entityDescriptions retain] autorelease];
+    if (entityDescriptions) return entityDescriptions;
     entityDescriptions = [[NSMutableDictionary alloc] init];
-    return [[entityDescriptions retain] autorelease];
+    return entityDescriptions;
 }
 
 - (NSDictionary *)transformJSONDictionary:(NSDictionary *)jsonDictionary 
          usingEntityPropertiesDescription:(BKEntityPropertiesDescription *)propertiesDescription {
     
-    NSMutableDictionary *transformedDict = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *transformedDict = [[NSMutableDictionary alloc] init];
     
     if (propertiesDescription.rootKeyPath) {
         jsonDictionary = [jsonDictionary valueForKeyPath:propertiesDescription.rootKeyPath];
@@ -325,7 +324,7 @@
     
     if (![objectForID isFault]) return objectForID;
     
-    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[objectID entity]];
     
     // Predicate for fetching self.  Code is faster than string predicate equivalent of 
@@ -354,7 +353,7 @@
     NSAssert(description, @"Must have a description");
     if (!description) return nil;
     
-    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
     
     [request setEntity:description.entityDescription];
     

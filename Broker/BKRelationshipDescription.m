@@ -31,14 +31,13 @@
             isToMany;
 
 - (void)dealloc {
-    [destinationEntityName release], destinationEntityName = nil;
+    destinationEntityName = nil;
 
-    [super dealloc];
 }
 
 + (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description {
     
-    BKRelationshipDescription *map = [[[BKRelationshipDescription alloc] init] autorelease];
+    BKRelationshipDescription *map = [[BKRelationshipDescription alloc] init];
 
     map.localPropertyName = description.name;
     map.destinationEntityName = description.destinationEntity.name;

@@ -35,13 +35,12 @@
             context;
 
 - (void)dealloc {
-    [jsonPayload release], jsonPayload = nil;
-    [entityURI release], entityURI = nil;
-    [relationshipName release], relationshipName = nil;
-    [context release], context = nil;
+    jsonPayload = nil;
+    entityURI = nil;
+    relationshipName = nil;
+    context = nil;
     
     
-    [super dealloc];
 }
 
 - (void)start {

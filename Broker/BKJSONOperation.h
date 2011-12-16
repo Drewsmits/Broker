@@ -36,10 +36,10 @@
     NSManagedObjectContext *context;
 }
 
-@property (nonatomic, retain) id jsonPayload;
-@property (nonatomic, retain) NSURL *entityURI;
+@property (nonatomic, strong) id jsonPayload;
+@property (nonatomic, strong) NSURL *entityURI;
 @property (nonatomic, copy) NSString *relationshipName;
-@property (nonatomic, retain) NSManagedObjectContext *context;
+@property (nonatomic, strong) NSManagedObjectContext *context;
 
 - (void)processJSONObject:(id)jsonObject;
 

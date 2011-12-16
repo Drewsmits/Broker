@@ -59,22 +59,22 @@
 /**
  
  */
-@property (readonly, nonatomic, retain) NSMutableDictionary *propertiesDescriptions;
+@property (readonly, nonatomic, strong) NSMutableDictionary *propertiesDescriptions;
 
 /**
  Dictionary used for fast key finding
  */
-@property (nonatomic, readonly) NSMutableDictionary *networkToLocalPropertiesMap;
+@property (weak, nonatomic, readonly) NSMutableDictionary *networkToLocalPropertiesMap;
 
 /**
  Dictionary used for fast key finding
  */
-@property (nonatomic, readonly) NSMutableDictionary *localToNetworkPropertiesMap;
+@property (weak, nonatomic, readonly) NSMutableDictionary *localToNetworkPropertiesMap;
 
 /**
  
  */
-@property (readonly, nonatomic, retain) NSEntityDescription *entityDescription;
+@property (readonly, nonatomic, strong) NSEntityDescription *entityDescription;
 
 /**
   Creates a new BKEntityPropertiesDescription where the entityName is the name 

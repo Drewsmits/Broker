@@ -45,13 +45,13 @@
 /**
  The NSManagedObjectContext in which the Broker instance performs its operations
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *mainContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *mainContext;
 
 /**
  The dictionary containing all BKEntityPropertiesDescriptions registered with 
  the Broker instance.
  */
-@property (nonatomic, readonly) NSMutableDictionary *entityDescriptions;
+@property (weak, nonatomic, readonly) NSMutableDictionary *entityDescriptions;
 
 /** @name Setup */
 

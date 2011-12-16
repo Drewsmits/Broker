@@ -31,10 +31,9 @@
             attributeType;
 
 - (void)dealloc {
-    [dateFormat release], dateFormat = nil;
-    [dateFormatter release], dateFormatter = nil;
+    dateFormat = nil;
+    dateFormatter = nil;
     
-    [super dealloc];
 }
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description {
@@ -45,7 +44,7 @@
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
                                    andMapToNetworkAttributeName:(NSString *)networkAttributeName {
     
-    BKAttributeDescription *map = [[[BKAttributeDescription alloc] init] autorelease];
+    BKAttributeDescription *map = [[BKAttributeDescription alloc] init];
     
     map.entityName = description.entity.name;
     map.localPropertyName = description.name;
@@ -104,12 +103,12 @@
 #pragma mark - Accessors
 
 - (NSDateFormatter *)dateFormatter {
-    if (dateFormatter) return [[dateFormatter retain] autorelease];
+    if (dateFormatter) return dateFormatter;
     
     dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:self.dateFormat];
     
-    return [[dateFormatter retain] autorelease];
+    return dateFormatter;
 }
 
 @end
