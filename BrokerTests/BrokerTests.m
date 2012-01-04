@@ -31,6 +31,7 @@
 
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"
+#import "BKJSONOperation.h"
 
 // Department
 static NSString *kDepartment = @"Department";
@@ -697,6 +698,73 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
                                                                                         shouldCreate:NO];
     
     STAssertEqualObjects(employee, foundEmployee, @"Found URI should be the same as the first created");
+}
+
+#pragma mark - BKJSONOperation
+
+- (void)testFilterJSONCollection {
+   
+    NSData *jsonData = DataFromFile(@"department_employees.json");
+   
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:nil];
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                              forProperty:@"startDate" 
+                                 onEntity:kEmployee];
+   
+    // Build Deparment
+    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+   
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+   
+    BKJSONOperationPreFilterBlock removeEmployeeWithID6 = (id)^(id jsonObject) {
+        if ([jsonObject isKindOfClass:[NSArray class]]) {
+            NSMutableArray *newCollection = [[jsonObject mutableCopy] autorelease];
+            for (id dictionary in jsonObject) {
+                if ([dictionary isKindOfClass:[NSDictionary class]]) {
+                    if ([[dictionary valueForKey:@"employeeID"] isEqualToNumber:[NSNumber numberWithInt:6]]) {
+                        [newCollection removeObject:dictionary];
+                    }
+                }
+            }
+            return newCollection;
+        }
+        return nil;
+    };
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                                  targetEntity:departmentURI 
+                               forRelationship:@"employees"
+                            jsonPreFilterBlock:removeEmployeeWithID6
+                           withCompletionBlock:CompletionBlock];
+   
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+   
+    // Fetch
+    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
+                                                        inContext:context];
+   
+    // Refresh
+    [context refreshObject:dept mergeChanges:YES];
+   
+    NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
+    int num = [employees count];
+        
+    BOOL removedEmployee6 = YES;
+    for (id employee in employees) {
+        if ([[employee valueForKey:@"employeeID"] isEqualToNumber:[NSNumber numberWithInt:6]]) {
+            removedEmployee6 = NO;
+        }
+    }
+   
+    STAssertEquals(num, 5, @"Should have 5 employee objects");
+    STAssertTrue(success, @"Should have eliminated employee during pre filter");
 }
 
 @end

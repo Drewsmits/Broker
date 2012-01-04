@@ -28,6 +28,8 @@
 #import "Conductor/CDOperation.h"
 #import "BKEntityPropertiesDescription.h"
 
+typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
+
 @interface BKJSONOperation : CDOperation {
 @private
     id jsonPayload;
@@ -41,15 +43,8 @@
 @property (nonatomic, copy) NSString *relationshipName;
 @property (nonatomic, strong) NSManagedObjectContext *context;
 
-- (void)processJSONObject:(id)jsonObject;
+@property (nonatomic, copy) BKJSONOperationPreFilterBlock preFilterBlock;
 
-- (void)processJSONCollection:(NSArray *)collection
-                    forObject:(NSManagedObject *)object
-        withEntityDescription:(BKEntityPropertiesDescription *)description
-              forRelationship:(NSString *)relationship;
-
-- (void)processJSONSubObject:(NSDictionary *)subDictionary 
-                   forObject:(NSManagedObject *)object 
-             withDescription:(BKEntityPropertiesDescription *)description;
+- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject;
 
 @end
