@@ -27,11 +27,27 @@
 
 #import "Broker.h"
 
+@interface BKJSONOperation ()
+
+- (void)processJSONObject:(id)jsonObject;
+
+- (void)processJSONCollection:(NSArray *)collection
+                    forObject:(NSManagedObject *)object
+        withEntityDescription:(BKEntityPropertiesDescription *)description
+              forRelationship:(NSString *)relationship;
+
+- (void)processJSONSubObject:(NSDictionary *)subDictionary 
+                   forObject:(NSManagedObject *)object 
+             withDescription:(BKEntityPropertiesDescription *)description;
+
+@end
+
 @implementation BKJSONOperation
 
 @synthesize jsonPayload,
             entityURI,
             relationshipName,
+            preFilterBlock,
             context;
 
 - (void)dealloc {
@@ -39,14 +55,13 @@
     entityURI = nil;
     relationshipName = nil;
     context = nil;
-    
-    
 }
 
 - (void)start {
     @autoreleasepool {    
         [super start];
         
+        // Convert JSON payload data to JSON object
         NSError *error;
         id jsonObject = [NSJSONSerialization JSONObjectWithData:self.jsonPayload 
                                                         options:NSJSONReadingMutableContainers 
@@ -55,8 +70,15 @@
         NSAssert(jsonObject, @"Unable to create JSON object from JSON data. ERROR: %@", error);
         if (!jsonObject) [self finish];
         
+        // If there is a pre-filter, apply it now
+        if (self.preFilterBlock) {
+            jsonObject = [self applyJSONPreFilterBlockToJSONObject:jsonObject];
+        }
+        
+        // Process
         [self processJSONObject:jsonObject];
         
+        // Clean up
         [self finish];
     }
 }
@@ -73,23 +95,35 @@
     [super finish];    
 }
 
+- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject {
+    
+    id newJSONObject = self.preFilterBlock(jsonObject);
+    
+    NSAssert(newJSONObject, @"JSON Pre-filter blocks must not return nil! Did you forget to return a value with your block?");
+    if (!newJSONObject) return jsonObject;
+    
+    return newJSONObject;
+}
+
 - (void)processJSONObject:(id)jsonObject {
     
+    // Grabs the object from the threaded context (thread safe)
     NSManagedObject *object = [[Broker sharedInstance] objectForURI:self.entityURI 
-                                                           inContext:self.context];
+                                                          inContext:self.context];
     
     NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
     if (!object) return;
     
+    // Grab the entity property description for the current working objects name,
     BKEntityPropertiesDescription *description = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:object.entity.name];
 
     NSAssert(description, @"Entity named \"%@\" not registered with Broker instance!", object.entity.name);
     if (!description) return;
     
-    // Flat
+    // Flat JSON
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
         
-        // Transform
+        // Transform flat JSON to use local property names and native object types
         NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:(NSDictionary *)jsonObject 
                                                         usingEntityPropertiesDescription:description];
         
@@ -98,7 +132,7 @@
                    withDescription:description];        
     }
     
-    // Collection
+    // Collection JSON
     if ([jsonObject isKindOfClass:[NSArray class]]) {
     
         [self processJSONCollection:jsonObject

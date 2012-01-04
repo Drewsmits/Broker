@@ -169,13 +169,38 @@
     [self processJSONPayload:jsonPayload
               targetEntity:entityURI
            forRelationship:nil
+        JSONPreFilterBlock:nil
        withCompletionBlock:CompletionBlock];
+}
 
+- (void)processJSONPayload:(id)jsonPayload 
+              targetEntity:(NSURL *)entityURI 
+        jsonPreFilterBlock:(id (^)())FilterBlock
+       withCompletionBlock:(void (^)())CompletionBlock {
+    
+    [self processJSONPayload:jsonPayload
+                targetEntity:entityURI
+             forRelationship:nil
+          JSONPreFilterBlock:FilterBlock
+         withCompletionBlock:CompletionBlock];
 }
 
 - (void)processJSONPayload:(id)jsonPayload 
               targetEntity:(NSURL *)entityURI
            forRelationship:(NSString *)relationshipName
+       withCompletionBlock:(void (^)())CompletionBlock {
+    
+    [self processJSONPayload:jsonPayload
+                targetEntity:entityURI
+             forRelationship:relationshipName 
+          JSONPreFilterBlock:nil
+         withCompletionBlock:CompletionBlock];
+}
+
+- (void)processJSONPayload:(id)jsonPayload
+              targetEntity:(NSURL *)entityURI
+           forRelationship:(NSString *)relationshipName
+        JSONPreFilterBlock:(id (^)())FilterBlock
        withCompletionBlock:(void (^)())CompletionBlock {
     
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
@@ -191,6 +216,8 @@
     // properly merges with main context on main thread
     operation.context = [self newMainStoreManagedObjectContext];
     
+    // Blocks
+    operation.preFilterBlock = FilterBlock;
     operation.completionBlock = CompletionBlock;
     
     [self addOperation:operation];

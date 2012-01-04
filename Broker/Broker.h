@@ -194,6 +194,12 @@
               targetEntity:(NSURL *)entityURI
        withCompletionBlock:(void (^)())CompletionBlock;
 
+
+- (void)processJSONPayload:(id)jsonPayload
+              targetEntity:(NSURL *)entityURI
+        jsonPreFilterBlock:(id (^)())FilterBlock
+       withCompletionBlock:(void (^)())CompletionBlock;
+
 /**
  Process a JSON payload returned from an API for a given relationship on an entity.
  You might have a Department with many Employees.  If your Department object has
@@ -212,6 +218,20 @@
 - (void)processJSONPayload:(id)jsonPayload 
               targetEntity:(NSURL *)entityURI
            forRelationship:(NSString *)relationshipName
+       withCompletionBlock:(void (^)())CompletionBlock;
+
+/**
+ Process a JSON payload returned from an API for a given relationship on an entity.
+ The JSON pre filter block will allow you to massage and returned JSON before it
+ is processed into Core Data objects.  You may want to remove some entities based
+ on some logic, for example.
+
+ @see [Broker processJSONPayload:targetEntity:forRelationship:withCompletionBlock:]
+ */
+- (void)processJSONPayload:(id)jsonPayload
+              targetEntity:(NSURL *)entityURI
+           forRelationship:(NSString *)relationshipName
+        JSONPreFilterBlock:(id (^)())FilterBlock
        withCompletionBlock:(void (^)())CompletionBlock;
 
 /** @name Core Data */
