@@ -175,7 +175,7 @@
 
 - (void)processJSONPayload:(id)jsonPayload 
               targetEntity:(NSURL *)entityURI 
-        jsonPreFilterBlock:(id (^)())FilterBlock
+        JSONPreFilterBlock:(id (^)())FilterBlock
        withCompletionBlock:(void (^)())CompletionBlock {
     
     [self processJSONPayload:jsonPayload
