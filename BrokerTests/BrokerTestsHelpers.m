@@ -53,6 +53,21 @@
     return dept.objectID.URIRepresentation;
 }
 
++ (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
+
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:entityName 
+                                                         inManagedObjectContext:context];
+    
+    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+        
+    [request setEntity:entityDescription];
+    
+    NSError *error = nil;
+    NSArray *array = [context executeFetchRequest:request error:&error];
+    
+	return array;
+}
+
 NSString *PathForTestResource(NSString *resouce) {
     
     NSString *testBundlePath = [[NSBundle bundleForClass:[BrokerTestsHelpers class]] pathForResource:@"TestResources" 

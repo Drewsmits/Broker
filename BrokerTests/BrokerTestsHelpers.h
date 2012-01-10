@@ -31,6 +31,7 @@
 + (NSURL *)createNewEmployee:(NSManagedObjectContext *)context;
 + (NSURL *)createNewFilledOutEmployee:(NSManagedObjectContext *)context;
 + (NSURL *)createNewDepartment:(NSManagedObjectContext *)context;
++ (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 
 NSString *PathForTestResource(NSString *resouce);
 NSURL *URLForTestResource(NSString *resouce);

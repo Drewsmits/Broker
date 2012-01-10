@@ -98,10 +98,10 @@
     
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     
-    if ([self entityPropertyDescriptionForEntityName:entityName]) {
-        WLog(@"Entity named \"%@\" already registered with Broker", entityName);
-        return;
-    }
+//    if ([self entityPropertyDescriptionForEntityName:entityName]) {
+//        WLog(@"Entity named \"%@\" already registered with Broker", entityName);
+//        return;
+//    }
     
     // create new object
     NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:entityName 
@@ -160,7 +160,7 @@
     [desc mapNetworkProperties:networkProperties toLocalProperties:localProperties];
 }
 
-#pragma mark - JSON
+#pragma mark - Object
 
 - (void)processJSONPayload:(id)jsonPayload 
             targetEntity:(NSURL *)entityURI
@@ -184,6 +184,8 @@
           JSONPreFilterBlock:FilterBlock
          withCompletionBlock:CompletionBlock];
 }
+
+#pragma mark - Relationship Object Collection
 
 - (void)processJSONPayload:(id)jsonPayload 
               targetEntity:(NSURL *)entityURI
@@ -221,6 +223,45 @@
     operation.completionBlock = CompletionBlock;
     
     [self addOperation:operation];
+}
+
+#pragma mark - Object Collection
+
+- (void)processJSONPayload:(id)jsonPayload 
+asCollectionOfEntitiesNamed:(NSString *)entityName 
+       withCompletionBlock:(void (^)())CompletionBlock {
+    [self processJSONPayload:jsonPayload 
+ asCollectionOfEntitiesNamed:entityName
+          JSONPreFilterBlock:nil
+         withCompletionBlock:CompletionBlock];
+}
+
+- (void)processJSONPayload:(id)jsonPayload 
+asCollectionOfEntitiesNamed:(NSString *)entityName
+        JSONPreFilterBlock:(id (^)())FilterBlock
+       withCompletionBlock:(void (^)())CompletionBlock {
+    
+    NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
+    if (!self.mainContext) return;
+    
+    BKJSONOperation *operation = [BKJSONOperation operation];
+    
+    operation.jsonPayload = jsonPayload;
+    
+    // This is the type of object the collection objects will be turned into
+    BKEntityPropertiesDescription *description = [self entityPropertyDescriptionForEntityName:entityName];
+    operation.entityDescription = description;
+    
+    // Thread safe managed object context.  Will call contextDidSave when saving,
+    // properly merges with main context on main thread
+    operation.context = [self newMainStoreManagedObjectContext];
+    
+    // Blocks
+    operation.preFilterBlock = FilterBlock;
+    operation.completionBlock = CompletionBlock;
+    
+    [self addOperation:operation];
+
 }
 
 #pragma mark - CoreData

@@ -503,7 +503,7 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
     int num = [employees count];
     
-    STAssertEquals(num, 6, @"Should have 7 employee objects");
+    STAssertEquals(num, 6, @"Should have 6 employee objects");
 }
 
 - (void)testDepartmentEmployeesJSON {
@@ -544,7 +544,7 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
     int num = [employees count];
     
-    STAssertEquals(num, 6, @"Should have 7 employee objects");
+    STAssertEquals(num, 6, @"Should have 6 employee objects");
 }
 
 - (void)testNestedDepartmentEmployeesJSON {
@@ -567,9 +567,9 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                  targetEntity:departmentURI 
-               forRelationship:nil 
-           withCompletionBlock:CompletionBlock];
+                                   targetEntity:departmentURI 
+                                forRelationship:@"employees" 
+                            withCompletionBlock:CompletionBlock];
     
     // Wait for async code to finish
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
@@ -667,6 +667,35 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Should set nested object attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Should set nested object attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");    
+}
+
+- (void)testEmployeeCollection {
+    
+    NSData *jsonData = DataFromFile(@"department_employees.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+        
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 6, @"Should have 6 employee objects");
 }
 
 #pragma mark - Core Data

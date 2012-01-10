@@ -36,9 +36,16 @@
         withEntityDescription:(BKEntityPropertiesDescription *)description
               forRelationship:(NSString *)relationship;
 
+- (NSSet *)processJSONCollection:(NSArray *)collection 
+ asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description;
+
 - (void)processJSONSubObject:(NSDictionary *)subDictionary 
                    forObject:(NSManagedObject *)object 
              withDescription:(BKEntityPropertiesDescription *)description;
+
+- (NSManagedObject *)targetObject;
+
+- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object;
 
 @end
 
@@ -46,6 +53,7 @@
 
 @synthesize jsonPayload,
             entityURI,
+            entityDescription,
             relationshipName,
             preFilterBlock,
             context;
@@ -53,6 +61,7 @@
 - (void)dealloc {
     jsonPayload = nil;
     entityURI = nil;
+    entityDescription = nil;
     relationshipName = nil;
     context = nil;
 }
@@ -95,33 +104,18 @@
     [super finish];    
 }
 
-- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject {
-    
-    id newJSONObject = self.preFilterBlock(jsonObject);
-    
-    NSAssert(newJSONObject, @"JSON Pre-filter blocks must not return nil! Did you forget to return a value with your block?");
-    if (!newJSONObject) return jsonObject;
-    
-    return newJSONObject;
-}
+#pragma mark - 
 
 - (void)processJSONObject:(id)jsonObject {
-    
-    // Grabs the object from the threaded context (thread safe)
-    NSManagedObject *object = [[Broker sharedInstance] objectForURI:self.entityURI 
-                                                          inContext:self.context];
-    
-    NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
-    if (!object) return;
-    
-    // Grab the entity property description for the current working objects name,
-    BKEntityPropertiesDescription *description = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:object.entity.name];
 
-    NSAssert(description, @"Entity named \"%@\" not registered with Broker instance!", object.entity.name);
-    if (!description) return;
-    
+
     // Flat JSON
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+        
+        NSManagedObject *object = [self targetObject];
+        
+        // Grab the entity property description for the current working objects name,
+        BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
         
         // Transform flat JSON to use local property names and native object types
         NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:(NSDictionary *)jsonObject 
@@ -129,18 +123,37 @@
         
         [self processJSONSubObject:transformedDict
                          forObject:object
-                   withDescription:description];        
+                   withDescription:description];
     }
     
     // Collection JSON
     if ([jsonObject isKindOfClass:[NSArray class]]) {
-    
-        [self processJSONCollection:jsonObject
-                          forObject:object
-              withEntityDescription:description
-                    forRelationship:self.relationshipName];
+        
+        // Is it a relationship on a target object?
+        if (self.relationshipName) {
+            
+            NSManagedObject *object = [self targetObject];
+            
+            // Grab the entity property description for the current working objects name,
+            BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
+            
+            [self processJSONCollection:jsonObject 
+                              forObject:object 
+                  withEntityDescription:description 
+                        forRelationship:self.relationshipName];
+        }
+        
+        // Is it a collection of entities?
+        if (self.entityDescription) {
+            [self processJSONCollection:jsonObject 
+        asEntitiesWithEntityDescription:self.entityDescription];
+        }
+        
     }
+    
 }
+
+#pragma mark - Processing
 
 - (void)processJSONCollection:(NSArray *)collection
                     forObject:(NSManagedObject *)object
@@ -164,7 +177,24 @@
     NSAssert(destinationEntityDesc.primaryKey, @"Processing a collection of %@ objects requires registration of an %@ primaryKey using [Broker registerEntityName:withPrimaryKey]", destinationEntityName, destinationEntityName);
     if (!destinationEntityDesc.primaryKey) return;
     
+    // Fetch the context relationship objects
     NSMutableSet *relationshipObjects = [object mutableSetValueForKey:relationship];
+    
+    // Create relationship objects to add
+    NSSet *objectsToAdd = [self processJSONCollection:collection 
+                    asEntitiesWithEntityDescription:destinationEntityDesc];
+    
+    [relationshipObjects unionSet:objectsToAdd];
+}
+
+- (NSSet *)processJSONCollection:(NSArray *)collection 
+ asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description {
+    
+    // Check for primary key
+    NSAssert(description.primaryKey, @"Processing a collection of %@ objects requires registration of a primaryKey using [Broker registerEntityName:withPrimaryKey]", description.entityName);
+    if (!description.primaryKey) return nil;
+    
+    NSMutableSet *collectionObjects = [NSMutableSet setWithCapacity:collection.count];
     
     for (id dictionary in collection) {
         
@@ -173,25 +203,24 @@
         
         // Transform
         NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:(NSDictionary *)dictionary 
-                                                        usingEntityPropertiesDescription:destinationEntityDesc];
+                                                        usingEntityPropertiesDescription:description];
         
         // Get the primary key value
-        id value = [transformedDict objectForKey:destinationEntityDesc.primaryKey];
-    
+        id value = [transformedDict objectForKey:description.primaryKey];
         
-        NSManagedObject *collectionObject = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:destinationEntityDesc 
+        NSManagedObject *collectionObject = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:description 
                                                                                         withPrimaryKeyValue:value
                                                                                                   inContext:self.context
                                                                                                shouldCreate:YES];
         
         [self processJSONSubObject:transformedDict
                          forObject:collectionObject
-                   withDescription:destinationEntityDesc];
+                   withDescription:description];
         
-        if (collectionObject) {
-            [relationshipObjects addObject:collectionObject];
-        }
+        [collectionObjects addObject:collectionObject];
     }
+
+    return collectionObjects;
 }
 
 - (void)processJSONSubObject:(NSDictionary *)subDictionary 
@@ -247,5 +276,32 @@
     }
 }
 
+- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject {
+    
+    id newJSONObject = self.preFilterBlock(jsonObject);
+    
+    NSAssert(newJSONObject, @"JSON Pre-filter blocks must not return nil! Did you forget to return a value with your block?");
+    if (!newJSONObject) return jsonObject;
+    
+    return newJSONObject;
+}
+
+#pragma mark - Accessors
+
+- (NSManagedObject *)targetObject {
+    
+    // Grabs the object from the threaded context (thread safe)
+    NSManagedObject *object = [[Broker sharedInstance] objectForURI:self.entityURI 
+                                                          inContext:self.context];
+    
+    NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
+    return object;
+}
+
+- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object {
+    BKEntityPropertiesDescription *description = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:object.entity.name];
+    NSAssert(description, @"Entity named \"%@\" is not registered with Broker instance!", object.entity.name);
+    return description;
+}
 
 @end

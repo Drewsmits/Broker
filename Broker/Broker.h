@@ -183,7 +183,7 @@
 /** @name Processing */
 
 /**
- Processes a JSON payload returned from an API.  
+ Processes a JSON payload returned from an API onto the target entity.
  
  @param jsonPayload The data returned from the API
  @param entityURI The URI representation of the managed object to process the
@@ -194,7 +194,16 @@
               targetEntity:(NSURL *)entityURI
        withCompletionBlock:(void (^)())CompletionBlock;
 
-
+/**
+ Processes a JSON payload returned from an API onto the target entity.
+ 
+ @param jsonPayload The data returned from the API
+ @param entityURI The URI representation of the managed object to process the
+ JSON for
+ @param FilterBlock A block passed in to apply to the incoming JSON before
+ any processing takes place.
+ @param CompletionBlock The block to run when the operation is complete
+ */
 - (void)processJSONPayload:(id)jsonPayload
               targetEntity:(NSURL *)entityURI
         JSONPreFilterBlock:(id (^)())FilterBlock
@@ -231,6 +240,33 @@
 - (void)processJSONPayload:(id)jsonPayload
               targetEntity:(NSURL *)entityURI
            forRelationship:(NSString *)relationshipName
+        JSONPreFilterBlock:(id (^)())FilterBlock
+       withCompletionBlock:(void (^)())CompletionBlock;
+
+/**
+ Process a JSON payload returned from an API as a collection of a particluar
+ type of entity.
+ 
+ @param jsonPayload The data returned from the API
+ @param entityName The name of the objects in the returned collection
+ @param CompletionBlock The block to run when the operation is complete
+ */
+- (void)processJSONPayload:(id)jsonPayload 
+asCollectionOfEntitiesNamed:(NSString *)entityName 
+       withCompletionBlock:(void (^)())CompletionBlock;
+
+/**
+ Process a JSON payload returned from an API as a collection of a particluar
+ type of entity and run a JSON pre filter on the payload before processing.
+ 
+ @param jsonPayload The data returned from the API
+ @param entityName The name of the objects in the returned collection
+ @param FilterBlock A block passed in to apply to the incoming JSON before
+ any processing takes place.
+ @param CompletionBlock The block to run when the operation is complete
+ */
+- (void)processJSONPayload:(id)jsonPayload 
+asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())FilterBlock
        withCompletionBlock:(void (^)())CompletionBlock;
 

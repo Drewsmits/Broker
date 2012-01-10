@@ -38,8 +38,13 @@ typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
     NSManagedObjectContext *context;
 }
 
+/**
+ The JSON data to be turned into a JSON object for processing
+ */
 @property (nonatomic, strong) id jsonPayload;
+
 @property (nonatomic, strong) NSURL *entityURI;
+@property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
 @property (nonatomic, strong) NSManagedObjectContext *context;
 
