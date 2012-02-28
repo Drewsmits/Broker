@@ -76,8 +76,11 @@
                                                         options:NSJSONReadingMutableContainers 
                                                           error:&error];
 
-        NSAssert(jsonObject, @"Unable to create JSON object from JSON data. ERROR: %@", error);
-        if (!jsonObject) [self finish];
+        if (!jsonObject) {
+            WLog(@"Unable to create JSON object from JSON data. ERROR: %@", error);
+            [self finish];
+            return;
+        }
         
         // If there is a pre-filter, apply it now
         if (self.preFilterBlock) {
