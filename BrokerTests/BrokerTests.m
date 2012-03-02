@@ -759,7 +759,7 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] processJSONPayload:jsonData 
                                    targetEntity:departmentURI 
                                 forRelationship:@"dogs" 
-                            withComplet"ionBlock:CompletionBlock];
+                            withCompletionBlock:CompletionBlock];
     
     // Wait for async code to finish
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
