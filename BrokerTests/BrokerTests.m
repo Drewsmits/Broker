@@ -43,6 +43,9 @@ static NSString *kEmployeeFirstname = @"firstname";
 static NSString *kDepartmentRelationship = @"department";
 static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
 
+// Dog
+static NSString *kDog = @"Dog";
+
 
 @implementation BrokerTests
 
@@ -697,6 +700,97 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
     
     STAssertEquals(num, 6, @"Should have 6 employee objects");
 }
+
+#pragma mark - Primary Key
+
+- (void)testCollectionWithNoPrimaryKey {
+    NSData *jsonData = DataFromFile(@"department_dogs_nested.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kDog];
+    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
+    
+    // Build Deparment
+    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                                   targetEntity:departmentURI 
+                                forRelationship:@"dogs" 
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    // Fetch
+    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
+                                                        inContext:context];
+    
+    // Refresh
+    [context refreshObject:dept mergeChanges:YES];
+    
+    NSSet *dogs = (NSSet *)[dept valueForKey:@"dogs"];
+    int num = [dogs count];
+    
+    STAssertEquals(num, 6, @"Should have 6 dog objects");
+}
+
+- (void)testCollectionWithNoPrimaryKeyTwice {
+    
+    NSData *jsonData = DataFromFile(@"department_dogs_nested.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kDog];
+    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
+    
+    // Build Deparment
+    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                                   targetEntity:departmentURI 
+                                forRelationship:@"dogs" 
+                            withComplet"ionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);}; 
+    
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                                   targetEntity:departmentURI 
+                                forRelationship:@"dogs" 
+                            withCompletionBlock:CompletionBlock2];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema2);
+    
+    // Fetch
+    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
+                                                        inContext:context];
+    
+    // Refresh
+    [context refreshObject:dept mergeChanges:YES];
+    
+    NSSet *dogs = (NSSet *)[dept valueForKey:@"dogs"];
+    int num = [dogs count];
+    
+    STAssertEquals(num, 12, @"Should have 12 dog objects");
+}
+
 
 #pragma mark - Core Data
 

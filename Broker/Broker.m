@@ -71,6 +71,13 @@
 
 #pragma mark - Registration
 
+- (void)registerEntityNamed:(NSString *)entityName {
+    [self registerEntityNamed:entityName
+               withPrimaryKey:nil
+      andMapNetworkProperties:nil 
+            toLocalProperties:nil];
+}
+
 - (void)registerEntityNamed:(NSString *)entityName 
              withPrimaryKey:(NSString *)primaryKey {
     [self registerEntityNamed:entityName
@@ -425,19 +432,21 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     
     [request setEntity:description.entityDescription];
     
+    NSArray *fetchedObjects = nil;
+    
     if (description.primaryKey) {
         [request setPredicate:[NSPredicate predicateWithFormat:@"SELF.%@ == %@", description.primaryKey, value]];
-    }
-        
-    NSError *error;
-    NSArray *array = [aContext executeFetchRequest:request error:&error];
     
-    if (create && array.count == 0) {
+        NSError *error;
+        fetchedObjects = [aContext executeFetchRequest:request error:&error];
+    }
+    
+    if (create && fetchedObjects.count == 0) {
         NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.entityName 
                                                                 inManagedObjectContext:aContext];
         return object;
-    } else if (array.count == 1) {
-        return (NSManagedObject *)[array objectAtIndex:0];
+    } else if (fetchedObjects.count == 1) {
+        return (NSManagedObject *)[fetchedObjects objectAtIndex:0];
     }
     
     return nil;

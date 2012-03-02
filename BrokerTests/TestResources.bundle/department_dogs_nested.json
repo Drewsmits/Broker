@@ -1,0 +1,24 @@
+{
+    "name": "Engineering",
+    "departmentID": "1234",
+    "dogs": [
+                  {
+                  "name": "Killer",
+                  },
+                  {
+                  "name": "Thrasher",
+                  },
+                  {
+                  "name": "Rex",
+                  },
+                  {
+                  "name": "Turbo",
+                  },
+                  {
+                  "name": "Spike",
+                  },
+                  {
+                  "name": "Gigantor",
+                  }
+            ]
+}

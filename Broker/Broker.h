@@ -85,6 +85,14 @@
  
  @see [Broker registerEntityNamed:withPrimaryKey:andMapNetworkProperties:toLocalProperties]
  */
+- (void)registerEntityNamed:(NSString *)entityName;
+
+/**
+ Regsister entity where network attribute names are the same as local 
+ attribute names.
+ 
+ @see [Broker registerEntityNamed:withPrimaryKey:andMapNetworkProperties:toLocalProperties]
+ */
 - (void)registerEntityNamed:(NSString *)entityName 
              withPrimaryKey:(NSString *)primaryKey;
 
@@ -106,7 +114,8 @@
  network attribute 'id' to local attribute of 'myObjectID.'
  
  @param entityName The entity name of the NSManagedObject.
- @param primaryKey The designated primary key of the entity
+ @param primaryKey The designated primary key of the entity. A nil primaryKey
+ may result in duplicate objects created when working with collections.
  @param networkProperties An array of network property names 
  @param localProperties An array of local property names that match with the
  networkProperties

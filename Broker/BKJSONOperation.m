@@ -176,10 +176,6 @@
     NSAssert(destinationEntityDesc, @"Entity for relationship \"%@\" is not registered with Broker instance!", relationship);
     if (!destinationEntityDesc) return;
     
-    // Check for primary key
-    NSAssert(destinationEntityDesc.primaryKey, @"Processing a collection of %@ objects requires registration of an %@ primaryKey using [Broker registerEntityName:withPrimaryKey]", destinationEntityName, destinationEntityName);
-    if (!destinationEntityDesc.primaryKey) return;
-    
     // Fetch the context relationship objects
     NSMutableSet *relationshipObjects = [object mutableSetValueForKey:relationship];
     
@@ -192,10 +188,6 @@
 
 - (NSSet *)processJSONCollection:(NSArray *)collection 
  asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description {
-    
-    // Check for primary key
-    NSAssert(description.primaryKey, @"Processing a collection of %@ objects requires registration of a primaryKey using [Broker registerEntityName:withPrimaryKey]", description.entityName);
-    if (!description.primaryKey) return nil;
     
     NSMutableSet *collectionObjects = [NSMutableSet setWithCapacity:collection.count];
     
