@@ -279,14 +279,6 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())FilterBlock
        withCompletionBlock:(void (^)())CompletionBlock;
 
-/** @name Core Data */
-
-/**
- Returns a new instance of the NSManagedObjectContext sharing the main 
- persistent store.  Suitible for use with background qeueus.
- */
-- (NSManagedObjectContext *)newMainStoreManagedObjectContext;
-
 /** @name Accessors */
 
 - (BKEntityPropertiesDescription *)entityPropertyDescriptionForEntityName:(NSString *)entityName;

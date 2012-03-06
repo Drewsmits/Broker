@@ -56,19 +56,24 @@
             entityDescription,
             relationshipName,
             preFilterBlock,
-            context;
+            mainContext,
+            backgroundContext;
 
 - (void)dealloc {
     jsonPayload = nil;
     entityURI = nil;
     entityDescription = nil;
     relationshipName = nil;
-    context = nil;
+    mainContext = nil;
+    backgroundContext = nil;
 }
 
 - (void)start {
     @autoreleasepool {    
         [super start];
+        
+        // Generate new background context
+        self.backgroundContext = [self newMainStoreManagedObjectContext];
         
         // Convert JSON payload data to JSON object
         NSError *error;
@@ -98,17 +103,17 @@
 - (void)finish {
     
     // Save context
-    if (self.context.hasChanges) {
+    if (self.backgroundContext.hasChanges) {
         NSError *error = nil;
-        [self.context save:&error];
+        [self.backgroundContext save:&error];
     }
     
     // Calls finish on superclass CDOperation, part of Conductor
     [super finish];    
 }
 
-#pragma mark - 
-
+#pragma mark - Processing
+                        
 - (void)processJSONObject:(id)jsonObject {
 
 
@@ -155,8 +160,6 @@
     }
     
 }
-
-#pragma mark - Processing
 
 - (void)processJSONCollection:(NSArray *)collection
                     forObject:(NSManagedObject *)object
@@ -205,7 +208,7 @@
         
         NSManagedObject *collectionObject = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:description 
                                                                                         withPrimaryKeyValue:value
-                                                                                                  inContext:self.context
+                                                                                                  inContext:self.backgroundContext
                                                                                                shouldCreate:YES];
         
         [self processJSONSubObject:transformedDict
@@ -246,7 +249,7 @@
                 
                 NSManagedObject *relationshipObject = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:destinationEntityDesc 
                                                                                                   withPrimaryKeyValue:primaryKeyValue
-                                                                                                            inContext:self.context
+                                                                                                            inContext:self.backgroundContext
                                                                                                          shouldCreate:YES];                
                 [self processJSONSubObject:transformedDict
                                  forObject:relationshipObject
@@ -287,7 +290,7 @@
     
     // Grabs the object from the threaded context (thread safe)
     NSManagedObject *object = [[Broker sharedInstance] objectForURI:self.entityURI 
-                                                          inContext:self.context];
+                                                          inContext:self.backgroundContext];
     
     NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
     return object;
@@ -297,6 +300,43 @@
     BKEntityPropertiesDescription *description = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:object.entity.name];
     NSAssert(description, @"Entity named \"%@\" is not registered with Broker instance!", object.entity.name);
     return description;
+}
+                        
+#pragma mark - Core Data
+                        
+- (NSManagedObjectContext *)newMainStoreManagedObjectContext {
+    
+    // Grab the main coordinator
+    NSPersistentStoreCoordinator *coord = [self.mainContext persistentStoreCoordinator];
+    
+    // Create new context with default concurrency type
+    NSManagedObjectContext *newContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+    [newContext setPersistentStoreCoordinator:coord];
+    
+    // Optimization
+    [newContext setUndoManager:nil];
+    
+    // Observer saves from this context
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(contextDidSave:) 
+                                                 name:NSManagedObjectContextDidSaveNotification 
+                                               object:newContext];
+    
+    return newContext;
+}
+
+- (void)contextDidSave:(NSNotification *)notification {
+    SEL selector = @selector(mergeChangesFromContextDidSaveNotification:);
+    
+    NSManagedObjectContext *threadContext = (NSManagedObjectContext *)notification.object;
+    
+    [self.mainContext performSelectorOnMainThread:selector 
+                                       withObject:notification 
+                                    waitUntilDone:NO];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:NSManagedObjectContextDidSaveNotification 
+                                                  object:threadContext];
 }
 
 @end

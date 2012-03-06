@@ -45,16 +45,18 @@
 }
 
 - (void)dealloc {
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     mainContext = nil;
     entityDescriptions = nil;
-        
 }
 
 #pragma mark - Setup
 
 + (id)brokerWithContext:(NSManagedObjectContext *)context {    
     Broker *broker = [[self alloc] init];
-    broker.mainContext = context;
+    [broker setupWithContext:context];
     return broker;
 }
 
@@ -65,6 +67,9 @@
 }
 
 - (void)reset {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     mainContext = nil;
     entityDescriptions = nil;
 }
@@ -220,10 +225,7 @@
     operation.jsonPayload = jsonPayload;
     operation.entityURI = entityURI;
     operation.relationshipName = relationshipName;
-    
-    // Thread safe managed object context.  Will call contextDidSave when saving,
-    // properly merges with main context on main thread
-    operation.context = [self newMainStoreManagedObjectContext];
+    operation.mainContext = self.mainContext;;
     
     // Blocks
     operation.preFilterBlock = FilterBlock;
@@ -261,7 +263,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     
     // Thread safe managed object context.  Will call contextDidSave when saving,
     // properly merges with main context on main thread
-    operation.context = [self newMainStoreManagedObjectContext];
+    operation.mainContext = self.mainContext;
     
     // Blocks
     operation.preFilterBlock = FilterBlock;
@@ -283,27 +285,6 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:NSManagedObjectContextDidSaveNotification 
                                                   object:threadContext];
-}
-
-- (NSManagedObjectContext *)newMainStoreManagedObjectContext {
-    
-    // Grab the main coordinator
-    NSPersistentStoreCoordinator *coord = [self.mainContext persistentStoreCoordinator];
-
-    // Create new context with default concurrency type
-    NSManagedObjectContext *newContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
-    [newContext setPersistentStoreCoordinator:coord];
-    
-    // Optimization
-    [newContext setUndoManager:nil];
-    
-    // Observer saves from this context
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(contextDidSave:) 
-                                                 name:NSManagedObjectContextDidSaveNotification 
-                                               object:newContext];
-    
-    return newContext;
 }
 
 #pragma mark - Accessors
@@ -437,8 +418,11 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     if (description.primaryKey) {
         [request setPredicate:[NSPredicate predicateWithFormat:@"SELF.%@ == %@", description.primaryKey, value]];
     
-        NSError *error;
+        NSError *error = nil;
         fetchedObjects = [aContext executeFetchRequest:request error:&error];
+        if (error) {
+            NSLog(@"Fetch Error: %@", error);
+        }
     }
     
     if (create && fetchedObjects.count == 0) {

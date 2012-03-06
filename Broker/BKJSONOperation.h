@@ -35,7 +35,8 @@ typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
     id jsonPayload;
     NSURL *entityURI;
     NSString *relationshipName;
-    NSManagedObjectContext *context;
+    NSManagedObjectContext *mainContext;
+    NSManagedObjectContext *backgroundContext;
 }
 
 /**
@@ -46,10 +47,13 @@ typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
 @property (nonatomic, strong) NSURL *entityURI;
 @property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
-@property (nonatomic, strong) NSManagedObjectContext *context;
+@property (nonatomic, strong) NSManagedObjectContext *mainContext;
+@property (nonatomic, strong) NSManagedObjectContext *backgroundContext;
 
 @property (nonatomic, copy) BKJSONOperationPreFilterBlock preFilterBlock;
 
 - (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject;
+
+- (NSManagedObjectContext *)newMainStoreManagedObjectContext;
 
 @end
