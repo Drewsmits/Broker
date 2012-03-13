@@ -256,12 +256,21 @@
  Process a JSON payload returned from an API as a collection of a particluar
  type of entity.
  
- @param jsonPayload The data returned from the API
- @param entityName The name of the objects in the returned collection
- @param CompletionBlock The block to run when the operation is complete
+ @see [Broker processJSONPayload:asCollectionOfEntitiesNamed:JSONPreFilterBlock:withCompletionBlock]
  */
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName 
+       withCompletionBlock:(void (^)())CompletionBlock;
+
+/**
+ Process a JSON payload returned from an API as a collection of a particluar
+ type of entity and run a JSON pre filter on the payload before processing.
+ 
+ @see [Broker processJSONPayload:asCollectionOfEntitiesNamed:JSONPreFilterBlock:withCompletionBlock]
+ */
+- (void)processJSONPayload:(id)jsonPayload 
+asCollectionOfEntitiesNamed:(NSString *)entityName
+        JSONPreFilterBlock:(id (^)())FilterBlock
        withCompletionBlock:(void (^)())CompletionBlock;
 
 /**
@@ -272,11 +281,16 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
  @param entityName The name of the objects in the returned collection
  @param FilterBlock A block passed in to apply to the incoming JSON before
  any processing takes place.
+ @param deleteStaleEntities If YES, Broker will delete all entities of the type specified
+ by entityName that were not included in the jsonPayload.  This is useful if you
+ want to delete objects when you get an empty JSON response.
  @param CompletionBlock The block to run when the operation is complete
  */
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())FilterBlock
+     contextDidChangeBlock:(void (^)())DidChangeBlock
+            emptyJSONBlock:(void (^)())EmptyJSONBlock
        withCompletionBlock:(void (^)())CompletionBlock;
 
 /** @name Accessors */

@@ -242,12 +242,30 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:nil
+       contextDidChangeBlock:nil
+              emptyJSONBlock:nil
          withCompletionBlock:CompletionBlock];
 }
 
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())FilterBlock
+       withCompletionBlock:(void (^)())CompletionBlock {
+    
+    [self processJSONPayload:jsonPayload 
+ asCollectionOfEntitiesNamed:entityName
+          JSONPreFilterBlock:FilterBlock
+       contextDidChangeBlock:nil
+              emptyJSONBlock:nil
+         withCompletionBlock:CompletionBlock];
+}
+
+- (void)processJSONPayload:(id)jsonPayload 
+asCollectionOfEntitiesNamed:(NSString *)entityName
+        JSONPreFilterBlock:(id (^)())FilterBlock
+     contextDidChangeBlock:(void (^)())DidChangeBlock
+            emptyJSONBlock:(void (^)())EmptyJSONBlock
+
        withCompletionBlock:(void (^)())CompletionBlock {
     
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
@@ -266,25 +284,12 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     operation.mainContext = self.mainContext;
     
     // Blocks
+    operation.didChangeBlock = DidChangeBlock;
+    operation.emptyJSONBlock = EmptyJSONBlock;
     operation.preFilterBlock = FilterBlock;
     operation.completionBlock = CompletionBlock;
     
-    [self addOperation:operation];
-
-}
-
-#pragma mark - CoreData
-
-- (void)contextDidSave:(NSNotification *)notification {
-    SEL selector = @selector(mergeChangesFromContextDidSaveNotification:);
-
-    NSManagedObjectContext *threadContext = (NSManagedObjectContext *)notification.object;
-    
-    [self.mainContext performSelectorOnMainThread:selector withObject:notification waitUntilDone:NO];
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:NSManagedObjectContextDidSaveNotification 
-                                                  object:threadContext];
+    [self addOperation:operation];    
 }
 
 #pragma mark - Accessors
@@ -410,7 +415,6 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     if (!description) return nil;
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    
     [request setEntity:description.entityDescription];
     
     NSArray *fetchedObjects = nil;

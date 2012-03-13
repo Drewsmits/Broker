@@ -701,6 +701,235 @@ static NSString *kDog = @"Dog";
     STAssertEquals(num, 6, @"Should have 6 employee objects");
 }
 
+- (void)testProcess200EmployeeCollection {
+    NSData *jsonData = DataFromFile(@"department_employees_200.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 200, @"Should have 200 employee objects");
+}
+
+- (void)testProcess200EmployeeCollectionTwice {
+    NSData *jsonData = DataFromFile(@"department_employees_200.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+        
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);};
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock2];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema2);
+    
+    
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 200, @"Should have 200 employee objects");
+}
+
+- (void)testProcess200EmployeeCollectionTwiceWithDelete {
+    NSData *jsonData = DataFromFile(@"department_employees_200.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    for (NSManagedObject *object in employees) {
+        [context deleteObject:object];
+    }
+    
+    [context save:nil];
+    
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);};
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock2];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema2);
+    
+    
+    employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 200, @"Should have 200 employee objects");
+}
+
+
+- (void)testDeleteStaleCollectionObjects {
+    NSData *jsonData200 = DataFromFile(@"department_employees_200.json");
+    NSData *jsonData100 = DataFromFile(@"department_employees_100.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    [[Broker sharedInstance] processJSONPayload:jsonData200 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock];
+
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);}; 
+    
+    // This will delete all stale employee objects.  IE objects not included in
+    // the new JSON response during the second processing
+    BKJSONOperationContextDidChangeBlock didChangeBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
+       
+        NSArray *updatedEmployess = (NSArray *)[[notification userInfo] objectForKey:NSUpdatedObjectsKey];
+        NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:aContext];
+        
+        for (NSManagedObject *employee in allEmployees) {                        
+            if (![updatedEmployess containsObject:employee] && [[employee valueForKey:@"employeeID"] intValue] > 100) {
+                [aContext deleteObject:employee];
+            }
+        }
+
+    };
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData100
+                    asCollectionOfEntitiesNamed:@"Employee"
+                             JSONPreFilterBlock:nil
+                          contextDidChangeBlock:didChangeBlock
+                                 emptyJSONBlock:nil
+                            withCompletionBlock:CompletionBlock2];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema2);
+
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 100, @"Should have 100 employee objects");
+}
+
+- (void)testEmptyJSONBlock {
+    NSData *jsonData200 = DataFromFile(@"department_employees_200.json");
+    NSData *jsonData0   = DataFromFile(@"department_employees_0.json");
+    
+    // Register Entities
+    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+                               forProperty:@"startDate" 
+                                  onEntity:kEmployee];
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    
+    [[Broker sharedInstance] processJSONPayload:jsonData200 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:CompletionBlock];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema);
+    
+    // Use to hold main thread while bg tasks complete
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);}; 
+    
+    // Delete all employees on an empty JSON list
+    BKJSONOperationEmptyJSONBlock emptyJSONBlock = ^(NSManagedObjectContext *aContext) {
+        NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:aContext];
+        for (NSManagedObject *employee in allEmployees) {                        
+            [aContext deleteObject:employee];
+        }
+    };
+    
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData0
+                    asCollectionOfEntitiesNamed:@"Employee"
+                             JSONPreFilterBlock:nil
+                          contextDidChangeBlock:nil
+                                 emptyJSONBlock:emptyJSONBlock
+                            withCompletionBlock:CompletionBlock2];
+    
+    // Wait for async code to finish
+    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+    dispatch_release(sema2);
+    
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 0, @"Should have 0 employee objects");
+}
+
 #pragma mark - Primary Key
 
 - (void)testCollectionWithNoPrimaryKey {

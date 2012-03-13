@@ -29,6 +29,8 @@
 #import "BKEntityPropertiesDescription.h"
 
 typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
+typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
+typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
 @interface BKJSONOperation : CDOperation {
 @private
@@ -51,6 +53,9 @@ typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
 @property (nonatomic, strong) NSManagedObjectContext *backgroundContext;
 
 @property (nonatomic, copy) BKJSONOperationPreFilterBlock preFilterBlock;
+@property (nonatomic, copy) BKJSONOperationContextDidChangeBlock didChangeBlock;
+@property (nonatomic, copy) BKJSONOperationEmptyJSONBlock emptyJSONBlock;
+
 
 - (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject;
 

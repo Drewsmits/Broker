@@ -57,9 +57,14 @@
             relationshipName,
             preFilterBlock,
             mainContext,
-            backgroundContext;
+            backgroundContext,
+            didChangeBlock,
+            emptyJSONBlock;
 
 - (void)dealloc {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     jsonPayload = nil;
     entityURI = nil;
     entityDescription = nil;
@@ -71,9 +76,15 @@
 - (void)start {
     @autoreleasepool {    
         [super start];
-        
+               
         // Generate new background context
         self.backgroundContext = [self newMainStoreManagedObjectContext];
+        
+        // Register for changes
+        [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                 selector:@selector(contextDidChange:) 
+                                                     name:NSManagedObjectContextObjectsDidChangeNotification 
+                                                   object:self.backgroundContext]; 
         
         // Convert JSON payload data to JSON object
         NSError *error;
@@ -115,7 +126,14 @@
 #pragma mark - Processing
                         
 - (void)processJSONObject:(id)jsonObject {
-
+    
+    // Execute empty JSON block if empty
+    if (!jsonObject || [jsonObject count] == 0) {
+        if (self.emptyJSONBlock) {
+            self.emptyJSONBlock(self.backgroundContext);
+        }
+        return;
+    }
 
     // Flat JSON
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
@@ -210,6 +228,11 @@
                                                                                         withPrimaryKeyValue:value
                                                                                                   inContext:self.backgroundContext
                                                                                                shouldCreate:YES];
+        
+        if (!collectionObject) {
+            WLog(@"Got nil back for collection object!");
+            continue;
+        }
         
         [self processJSONSubObject:transformedDict
                          forObject:collectionObject
@@ -337,6 +360,12 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:NSManagedObjectContextDidSaveNotification 
                                                   object:threadContext];
+}
+
+- (void)contextDidChange:(NSNotification *)notification {
+    if (self.didChangeBlock) {
+        self.didChangeBlock(self.backgroundContext, notification);
+    };
 }
 
 @end
