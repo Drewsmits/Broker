@@ -26,6 +26,7 @@
 #import "BKJSONOperation.h"
 
 #import "Broker.h"
+#import "NSManagedObject+Broker.h"
 
 @interface BKJSONOperation ()
 
@@ -62,23 +63,12 @@
             emptyJSONBlock;
 
 - (void)dealloc {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    jsonPayload = nil;
-    entityURI = nil;
-    entityDescription = nil;
-    relationshipName = nil;
-    mainContext = nil;
-    backgroundContext = nil;
 }
 
 - (void)start {
     @autoreleasepool {    
         [super start];
-               
-        // Generate new background context
-        self.backgroundContext = [self newMainStoreManagedObjectContext];
         
         // Register for changes
         [[NSNotificationCenter defaultCenter] addObserver:self 
@@ -94,6 +84,8 @@
 
         if (!jsonObject) {
             WLog(@"Unable to create JSON object from JSON data. ERROR: %@", error);
+            DLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
+                                                      encoding:NSUTF8StringEncoding]);
             [self finish];
             return;
         }
@@ -114,10 +106,7 @@
 - (void)finish {
     
     // Save context
-    if (self.backgroundContext.hasChanges) {
-        NSError *error = nil;
-        [self.backgroundContext save:&error];
-    }
+    [self saveBackgroundContext];
     
     // Calls finish on superclass CDOperation, part of Conductor
     [super finish];    
@@ -139,6 +128,7 @@
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
         
         NSManagedObject *object = [self targetObject];
+        if (!object) return;
         
         // Grab the entity property description for the current working objects name,
         BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
@@ -159,7 +149,8 @@
         if (self.relationshipName) {
             
             NSManagedObject *object = [self targetObject];
-            
+            if (!object) return;
+
             // Grab the entity property description for the current working objects name,
             BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
             
@@ -316,6 +307,8 @@
                                                           inContext:self.backgroundContext];
     
     NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
+    if ([object hasBeenDeleted]) return nil;
+    
     return object;
 }
 
@@ -326,41 +319,6 @@
 }
                         
 #pragma mark - Core Data
-                        
-- (NSManagedObjectContext *)newMainStoreManagedObjectContext {
-    
-    // Grab the main coordinator
-    NSPersistentStoreCoordinator *coord = [self.mainContext persistentStoreCoordinator];
-    
-    // Create new context with default concurrency type
-    NSManagedObjectContext *newContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
-    [newContext setPersistentStoreCoordinator:coord];
-    
-    // Optimization
-    [newContext setUndoManager:nil];
-    
-    // Observer saves from this context
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(contextDidSave:) 
-                                                 name:NSManagedObjectContextDidSaveNotification 
-                                               object:newContext];
-    
-    return newContext;
-}
-
-- (void)contextDidSave:(NSNotification *)notification {
-    SEL selector = @selector(mergeChangesFromContextDidSaveNotification:);
-    
-    NSManagedObjectContext *threadContext = (NSManagedObjectContext *)notification.object;
-    
-    [self.mainContext performSelectorOnMainThread:selector 
-                                       withObject:notification 
-                                    waitUntilDone:NO];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:NSManagedObjectContextDidSaveNotification 
-                                                  object:threadContext];
-}
 
 - (void)contextDidChange:(NSNotification *)notification {
     if (self.didChangeBlock) {

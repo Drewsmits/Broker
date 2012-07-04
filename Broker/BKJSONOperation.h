@@ -25,21 +25,14 @@
 
 #import <CoreData/CoreData.h>
 
-#import "Conductor/CDOperation.h"
+#import "Conductor/CDCoreDataOperation.h"
 #import "BKEntityPropertiesDescription.h"
 
 typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
 typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
 typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
-@interface BKJSONOperation : CDOperation {
-@private
-    id jsonPayload;
-    NSURL *entityURI;
-    NSString *relationshipName;
-    NSManagedObjectContext *mainContext;
-    NSManagedObjectContext *backgroundContext;
-}
+@interface BKJSONOperation : CDCoreDataOperation
 
 /**
  The JSON data to be turned into a JSON object for processing
@@ -49,16 +42,28 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 @property (nonatomic, strong) NSURL *entityURI;
 @property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
-@property (nonatomic, strong) NSManagedObjectContext *mainContext;
-@property (nonatomic, strong) NSManagedObjectContext *backgroundContext;
 
+/**
+ The BKJSONOperationPreFilterBlock allows you to edit the JSON object before processing
+ begins.  This may be useful to remove stale objects, for example, and not bother
+ processing them.
+ */
 @property (nonatomic, copy) BKJSONOperationPreFilterBlock preFilterBlock;
+
+/**
+ This block is called when the context changes, and allows you to apply some changes
+ mid stream.
+ */
 @property (nonatomic, copy) BKJSONOperationContextDidChangeBlock didChangeBlock;
+
+/**
+ This block is executed when the JSON payload turns out to be empty.  As an example,
+ you might get a list of tweets.  If that list is empty, you may want to delete
+ all the local tweets you have.
+ */
 @property (nonatomic, copy) BKJSONOperationEmptyJSONBlock emptyJSONBlock;
 
 
 - (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject;
-
-- (NSManagedObjectContext *)newMainStoreManagedObjectContext;
 
 @end
