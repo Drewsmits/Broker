@@ -40,16 +40,6 @@
             propertiesDescriptions,
             entityDescription;
 
-- (void)dealloc {
-    entityName = nil;
-    primaryKey = nil;
-    rootKeyPath = nil;
-    propertiesDescriptions = nil;
-    networkToLocalPropertiesMap = nil;
-    localToNetworkPropertiesMap = nil;
-    entityDescription = nil;
-    
-}
 
 + (BKEntityPropertiesDescription *)descriptionForEntity:(NSEntityDescription *)entity 
                                    withPropertiesByName:(NSDictionary *)properties

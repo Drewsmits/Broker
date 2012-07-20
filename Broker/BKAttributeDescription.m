@@ -30,11 +30,6 @@
 @synthesize dateFormat,
             attributeType;
 
-- (void)dealloc {
-    dateFormat = nil;
-    dateFormatter = nil;
-    
-}
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description {
     return [self descriptionWithAttributeDescription:description

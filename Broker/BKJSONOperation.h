@@ -28,7 +28,7 @@
 #import "Conductor/CDCoreDataOperation.h"
 #import "BKEntityPropertiesDescription.h"
 
-typedef id (^BKJSONOperationPreFilterBlock)(id jsonObject);
+typedef id (^BKJSONOperationPreFilterBlock)(NSManagedObjectContext *context, id jsonObject);
 typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
 typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 

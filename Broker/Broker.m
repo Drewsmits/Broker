@@ -45,11 +45,7 @@
 }
 
 - (void)dealloc {
-
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    mainContext = nil;
-    entityDescriptions = nil;
 }
 
 #pragma mark - Setup
@@ -67,7 +63,6 @@
 }
 
 - (void)reset {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     mainContext = nil;

@@ -31,11 +31,4 @@
             localPropertyName, 
             networkPropertyName;
 
-- (void)dealloc {
-    entityName = nil;
-    localPropertyName = nil;
-    networkPropertyName = nil;
-    
-}
-
 @end

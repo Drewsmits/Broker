@@ -1072,7 +1072,7 @@ static NSString *kDog = @"Dog";
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
    
-    BKJSONOperationPreFilterBlock removeEmployeeWithID6 = (id)^(id jsonObject) {
+    BKJSONOperationPreFilterBlock removeEmployeeWithID6 = (id)^(NSManagedObjectContext *context, id jsonObject) {
         if ([jsonObject isKindOfClass:[NSArray class]]) {
             NSMutableArray *newCollection = [[jsonObject mutableCopy] autorelease];
             for (id dictionary in jsonObject) {

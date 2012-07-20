@@ -290,7 +290,7 @@
 
 - (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject {
     
-    id newJSONObject = self.preFilterBlock(jsonObject);
+    id newJSONObject = self.preFilterBlock(self.backgroundContext, jsonObject);
     
     NSAssert(newJSONObject, @"JSON Pre-filter blocks must not return nil! Did you forget to return a value with your block?");
     if (!newJSONObject) return jsonObject;

@@ -30,10 +30,6 @@
 @synthesize destinationEntityName, 
             isToMany;
 
-- (void)dealloc {
-    destinationEntityName = nil;
-
-}
 
 + (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description {
     
