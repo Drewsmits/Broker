@@ -153,7 +153,6 @@
 		DB4C0E15143D2E770090F5E3 = {
 			isa = PBXGroup;
 			children = (
-				DB0DE49115B8F68D007F382F /* UIKit.framework */,
 				DB4C0E27143D2F4F0090F5E3 /* Broker */,
 				DB4C0E3B143D2F4F0090F5E3 /* BrokerTests */,
 				DB4C0E24143D2F4F0090F5E3 /* Frameworks */,
@@ -174,6 +173,7 @@
 		DB4C0E24143D2F4F0090F5E3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DB0DE49115B8F68D007F382F /* UIKit.framework */,
 				DB4C0E58143D34E50090F5E3 /* CoreData.framework */,
 				DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */,
 				DB4C0E33143D2F4F0090F5E3 /* SenTestingKit.framework */,

@@ -53,7 +53,7 @@
 @implementation BKJSONOperation
 
 @synthesize jsonPayload,
-            entityURI,
+            objectID,
             entityDescription,
             relationshipName,
             preFilterBlock,
@@ -128,7 +128,10 @@
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
         
         NSManagedObject *object = [self targetObject];
-        if (!object) return;
+        if (!object) {
+            WLog(@"Could not find object!");
+            return;
+        }
         
         // Grab the entity property description for the current working objects name,
         BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
@@ -149,8 +152,10 @@
         if (self.relationshipName) {
             
             NSManagedObject *object = [self targetObject];
-            if (!object) return;
-
+            if (!object) {
+                WLog(@"Could not find object!");
+                return;
+            }
             // Grab the entity property description for the current working objects name,
             BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
             
@@ -303,9 +308,12 @@
 - (NSManagedObject *)targetObject {
     
     // Grabs the object from the threaded context (thread safe)
-    NSManagedObject *object = [[Broker sharedInstance] objectForURI:self.entityURI 
-                                                          inContext:self.backgroundContext];
+    __block NSManagedObject *object = nil;
     
+    [self.backgroundContext performBlockAndWait:^ {
+        object = [self.backgroundContext objectWithID:self.objectID];
+    }];
+        
     NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
     if ([object hasBeenDeleted]) return nil;
     

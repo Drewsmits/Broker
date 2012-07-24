@@ -33,7 +33,10 @@
 
 @implementation Broker
 
-@synthesize mainContext;
+@synthesize mainContext = mainContext_,
+            queueName = queueName_;
+
+
 
 + (id)sharedInstance {
     static dispatch_once_t pred = 0;
@@ -50,16 +53,32 @@
 
 #pragma mark - Setup
 
-+ (id)brokerWithContext:(NSManagedObjectContext *)context {    
-    Broker *broker = [[self alloc] init];
-    [broker setupWithContext:context];
-    return broker;
-}
-
-- (void)setupWithContext:(NSManagedObjectContext *)context {
+- (void)setupWithContext:(NSManagedObjectContext *)context
+            andQueueName:(NSString *)queueName
+{
     NSAssert(context, @"Context must not be nil!");
     if (!context) return;
+    
+    // Share the main context
     self.mainContext = context;
+    
+    // This is the name of the queue that will be used to keep track of the 
+    // parse operations
+    self.queueName = queueName;
+}
+
+- (void)setupWithContext:(NSManagedObjectContext *)context
+            andQueueName:(NSString *)queueName
+    withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount
+{
+    [self setupWithContext:context andQueueName:queueName];
+    
+    // Presist JSON processing queue
+    self.removeQueuesWhenEmpty = NO;
+        
+    // Set max operation count
+    [self setMaxConcurrentOperationCount:maxOperationCount 
+                           forQueueNamed:self.queueName];
 }
 
 - (void)reset {
@@ -170,99 +189,99 @@
 #pragma mark - Object
 
 - (void)processJSONPayload:(id)jsonPayload 
-            targetEntity:(NSURL *)entityURI
-     withCompletionBlock:(void (^)())CompletionBlock {
+            targetObjectID:(NSManagedObjectID *)objectID
+       withCompletionBlock:(void (^)())completionBlock {
     
     [self processJSONPayload:jsonPayload
-              targetEntity:entityURI
-           forRelationship:nil
-        JSONPreFilterBlock:nil
-       withCompletionBlock:CompletionBlock];
+              targetObjectID:objectID
+             forRelationship:nil
+          JSONPreFilterBlock:nil
+         withCompletionBlock:completionBlock];
 }
 
 - (void)processJSONPayload:(id)jsonPayload 
-              targetEntity:(NSURL *)entityURI 
+            targetObjectID:(NSManagedObjectID *)objectID 
         JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())CompletionBlock {
+       withCompletionBlock:(void (^)())completionBlock {
     
     [self processJSONPayload:jsonPayload
-                targetEntity:entityURI
+              targetObjectID:objectID
              forRelationship:nil
           JSONPreFilterBlock:FilterBlock
-         withCompletionBlock:CompletionBlock];
+         withCompletionBlock:completionBlock];
 }
 
 #pragma mark - Relationship Object Collection
 
 - (void)processJSONPayload:(id)jsonPayload 
-              targetEntity:(NSURL *)entityURI
+            targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
-       withCompletionBlock:(void (^)())CompletionBlock {
+       withCompletionBlock:(void (^)())completionBlock {
     
     [self processJSONPayload:jsonPayload
-                targetEntity:entityURI
+            targetObjectID:objectID
              forRelationship:relationshipName 
           JSONPreFilterBlock:nil
-         withCompletionBlock:CompletionBlock];
+         withCompletionBlock:completionBlock];
 }
 
 - (void)processJSONPayload:(id)jsonPayload
-              targetEntity:(NSURL *)entityURI
+            targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
-        JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())CompletionBlock {
-    
+        JSONPreFilterBlock:(id (^)())filterBlock
+       withCompletionBlock:(void (^)())completionBlock 
+{    
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     if (!self.mainContext) return;
     
     BKJSONOperation *operation = [BKJSONOperation operation];
     
     operation.jsonPayload = jsonPayload;
-    operation.entityURI = entityURI;
+    operation.objectID = objectID;
     operation.relationshipName = relationshipName;
     operation.mainContext = self.mainContext;;
     
     // Blocks
-    operation.preFilterBlock = FilterBlock;
-    operation.completionBlock = CompletionBlock;
+    operation.preFilterBlock = filterBlock;
+    operation.completionBlock = completionBlock;
     
-    [self addOperation:operation];
+    // Add operation
+    [self addOperation:operation toQueueNamed:self.queueName];
 }
 
 #pragma mark - Object Collection
 
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName 
-       withCompletionBlock:(void (^)())CompletionBlock {
+       withCompletionBlock:(void (^)())completionBlock {
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:nil
        contextDidChangeBlock:nil
               emptyJSONBlock:nil
-         withCompletionBlock:CompletionBlock];
+         withCompletionBlock:completionBlock];
 }
 
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
-        JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())CompletionBlock {
+        JSONPreFilterBlock:(id (^)())filterBlock
+       withCompletionBlock:(void (^)())completionBlock {
     
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
-          JSONPreFilterBlock:FilterBlock
+          JSONPreFilterBlock:filterBlock
        contextDidChangeBlock:nil
               emptyJSONBlock:nil
-         withCompletionBlock:CompletionBlock];
+         withCompletionBlock:completionBlock];
 }
 
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
-        JSONPreFilterBlock:(id (^)())FilterBlock
-     contextDidChangeBlock:(void (^)())DidChangeBlock
-            emptyJSONBlock:(void (^)())EmptyJSONBlock
-
-       withCompletionBlock:(void (^)())CompletionBlock {
-    
+        JSONPreFilterBlock:(id (^)())filterBlock
+     contextDidChangeBlock:(void (^)())didChangeBlock
+            emptyJSONBlock:(void (^)())emptyJSONBlock
+       withCompletionBlock:(void (^)())completionBlock
+{    
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     if (!self.mainContext) return;
     
@@ -279,12 +298,13 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     operation.mainContext = self.mainContext;
     
     // Blocks
-    operation.didChangeBlock = DidChangeBlock;
-    operation.emptyJSONBlock = EmptyJSONBlock;
-    operation.preFilterBlock = FilterBlock;
-    operation.completionBlock = CompletionBlock;
+    operation.didChangeBlock = didChangeBlock;
+    operation.emptyJSONBlock = emptyJSONBlock;
+    operation.preFilterBlock = filterBlock;
+    operation.completionBlock = completionBlock;
     
-    [self addOperation:operation];    
+    // Add operation
+    [self addOperation:operation toQueueNamed:self.queueName];
 }
 
 #pragma mark - Accessors

@@ -33,6 +33,8 @@
 #import "BKRelationshipDescription.h"
 #import "BKJSONOperation.h"
 
+#define LOOP_WAIT_TIME 0.01
+
 // Department
 static NSString *kDepartment = @"Department";
 static NSString *kEmployeesRelationship = @"employees";
@@ -69,11 +71,13 @@ static NSString *kDog = @"Dog";
                                         error:&error];
 
     // Build context
-    context = [[NSManagedObjectContext alloc] init];
+    context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     [context setPersistentStoreCoordinator:coord];
 
     // Setup Broker
-    [[Broker sharedInstance] setupWithContext:context];
+    [[Broker sharedInstance] setupWithContext:context
+                                 andQueueName:@"BrokerTestQueue" 
+              withMaxConcurrentOperationCount:1];
 }
 
 - (void)tearDown {
@@ -221,8 +225,8 @@ static NSString *kDog = @"Dog";
 
 - (void)testDescriptionWithAttributeDescription {
     
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
-    NSManagedObject *object = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObject *object = [context objectWithID:employeeID];
     
     NSDictionary *attributes = object.entity.attributesByName;
     
@@ -239,8 +243,8 @@ static NSString *kDog = @"Dog";
 
 - (void)testDescriptionWithAttributeDescriptionAndMapToNetworkAttributeName {
     
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
-    NSManagedObject *object = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObject *object = [context objectWithID:employeeID];
     
     NSDictionary *attributes = object.entity.attributesByName;
     
@@ -319,7 +323,7 @@ static NSString *kDog = @"Dog";
     BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
     
     NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:fakeJSON 
-                                   usingEntityPropertiesDescription:desc];
+                                                    usingEntityPropertiesDescription:desc];
     
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -344,26 +348,27 @@ static NSString *kDog = @"Dog";
                  onEntity:kEmployee];
 
     // Add a new Employee to the store
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
 
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData
-                  targetEntity:employeeURI
-           withCompletionBlock:CompletionBlock];
+                  targetObjectID:employeeID
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Re-fetch
-    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
-    
-    [context refreshObject:employee mergeChanges:YES];
-    
+    NSManagedObject *employee = [context objectWithID:employeeID];
+        
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:kEmployeeStartDateFormat];
     NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
@@ -389,26 +394,27 @@ static NSString *kDog = @"Dog";
                                       forEntity:kEmployee];
     
     // Add a new Employee to the store
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData
-                                   targetEntity:employeeURI
-                            withCompletionBlock:CompletionBlock];
+                                 targetObjectID:employeeID
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Re-fetch
-    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
-    
-    [context refreshObject:employee mergeChanges:YES];
-    
+    NSManagedObject *employee = [context objectWithID:employeeID];
+        
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:kEmployeeStartDateFormat];
     NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
@@ -430,26 +436,27 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
 
     // Add a new Employee to the store
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData
-                  targetEntity:employeeURI
-           withCompletionBlock:CompletionBlock];
+                                 targetObjectID:employeeID
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Re-fetch
-    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
-    
-    [context refreshObject:employee mergeChanges:YES];
-    
+    NSManagedObject *employee = [context objectWithID:employeeID];
+        
     STAssertNotNil([employee valueForKey:@"contactInfo"], @"Should have contactInfo object");
     
     id contactInfo = [employee valueForKey:@"contactInfo"];
@@ -480,26 +487,27 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
 
     // Build Deparment
-    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+    NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData
-                                   targetEntity:departmentURI
-                            withCompletionBlock:CompletionBlock];
+                                 targetObjectID:departmentID
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Re-fetch
-    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI inContext:context];
-    
-    [context refreshObject:dept mergeChanges:YES];
-    
+    NSManagedObject *dept = [context objectWithID:departmentID];
+        
     STAssertEqualObjects([dept valueForKey:@"name"], @"Engineering", @"Attribute should be set correctly");
     STAssertEqualObjects([dept valueForKey:@"departmentID"], [NSNumber numberWithInt:1234], @"Attribute should be set correctly");
 
@@ -521,29 +529,28 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
     
     // Build Deparment
-    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+    NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                  targetEntity:departmentURI 
-               forRelationship:@"employees" 
-           withCompletionBlock:CompletionBlock];
+                                 targetObjectID:departmentID 
+                                forRelationship:@"employees" 
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Fetch
-    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
-                                        inContext:context];
-    
-    // Refresh
-    [context refreshObject:dept mergeChanges:YES];
-    
+    NSManagedObject *dept = [context objectWithID:departmentID];
+        
     NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
     int num = [employees count];
     
@@ -562,29 +569,28 @@ static NSString *kDog = @"Dog";
                  onEntity:kEmployee];
 
     // Build Deparment
-    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+    NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                                   targetEntity:departmentURI 
+                                 targetObjectID:departmentID 
                                 forRelationship:@"employees" 
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:^ {
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Fetch
-    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
-                                        inContext:context];
-    
-    // Refresh
-    [context refreshObject:dept mergeChanges:YES];
-    
+    NSManagedObject *dept = [context objectWithID:departmentID];
+        
     NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
     int num = [employees count];
     
@@ -601,26 +607,27 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
     
     // Add a new Employee to the store
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData
-                                   targetEntity:employeeURI
-                            withCompletionBlock:CompletionBlock];
+                                   targetObjectID:employeeID
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME]; 
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Re-fetch
-    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
-    
-    [context refreshObject:employee mergeChanges:YES];    
-    
+    NSManagedObject *employee = [context objectWithID:employeeID];
+        
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:kEmployeeStartDateFormat];
     NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
@@ -642,26 +649,27 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
     
     // Add a new Employee to the store
-    NSURL *employeeURI = [BrokerTestsHelpers createNewEmployee:context];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData
-                                   targetEntity:employeeURI
-                            withCompletionBlock:CompletionBlock];
+                                 targetObjectID:employeeID
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Re-fetch
-    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
+    NSManagedObject *employee = [context objectWithID:employeeID];
     
-    [context refreshObject:employee mergeChanges:YES];    
-
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:kEmployeeStartDateFormat];
     NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
@@ -683,17 +691,20 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
         
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -711,17 +722,20 @@ static NSString *kDog = @"Dog";
                                   onEntity:kEmployee];
     
     // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -737,32 +751,26 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
-    
-    // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock];
-    
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
         
-    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
-    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);};
+    // Chunk dat
+    [[Broker sharedInstance] processJSONPayload:jsonData 
+                    asCollectionOfEntitiesNamed:@"Employee"
+                            withCompletionBlock:nil];
+            
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock2];
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema2);
-    
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -778,39 +786,33 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
-    
+            
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:nil];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
     
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     for (NSManagedObject *object in employees) {
         [context deleteObject:object];
     }
-    
-    [context save:nil];
-    
-    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
-    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);};
+        
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock2];
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
     // Wait for async code to finish
-    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema2);
-    
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];   
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }  
     
     employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -828,23 +830,11 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
-    
+        
     [[Broker sharedInstance] processJSONPayload:jsonData200 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:nil];
 
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
-    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);}; 
-    
     // This will delete all stale employee objects.  IE objects not included in
     // the new JSON response during the second processing
     BKJSONOperationContextDidChangeBlock didChangeBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
@@ -860,17 +850,25 @@ static NSString *kDog = @"Dog";
 
     };
     
+    // Wait
+    __block BOOL hasFinished = NO;
+    
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData100
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
                           contextDidChangeBlock:didChangeBlock
                                  emptyJSONBlock:nil
-                            withCompletionBlock:CompletionBlock2];
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
     // Wait for async code to finish
-    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema2);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }  
 
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -888,21 +886,10 @@ static NSString *kDog = @"Dog";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
     
     [[Broker sharedInstance] processJSONPayload:jsonData200 
                     asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:CompletionBlock];
-    
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
-    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);}; 
+                            withCompletionBlock:nil];
     
     // Delete all employees on an empty JSON list
     BKJSONOperationEmptyJSONBlock emptyJSONBlock = ^(NSManagedObjectContext *aContext) {
@@ -912,17 +899,25 @@ static NSString *kDog = @"Dog";
         }
     };
     
+    // Wait
+    __block BOOL hasFinished = NO;
+    
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData0
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
                           contextDidChangeBlock:nil
                                  emptyJSONBlock:emptyJSONBlock
-                            withCompletionBlock:CompletionBlock2];
+                            withCompletionBlock:^ {
+                                hasFinished = YES;
+                            }];
     
     // Wait for async code to finish
-    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema2);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }  
     
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -940,28 +935,28 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
     
     // Build Deparment
-    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
+    NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    // Wait
+    __block BOOL hasFinished = NO;
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                                   targetEntity:departmentURI 
+                                 targetObjectID:departmentID 
                                 forRelationship:@"dogs" 
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
     
     // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
-    
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];   
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }    
+        
     // Fetch
-    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
-                                                        inContext:context];
-    
-    // Refresh
-    [context refreshObject:dept mergeChanges:YES];
+    NSManagedObject *dept = [context objectWithID:departmentID];
     
     NSSet *dogs = (NSSet *)[dept valueForKey:@"dogs"];
     int num = [dogs count];
@@ -978,42 +973,35 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
     
     // Build Deparment
-    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
+    NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
+
     
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                                   targetEntity:departmentURI 
+                                 targetObjectID:departmentID 
                                 forRelationship:@"dogs" 
-                            withCompletionBlock:CompletionBlock];
+                            withCompletionBlock:nil];
     
-    // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
-    
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
-    void (^CompletionBlock2)(void) = ^{dispatch_semaphore_signal(sema2);}; 
+    // Wait
+    __block BOOL hasFinished = NO;
     
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                                   targetEntity:departmentURI 
+                                 targetObjectID:departmentID 
                                 forRelationship:@"dogs" 
-                            withCompletionBlock:CompletionBlock2];
-    
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
+
     // Wait for async code to finish
-    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema2);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
     
     // Fetch
-    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
-                                                        inContext:context];
-    
-    // Refresh
-    [context refreshObject:dept mergeChanges:YES];
-    
+    NSManagedObject *dept = [context objectWithID:departmentID];
+        
     NSSet *dogs = (NSSet *)[dept valueForKey:@"dogs"];
     int num = [dogs count];
     
@@ -1038,9 +1026,8 @@ static NSString *kDog = @"Dog";
 
     [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
-    NSURL *employeeURI = [BrokerTestsHelpers createNewFilledOutEmployee:context];
-    NSManagedObject *employee = [[Broker sharedInstance] objectForURI:employeeURI inContext:context];
-    //[context refreshObject:employee mergeChanges:YES];
+    NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewFilledOutEmployee:context];
+    NSManagedObject *employee = [context objectWithID:employeeID];
     
     BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
     
@@ -1066,12 +1053,8 @@ static NSString *kDog = @"Dog";
                                  onEntity:kEmployee];
    
     // Build Deparment
-    NSURL *departmentURI = [BrokerTestsHelpers createNewDepartment:context];
-   
-    // Use to hold main thread while bg tasks complete
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    void (^CompletionBlock)(void) = ^{dispatch_semaphore_signal(sema);}; 
-   
+    NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
+      
     BKJSONOperationPreFilterBlock removeEmployeeWithID6 = (id)^(NSManagedObjectContext *context, id jsonObject) {
         if ([jsonObject isKindOfClass:[NSArray class]]) {
             NSMutableArray *newCollection = [[jsonObject mutableCopy] autorelease];
@@ -1087,24 +1070,27 @@ static NSString *kDog = @"Dog";
         return nil;
     };
     
+    __block BOOL hasFinished = NO;
+    
     // Chunk dat
     [[Broker sharedInstance] processJSONPayload:jsonData 
-                                  targetEntity:departmentURI 
-                               forRelationship:@"employees"
-                            JSONPreFilterBlock:removeEmployeeWithID6
-                           withCompletionBlock:CompletionBlock];
+                                 targetObjectID:departmentID 
+                                forRelationship:@"employees"
+                             JSONPreFilterBlock:removeEmployeeWithID6
+                            withCompletionBlock:^{
+                                hasFinished = YES;
+                            }];
    
     // Wait for async code to finish
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    dispatch_release(sema);
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
+    while (hasFinished == NO) {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:loopUntil];
+    }
    
     // Fetch
-    NSManagedObject *dept = [[Broker sharedInstance] objectForURI:departmentURI 
-                                                        inContext:context];
-   
-    // Refresh
-    [context refreshObject:dept mergeChanges:YES];
-   
+    NSManagedObject *dept = [context objectWithID:departmentID];
+    
     NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
     int num = [employees count];
         

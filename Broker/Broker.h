@@ -53,24 +53,34 @@
  */
 @property (weak, nonatomic, readonly) NSMutableDictionary *entityDescriptions;
 
-/** @name Setup */
-
 /**
- This should be part of the larger summary
- 
- This is the longer description
- 
- @return A new Broker instance setup with the provided NSManagedObjectContext
- 
- @param context Typically this is apps main NSManagedObjectContext.
+ Set this if you want to give the underlying conductor queue a name for future
+ reference.
  */
-+ (id)brokerWithContext:(NSManagedObjectContext *)context;
+@property (nonatomic, copy) NSString *queueName;
+
+/** @name Setup */
 
 /**
  Performs basic setup operations with the provided NSManagedObjectContext
  @param context Typically this is the main app context.
+ @param queueName This is the name of the queue that controls the JSON parsing 
+ operations.  Keep track of this queue name to modify the queue behavior later.
  */
-- (void)setupWithContext:(NSManagedObjectContext *)context;
+- (void)setupWithContext:(NSManagedObjectContext *)context 
+            andQueueName:(NSString *)queueName;
+
+/**
+ Performs basic setup operations with the provided NSManagedObjectContext
+ @param context Typically this is the main app context.
+ @param queueName This is the name of the queue that controls the JSON parsing 
+ operations.  Keep track of this queue name to modify the queue behavior later.
+ @param maxOperationCount The maximum simultanious parse operations that can 
+ run at once. Set this to 1 for a serial queue.  
+ */
+- (void)setupWithContext:(NSManagedObjectContext *)context 
+            andQueueName:(NSString *)queueName
+withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount;
 
 /**
  Resets Broker instance by clearing the context and entityDescriptions.
@@ -195,28 +205,28 @@
  Processes a JSON payload returned from an API onto the target entity.
  
  @param jsonPayload The data returned from the API
- @param entityURI The URI representation of the managed object to process the
+ @param objectID The URI representation of the managed object to process the
  JSON for
- @param CompletionBlock The block to run when the operation is complete
+ @param completionBlock The block to run when the operation is complete
  */
 - (void)processJSONPayload:(id)jsonPayload 
-              targetEntity:(NSURL *)entityURI
-       withCompletionBlock:(void (^)())CompletionBlock;
+            targetObjectID:(NSManagedObjectID *)objectID
+       withCompletionBlock:(void (^)())completionBlock;
 
 /**
  Processes a JSON payload returned from an API onto the target entity.
  
  @param jsonPayload The data returned from the API
- @param entityURI The URI representation of the managed object to process the
+ @param objectID The URI representation of the managed object to process the
  JSON for
  @param FilterBlock A block passed in to apply to the incoming JSON before
  any processing takes place.
- @param CompletionBlock The block to run when the operation is complete
+ @param completionBlock The block to run when the operation is complete
  */
 - (void)processJSONPayload:(id)jsonPayload
-              targetEntity:(NSURL *)entityURI
+            targetObjectID:(NSManagedObjectID *)objectID
         JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())CompletionBlock;
+       withCompletionBlock:(void (^)())completionBlock;
 
 /**
  Process a JSON payload returned from an API for a given relationship on an entity.
@@ -227,16 +237,16 @@
  [myBrokerInstance processJSONPayload:apiJSONData targetEntity:departmentURI forRelationship:@"employees" withCompletionBlock:myBlock]
  
  @param jsonPayload The data returned from the API
- @param entityURI The URI representation of the managed object to process the
+ @param objectID The URI representation of the managed object to process the
  JSON for
  @param relationshipName The name of the relationship on the entity to recieve the
  processed JSON objects
- @param CompletionBlock The block to run when the operation is complete
+ @param completionBlock The block to run when the operation is complete
  */
 - (void)processJSONPayload:(id)jsonPayload 
-              targetEntity:(NSURL *)entityURI
+            targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
-       withCompletionBlock:(void (^)())CompletionBlock;
+       withCompletionBlock:(void (^)())completionBlock;
 
 /**
  Process a JSON payload returned from an API for a given relationship on an entity.
@@ -247,10 +257,10 @@
  @see [Broker processJSONPayload:targetEntity:forRelationship:withCompletionBlock:]
  */
 - (void)processJSONPayload:(id)jsonPayload
-              targetEntity:(NSURL *)entityURI
+            targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
-        JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())CompletionBlock;
+        JSONPreFilterBlock:(id (^)())filterBlock
+       withCompletionBlock:(void (^)())completionBlock;
 
 /**
  Process a JSON payload returned from an API as a collection of a particluar
@@ -260,7 +270,7 @@
  */
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName 
-       withCompletionBlock:(void (^)())CompletionBlock;
+       withCompletionBlock:(void (^)())completionBlock;
 
 /**
  Process a JSON payload returned from an API as a collection of a particluar
@@ -270,8 +280,8 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
  */
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
-        JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())CompletionBlock;
+        JSONPreFilterBlock:(id (^)())filterBlock
+       withCompletionBlock:(void (^)())completionBlock;
 
 /**
  Process a JSON payload returned from an API as a collection of a particluar
@@ -288,10 +298,10 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
  */
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
-        JSONPreFilterBlock:(id (^)())FilterBlock
-     contextDidChangeBlock:(void (^)())DidChangeBlock
-            emptyJSONBlock:(void (^)())EmptyJSONBlock
-       withCompletionBlock:(void (^)())CompletionBlock;
+        JSONPreFilterBlock:(id (^)())filterBlock
+     contextDidChangeBlock:(void (^)())didChangeBlock
+            emptyJSONBlock:(void (^)())emptyJSONBlock
+       withCompletionBlock:(void (^)())completionBlock;
 
 /** @name Accessors */
 

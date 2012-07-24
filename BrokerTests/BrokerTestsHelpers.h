@@ -28,9 +28,9 @@
 
 @interface BrokerTestsHelpers : NSObject
 
-+ (NSURL *)createNewEmployee:(NSManagedObjectContext *)context;
-+ (NSURL *)createNewFilledOutEmployee:(NSManagedObjectContext *)context;
-+ (NSURL *)createNewDepartment:(NSManagedObjectContext *)context;
++ (NSManagedObjectID *)createNewEmployee:(NSManagedObjectContext *)context;
++ (NSManagedObjectID *)createNewFilledOutEmployee:(NSManagedObjectContext *)context;
++ (NSManagedObjectID *)createNewDepartment:(NSManagedObjectContext *)context;
 + (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 
 NSString *PathForTestResource(NSString *resouce);

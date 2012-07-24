@@ -27,14 +27,14 @@
 
 @implementation BrokerTestsHelpers
 
-+ (NSURL *)createNewEmployee:(NSManagedObjectContext *)context {
++ (NSManagedObjectID *)createNewEmployee:(NSManagedObjectContext *)context {
     NSManagedObject *employee = [NSEntityDescription insertNewObjectForEntityForName:@"Employee" 
                                                               inManagedObjectContext:context];
     [context save:nil];
-    return employee.objectID.URIRepresentation;
+    return employee.objectID;
 }
 
-+ (NSURL *)createNewFilledOutEmployee:(NSManagedObjectContext *)context {
++ (NSManagedObjectID *)createNewFilledOutEmployee:(NSManagedObjectContext *)context {
     NSManagedObject *employee = [NSEntityDescription insertNewObjectForEntityForName:@"Employee" 
                                                               inManagedObjectContext:context];
     
@@ -43,14 +43,14 @@
     [employee setValue:@"Bacon" forKey:@"lastname"];
     
     [context save:nil];
-    return employee.objectID.URIRepresentation;
+    return employee.objectID;
 }
 
-+ (NSURL *)createNewDepartment:(NSManagedObjectContext *)context {
++ (NSManagedObjectID *)createNewDepartment:(NSManagedObjectContext *)context {
     NSManagedObject *dept = [NSEntityDescription insertNewObjectForEntityForName:@"Department" 
                                                               inManagedObjectContext:context];
     [context save:nil];
-    return dept.objectID.URIRepresentation;
+    return dept.objectID;
 }
 
 + (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context {

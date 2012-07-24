@@ -38,8 +38,7 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  The JSON data to be turned into a JSON object for processing
  */
 @property (nonatomic, strong) id jsonPayload;
-
-@property (nonatomic, strong) NSURL *entityURI;
+@property (nonatomic, strong) NSManagedObjectID *objectID;
 @property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
 
