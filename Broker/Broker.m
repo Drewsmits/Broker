@@ -40,9 +40,9 @@
 
 + (id)sharedInstance {
     static dispatch_once_t pred = 0;
-    __strong static id _sharedInstance = nil;
+    __strong static Broker *_sharedInstance = nil;
     dispatch_once(&pred, ^{
-        _sharedInstance = [[self alloc] init];
+        _sharedInstance = [[Broker alloc] init];
     });
     return _sharedInstance;
 }
@@ -237,6 +237,7 @@
     BKJSONOperation *operation = [BKJSONOperation operation];
     
     operation.jsonPayload = jsonPayload;
+    operation.broker = self;
     operation.objectID = objectID;
     operation.relationshipName = relationshipName;
     operation.mainContext = self.mainContext;;
@@ -257,7 +258,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:nil
-       contextDidChangeBlock:nil
+       contextWillSaveBlock:nil
               emptyJSONBlock:nil
          withCompletionBlock:completionBlock];
 }
@@ -270,7 +271,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:filterBlock
-       contextDidChangeBlock:nil
+       contextWillSaveBlock:nil
               emptyJSONBlock:nil
          withCompletionBlock:completionBlock];
 }
@@ -278,7 +279,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
-     contextDidChangeBlock:(void (^)())didChangeBlock
+     contextWillSaveBlock:(void (^)())willSaveBlock
             emptyJSONBlock:(void (^)())emptyJSONBlock
        withCompletionBlock:(void (^)())completionBlock
 {    
@@ -288,9 +289,16 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     BKJSONOperation *operation = [BKJSONOperation operation];
     
     operation.jsonPayload = jsonPayload;
+    operation.broker = self;
     
     // This is the type of object the collection objects will be turned into
     BKEntityPropertiesDescription *description = [self entityPropertyDescriptionForEntityName:entityName];
+    
+    if (!description) {
+        WLog(@"No entity description found!  Did you remember to register it?");
+        return;
+    }
+    
     operation.entityDescription = description;
     
     // Thread safe managed object context.  Will call contextDidSave when saving,
@@ -298,7 +306,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     operation.mainContext = self.mainContext;
     
     // Blocks
-    operation.didChangeBlock = didChangeBlock;
+    operation.willSaveBlock = willSaveBlock;
     operation.emptyJSONBlock = emptyJSONBlock;
     operation.preFilterBlock = filterBlock;
     operation.completionBlock = completionBlock;
@@ -388,72 +396,5 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     
     return [NSDictionary dictionaryWithDictionary:transformedDict];
 }
-
-#pragma mark - CoreData
-
-- (NSManagedObject *)objectForURI:(NSURL *)objectURI inContext:(NSManagedObjectContext *)aContext {
-    NSManagedObjectID *objectID = [[aContext persistentStoreCoordinator] managedObjectIDForURIRepresentation:objectURI];
-    
-    if (!objectID) return nil;
-    
-    NSManagedObject *objectForID = [aContext objectWithID:objectID];
-    
-    if (![objectForID isFault]) return objectForID;
-    
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[objectID entity]];
-    
-    // Predicate for fetching self.  Code is faster than string predicate equivalent of 
-    // [NSPredicate predicateWithFormat:@"SELF = %@", objectForID];
-    NSPredicate *predicate = [NSComparisonPredicate predicateWithLeftExpression:[NSExpression expressionForEvaluatedObject] 
-                                                                rightExpression:[NSExpression expressionForConstantValue:objectForID]
-                                                                       modifier:NSDirectPredicateModifier
-                                                                           type:NSEqualToPredicateOperatorType
-                                                                        options:0];
-    
-    [request setPredicate:predicate];
-    
-    NSArray *results = [aContext executeFetchRequest:request error:nil];
-    if ([results count] > 0 ) {
-        return [results objectAtIndex:0];
-    }
-    
-    return nil;
-}
-
-- (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityPropertiesDescription *)description 
-                                        withPrimaryKeyValue:(id)value
-                                                  inContext:(NSManagedObjectContext *)aContext
-                                               shouldCreate:(BOOL)create {  
-    
-    NSAssert(description, @"Must have a description");
-    if (!description) return nil;
-    
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:description.entityDescription];
-    
-    NSArray *fetchedObjects = nil;
-    
-    if (description.primaryKey) {
-        [request setPredicate:[NSPredicate predicateWithFormat:@"SELF.%@ == %@", description.primaryKey, value]];
-    
-        NSError *error = nil;
-        fetchedObjects = [aContext executeFetchRequest:request error:&error];
-        if (error) {
-            NSLog(@"Fetch Error: %@", error);
-        }
-    }
-    
-    if (create && fetchedObjects.count == 0) {
-        NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.entityName 
-                                                                inManagedObjectContext:aContext];
-        return object;
-    } else if (fetchedObjects.count == 1) {
-        return (NSManagedObject *)[fetchedObjects objectAtIndex:0];
-    }
-    
-    return nil;
-}
-
 
 @end

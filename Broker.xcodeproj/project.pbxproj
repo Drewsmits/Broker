@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB0DE49115B8F68D007F382F /* UIKit.framework */; };
 		DB24BB32145767A200BDAD0A /* libConductor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB394878145737D900BFF50E /* libConductor.a */; };
+		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; };
+		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
 		DB4C0E2C143D2F4F0090F5E3 /* Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E2B143D2F4F0090F5E3 /* Broker.m */; };
 		DB4C0E34143D2F4F0090F5E3 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E33143D2F4F0090F5E3 /* SenTestingKit.framework */; };
@@ -77,6 +79,8 @@
 /* Begin PBXFileReference section */
 		DB0DE49115B8F68D007F382F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DB39486F145737D900BFF50E /* Conductor.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Conductor.xcodeproj; path = ../Conductor/Conductor.xcodeproj; sourceTree = "<group>"; };
+		DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+Broker.h"; sourceTree = "<group>"; };
+		DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+Broker.m"; sourceTree = "<group>"; };
 		DB4C0E22143D2F4F0090F5E3 /* libBroker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBroker.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DB4C0E29143D2F4F0090F5E3 /* Broker-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "Broker-Prefix.pch"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -198,6 +202,8 @@
 				DB576E0C14572D0F006021CE /* BKJSONOperation.m */,
 				DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */,
 				DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */,
+				DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */,
+				DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */,
 				DB4C0E28143D2F4F0090F5E3 /* Supporting Files */,
 			);
 			path = Broker;
@@ -248,6 +254,7 @@
 				DBA5F95C145610C500EBFF68 /* Broker.h in Headers */,
 				DB576E0D14572D0F006021CE /* BKJSONOperation.h in Headers */,
 				DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */,
+				DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,6 +389,7 @@
 				DBCD67531443F47A000FD78D /* BKPropertyDescription.m in Sources */,
 				DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */,
 				DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */,
+				DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

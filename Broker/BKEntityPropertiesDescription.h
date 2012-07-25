@@ -28,6 +28,7 @@
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"
 
+
 @interface BKEntityPropertiesDescription : NSObject {
 @private
     NSString *entityName;

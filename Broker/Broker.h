@@ -29,7 +29,6 @@
 #import "Conductor/Conductor.h"
 
 #import "BKEntityPropertiesDescription.h"
-
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"
 
@@ -299,7 +298,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
-     contextDidChangeBlock:(void (^)())didChangeBlock
+     contextWillSaveBlock:(void (^)())willSaveBlock
             emptyJSONBlock:(void (^)())emptyJSONBlock
        withCompletionBlock:(void (^)())completionBlock;
 
@@ -320,13 +319,5 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 
 - (NSDictionary *)transformJSONDictionary:(NSDictionary *)jsonDictionary 
          usingEntityPropertiesDescription:(BKEntityPropertiesDescription *)entityMap;
-
-- (NSManagedObject *)objectForURI:(NSURL *)objectURI 
-                        inContext:(NSManagedObjectContext *)aContext;
-
-- (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityPropertiesDescription *)description 
-                                        withPrimaryKeyValue:(id)value
-                                                  inContext:(NSManagedObjectContext *)aContext
-                                               shouldCreate:(BOOL)create;
 
 @end

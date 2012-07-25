@@ -26,6 +26,9 @@
 #import "BKEntityPropertiesDescription.h"
 #import <CoreData/CoreData.h>
 
+#import "BKAttributeDescription.h"
+#import "BKRelationshipDescription.h"
+
 @interface BKEntityPropertiesDescription ()
 @property (readwrite, nonatomic, copy) NSString *entityName;
 @property (readwrite, nonatomic, strong) NSMutableDictionary *propertiesDescriptions;

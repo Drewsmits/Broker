@@ -27,6 +27,7 @@
 
 #import "Broker.h"
 #import "NSManagedObject+Broker.h"
+#import "NSManagedObjectContext+Broker.h"
 
 @interface BKJSONOperation ()
 
@@ -53,13 +54,14 @@
 @implementation BKJSONOperation
 
 @synthesize jsonPayload,
+            broker,
             objectID,
             entityDescription,
             relationshipName,
             preFilterBlock,
             mainContext,
             backgroundContext,
-            didChangeBlock,
+            willSaveBlock,
             emptyJSONBlock;
 
 - (void)dealloc {
@@ -70,11 +72,12 @@
     @autoreleasepool {    
         [super start];
         
-        // Register for changes
+        // Register for save
         [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(contextDidChange:) 
-                                                     name:NSManagedObjectContextObjectsDidChangeNotification 
+                                                 selector:@selector(contextWillSave:) 
+                                                     name:NSManagedObjectContextWillSaveNotification
                                                    object:self.backgroundContext]; 
+
         
         // Convert JSON payload data to JSON object
         NSError *error;
@@ -137,8 +140,8 @@
         BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
         
         // Transform flat JSON to use local property names and native object types
-        NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:(NSDictionary *)jsonObject 
-                                                        usingEntityPropertiesDescription:description];
+        NSDictionary *transformedDict = [self.broker transformJSONDictionary:(NSDictionary *)jsonObject 
+                                            usingEntityPropertiesDescription:description];
         
         [self processJSONSubObject:transformedDict
                          forObject:object
@@ -163,14 +166,19 @@
                               forObject:object 
                   withEntityDescription:description 
                         forRelationship:self.relationshipName];
+            
+            return;
         }
         
         // Is it a collection of entities?
         if (self.entityDescription) {
             [self processJSONCollection:jsonObject 
         asEntitiesWithEntityDescription:self.entityDescription];
+            
+            return;
         }
         
+        WLog(@"Neither relationship name or entity description specified!");
     }
     
 }
@@ -187,7 +195,7 @@
         destinationEntityName = description.entityName;
     }
     
-    BKEntityPropertiesDescription *destinationEntityDesc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:destinationEntityName];
+    BKEntityPropertiesDescription *destinationEntityDesc = [self.broker entityPropertyDescriptionForEntityName:destinationEntityName];
     
     // Check for registration
     NSAssert(destinationEntityDesc, @"Entity for relationship \"%@\" is not registered with Broker instance!", relationship);
@@ -214,16 +222,15 @@
         if (![dictionary isKindOfClass:[NSDictionary class]]) continue;
         
         // Transform
-        NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:(NSDictionary *)dictionary 
-                                                        usingEntityPropertiesDescription:description];
+        NSDictionary *transformedDict = [self.broker transformJSONDictionary:(NSDictionary *)dictionary 
+                                            usingEntityPropertiesDescription:description];
         
         // Get the primary key value
         id value = [transformedDict objectForKey:description.primaryKey];
         
-        NSManagedObject *collectionObject = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:description 
-                                                                                        withPrimaryKeyValue:value
-                                                                                                  inContext:self.backgroundContext
-                                                                                               shouldCreate:YES];
+        NSManagedObject *collectionObject = [self.backgroundContext findOrCreateObjectForEntityDescribedBy:description 
+                                                                                       withPrimaryKeyValue:value
+                                                                                              shouldCreate:YES];
         
         if (!collectionObject) {
             WLog(@"Got nil back for collection object!");
@@ -249,8 +256,8 @@
             
             id value = [subDictionary valueForKey:property];            
             
-            BKEntityPropertiesDescription *destinationEntityDesc = [[Broker sharedInstance] destinationEntityPropertiesDescriptionForRelationship:property
-                                                                                                                                    onEntityNamed:object.entity.name];
+            BKEntityPropertiesDescription *destinationEntityDesc = [self.broker destinationEntityPropertiesDescriptionForRelationship:property
+                                                                                                                        onEntityNamed:object.entity.name];
             
             if (!destinationEntityDesc) {
                 WLog(@"Destination entity for relationship \"%@\" on entity \"%@\" not registered with Broker!  Skipping...", property, [object.objectID.entity name]);
@@ -260,16 +267,15 @@
             // Flat
             if ([value isKindOfClass:[NSDictionary class]]) {
                 
-                NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:value 
-                                                                usingEntityPropertiesDescription:destinationEntityDesc];
+                NSDictionary *transformedDict = [self.broker transformJSONDictionary:value 
+                                                    usingEntityPropertiesDescription:destinationEntityDesc];
                 
                 // Get the primary key value
                 id primaryKeyValue = [transformedDict objectForKey:destinationEntityDesc.primaryKey];
                 
-                NSManagedObject *relationshipObject = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:destinationEntityDesc 
-                                                                                                  withPrimaryKeyValue:primaryKeyValue
-                                                                                                            inContext:self.backgroundContext
-                                                                                                         shouldCreate:YES];                
+                NSManagedObject *relationshipObject = [self.backgroundContext findOrCreateObjectForEntityDescribedBy:destinationEntityDesc 
+                                                                                                 withPrimaryKeyValue:primaryKeyValue
+                                                                                                        shouldCreate:YES];                
                 [self processJSONSubObject:transformedDict
                                  forObject:relationshipObject
                            withDescription:destinationEntityDesc];
@@ -321,17 +327,18 @@
 }
 
 - (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object {
-    BKEntityPropertiesDescription *description = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:object.entity.name];
+    BKEntityPropertiesDescription *description = [self.broker entityPropertyDescriptionForEntityName:object.entity.name];
     NSAssert(description, @"Entity named \"%@\" is not registered with Broker instance!", object.entity.name);
     return description;
 }
                         
 #pragma mark - Core Data
 
-- (void)contextDidChange:(NSNotification *)notification {
-    if (self.didChangeBlock) {
-        self.didChangeBlock(self.backgroundContext, notification);
+- (void)contextWillSave:(NSNotification *)notification {
+    if (self.willSaveBlock) {
+        self.willSaveBlock(self.backgroundContext, notification);
     };
 }
+
 
 @end

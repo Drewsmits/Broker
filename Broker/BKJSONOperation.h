@@ -23,13 +23,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <CoreData/CoreData.h>
-
 #import "Conductor/CDCoreDataOperation.h"
-#import "BKEntityPropertiesDescription.h"
+
+@class Broker;
+@class BKEntityPropertiesDescription;
 
 typedef id (^BKJSONOperationPreFilterBlock)(NSManagedObjectContext *context, id jsonObject);
-typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
+typedef void (^BKJSONOperationContextWillSaveBlock)(NSManagedObjectContext *context, NSNotification *notification);
 typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
 @interface BKJSONOperation : CDCoreDataOperation
@@ -38,6 +38,7 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  The JSON data to be turned into a JSON object for processing
  */
 @property (nonatomic, strong) id jsonPayload;
+@property (nonatomic, weak) Broker *broker;
 @property (nonatomic, strong) NSManagedObjectID *objectID;
 @property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
@@ -53,7 +54,7 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  This block is called when the context changes, and allows you to apply some changes
  mid stream.
  */
-@property (nonatomic, copy) BKJSONOperationContextDidChangeBlock didChangeBlock;
+@property (nonatomic, copy) BKJSONOperationContextWillSaveBlock willSaveBlock;
 
 /**
  This block is executed when the JSON payload turns out to be empty.  As an example,

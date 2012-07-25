@@ -32,6 +32,7 @@
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"
 #import "BKJSONOperation.h"
+#import "NSManagedObjectContext+Broker.h"
 
 #define LOOP_WAIT_TIME 0.01
 
@@ -837,7 +838,7 @@ static NSString *kDog = @"Dog";
 
     // This will delete all stale employee objects.  IE objects not included in
     // the new JSON response during the second processing
-    BKJSONOperationContextDidChangeBlock didChangeBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
+    BKJSONOperationContextWillSaveBlock willSaveBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
        
         NSArray *updatedEmployess = (NSArray *)[[notification userInfo] objectForKey:NSUpdatedObjectsKey];
         NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:aContext];
@@ -857,7 +858,7 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] processJSONPayload:jsonData100
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
-                          contextDidChangeBlock:didChangeBlock
+                          contextWillSaveBlock:willSaveBlock
                                  emptyJSONBlock:nil
                             withCompletionBlock:^{
                                 hasFinished = YES;
@@ -906,7 +907,7 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] processJSONPayload:jsonData0
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
-                          contextDidChangeBlock:nil
+                          contextWillSaveBlock:nil
                                  emptyJSONBlock:emptyJSONBlock
                             withCompletionBlock:^ {
                                 hasFinished = YES;
@@ -1011,17 +1012,6 @@ static NSString *kDog = @"Dog";
 
 #pragma mark - Core Data
 
-- (void)testObjectWithURI {
-    
-    NSManagedObject *department = [NSEntityDescription insertNewObjectForEntityForName:kDepartment 
-                                                                inManagedObjectContext:context];
-    
-    NSManagedObject *fetchedDepartment = [[Broker sharedInstance] objectForURI:department.objectID.URIRepresentation 
-                                                     inContext:context];
-     
-    STAssertEqualObjects(department, fetchedDepartment, @"Should get the same object");
-}
-
 - (void)testFindEntityWithPrimaryKey {
 
     [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
@@ -1031,10 +1021,9 @@ static NSString *kDog = @"Dog";
     
     BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
     
-    NSManagedObject *foundEmployee = [[Broker sharedInstance] findOrCreateObjectForEntityDescribedBy:desc
-                                                                                 withPrimaryKeyValue:[NSNumber numberWithInt:12345]
-                                                                                           inContext:context
-                                                                                        shouldCreate:NO];
+    NSManagedObject *foundEmployee = [context findOrCreateObjectForEntityDescribedBy:desc
+                                                                 withPrimaryKeyValue:[NSNumber numberWithInt:12345]
+                                                                        shouldCreate:NO];
     
     STAssertEqualObjects(employee, foundEmployee, @"Found URI should be the same as the first created");
 }
