@@ -298,7 +298,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
-     contextWillSaveBlock:(void (^)())willSaveBlock
+     contextDidChangeBlock:(void (^)())didChangeBlock
             emptyJSONBlock:(void (^)())emptyJSONBlock
        withCompletionBlock:(void (^)())completionBlock;
 

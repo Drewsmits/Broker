@@ -61,7 +61,7 @@
             preFilterBlock,
             mainContext,
             backgroundContext,
-            willSaveBlock,
+            didChangeBlock,
             emptyJSONBlock;
 
 - (void)dealloc {
@@ -72,12 +72,11 @@
     @autoreleasepool {    
         [super start];
         
-        // Register for save
+        // Register for change
         [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(contextWillSave:) 
-                                                     name:NSManagedObjectContextWillSaveNotification
-                                                   object:self.backgroundContext]; 
-
+                                                 selector:@selector(contextDidChange:) 
+                                                     name:NSManagedObjectContextObjectsDidChangeNotification
+                                                   object:self.backgroundContext];
         
         // Convert JSON payload data to JSON object
         NSError *error;
@@ -334,11 +333,16 @@
                         
 #pragma mark - Core Data
 
-- (void)contextWillSave:(NSNotification *)notification {
-    if (self.willSaveBlock) {
-        self.willSaveBlock(self.backgroundContext, notification);
+- (void)contextDidChange:(NSNotification *)notification 
+{    
+    // Make sure this is only called once
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:NSManagedObjectContextObjectsDidChangeNotification 
+                                                  object:self.backgroundContext];
+    
+    if (self.didChangeBlock) {
+        self.didChangeBlock(self.backgroundContext, notification);
     };
 }
-
 
 @end

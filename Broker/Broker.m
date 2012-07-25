@@ -258,7 +258,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:nil
-       contextWillSaveBlock:nil
+       contextDidChangeBlock:nil
               emptyJSONBlock:nil
          withCompletionBlock:completionBlock];
 }
@@ -271,7 +271,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:filterBlock
-       contextWillSaveBlock:nil
+       contextDidChangeBlock:nil
               emptyJSONBlock:nil
          withCompletionBlock:completionBlock];
 }
@@ -279,7 +279,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
-     contextWillSaveBlock:(void (^)())willSaveBlock
+     contextDidChangeBlock:(void (^)())didChangeBlock
             emptyJSONBlock:(void (^)())emptyJSONBlock
        withCompletionBlock:(void (^)())completionBlock
 {    
@@ -306,7 +306,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     operation.mainContext = self.mainContext;
     
     // Blocks
-    operation.willSaveBlock = willSaveBlock;
+    operation.didChangeBlock = didChangeBlock;
     operation.emptyJSONBlock = emptyJSONBlock;
     operation.preFilterBlock = filterBlock;
     operation.completionBlock = completionBlock;

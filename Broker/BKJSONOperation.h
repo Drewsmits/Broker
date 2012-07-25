@@ -29,7 +29,7 @@
 @class BKEntityPropertiesDescription;
 
 typedef id (^BKJSONOperationPreFilterBlock)(NSManagedObjectContext *context, id jsonObject);
-typedef void (^BKJSONOperationContextWillSaveBlock)(NSManagedObjectContext *context, NSNotification *notification);
+typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
 typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
 @interface BKJSONOperation : CDCoreDataOperation
@@ -54,7 +54,7 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  This block is called when the context changes, and allows you to apply some changes
  mid stream.
  */
-@property (nonatomic, copy) BKJSONOperationContextWillSaveBlock willSaveBlock;
+@property (nonatomic, copy) BKJSONOperationContextDidChangeBlock didChangeBlock;
 
 /**
  This block is executed when the JSON payload turns out to be empty.  As an example,

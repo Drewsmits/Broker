@@ -838,7 +838,7 @@ static NSString *kDog = @"Dog";
 
     // This will delete all stale employee objects.  IE objects not included in
     // the new JSON response during the second processing
-    BKJSONOperationContextWillSaveBlock willSaveBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
+    BKJSONOperationContextDidChangeBlock didChangeBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
        
         NSArray *updatedEmployess = (NSArray *)[[notification userInfo] objectForKey:NSUpdatedObjectsKey];
         NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:aContext];
@@ -858,7 +858,7 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] processJSONPayload:jsonData100
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
-                          contextWillSaveBlock:willSaveBlock
+                          contextDidChangeBlock:didChangeBlock
                                  emptyJSONBlock:nil
                             withCompletionBlock:^{
                                 hasFinished = YES;
@@ -907,7 +907,7 @@ static NSString *kDog = @"Dog";
     [[Broker sharedInstance] processJSONPayload:jsonData0
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
-                          contextWillSaveBlock:nil
+                          contextDidChangeBlock:nil
                                  emptyJSONBlock:emptyJSONBlock
                             withCompletionBlock:^ {
                                 hasFinished = YES;
