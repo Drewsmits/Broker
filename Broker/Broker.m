@@ -180,7 +180,7 @@
 
     BKEntityPropertiesDescription *desc = [self entityPropertyDescriptionForEntityName:entity];
     
-    NSAssert(desc, @"You must first register entity named \"%@\" before mapping properties.");
+    NSAssert(desc, @"You must first register entity named before mapping properties.");
     if (!desc) return;
     
     [desc mapNetworkProperties:networkProperties toLocalProperties:localProperties];
