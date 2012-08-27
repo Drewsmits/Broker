@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB0DE49115B8F68D007F382F /* UIKit.framework */; };
 		DB24BB32145767A200BDAD0A /* libConductor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB394878145737D900BFF50E /* libConductor.a */; };
-		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; };
+		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
 		DB4C0E2C143D2F4F0090F5E3 /* Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E2B143D2F4F0090F5E3 /* Broker.m */; };
@@ -305,7 +305,7 @@
 		DB4C0E17143D2E770090F5E3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0440;
 				ORGANIZATIONNAME = "Andrew B. Smith";
 			};
 			buildConfigurationList = DB4C0E1A143D2E770090F5E3 /* Build configuration list for PBXProject "Broker" */;
@@ -521,6 +521,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -555,6 +556,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",

@@ -31,6 +31,7 @@
 #import "BKEntityPropertiesDescription.h"
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"
+#import "BKJSONOperation.h"
 
 
 @interface Broker : Conductor {
@@ -44,7 +45,7 @@
 /**
  The NSManagedObjectContext in which the Broker instance performs its operations
  */
-@property (nonatomic, strong, readonly) NSManagedObjectContext *mainContext;
+@property (readonly) NSManagedObjectContext *mainContext;
 
 /**
  The dictionary containing all BKEntityPropertiesDescriptions registered with 
@@ -57,6 +58,9 @@
  reference.
  */
 @property (nonatomic, copy) NSString *queueName;
+
++ (Broker *)brokerWithContext:(NSManagedObjectContext *)context
+                 andQueueName:(NSString *)queueName;
 
 /** @name Setup */
 

@@ -53,17 +53,6 @@
 
 @implementation BKJSONOperation
 
-@synthesize jsonPayload,
-            broker,
-            objectID,
-            entityDescription,
-            relationshipName,
-            preFilterBlock,
-            mainContext,
-            backgroundContext,
-            didChangeBlock,
-            emptyJSONBlock;
-
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -109,6 +98,7 @@
     
     // Save context
     [self saveBackgroundContext];
+    
     
     // Calls finish on superclass CDOperation, part of Conductor
     [super finish];    

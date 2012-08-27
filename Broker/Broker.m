@@ -28,15 +28,12 @@
 #import "BKJSONOperation.h"
 
 @interface Broker ()
-@property (nonatomic, strong, readwrite) NSManagedObjectContext *mainContext;
+
 @end
 
 @implementation Broker
 
-@synthesize mainContext = mainContext_,
-            queueName = queueName_;
-
-
+@synthesize queueName = queueName_;
 
 + (id)sharedInstance {
     static dispatch_once_t pred = 0;
@@ -51,6 +48,15 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
++ (Broker *)brokerWithContext:(NSManagedObjectContext *)context
+                 andQueueName:(NSString *)queueName
+{
+    Broker *broker = [[Broker alloc] init];
+    [broker setupWithContext:context andQueueName:queueName];
+    return broker;
+}
+
+
 #pragma mark - Setup
 
 - (void)setupWithContext:(NSManagedObjectContext *)context
@@ -60,7 +66,7 @@
     if (!context) return;
     
     // Share the main context
-    self.mainContext = context;
+    _mainContext = context;
     
     // This is the name of the queue that will be used to keep track of the 
     // parse operations
@@ -83,8 +89,7 @@
 
 - (void)reset {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    mainContext = nil;
+    _mainContext = nil;
     entityDescriptions = nil;
 }
 
@@ -112,8 +117,8 @@
     
     [self registerEntityNamed:entityName
                withPrimaryKey:primaryKey
-      andMapNetworkProperties:[NSArray arrayWithObject:networkProperty] 
-            toLocalProperties:[NSArray arrayWithObject:localProperty]];
+      andMapNetworkProperties:@[networkProperty] 
+            toLocalProperties:@[localProperty]];
     
 }
 
@@ -168,8 +173,8 @@
            toLocalProperty:(NSString *)localProperty
                  forEntity:(NSString *)entity {
     
-    [self mapNetworkProperties:[NSArray arrayWithObject:networkProperty]
-             toLocalProperties:[NSArray arrayWithObject:localProperty]
+    [self mapNetworkProperties:@[networkProperty]
+             toLocalProperties:@[localProperty]
                      forEntity:entity];
 
 }

@@ -57,22 +57,28 @@
         case NSUndefinedAttributeType:
             return nil;
             break;
-        case NSInteger16AttributeType ... NSInteger64AttributeType:
-            return [NSNumber numberWithInt:[value intValue]];
+        case NSInteger16AttributeType:
+            return @([value shortValue]);
+            break;
+        case NSInteger32AttributeType:
+            return @([value integerValue]);
+            break;
+        case NSInteger64AttributeType:
+            return @([value longLongValue]);
             break;
         case NSDecimalAttributeType:
             return [NSDecimalNumber decimalNumberWithDecimal:[value decimalValue]];
             break;
         case NSDoubleAttributeType:
-            return [NSNumber numberWithDouble:[value doubleValue]];
+            return @([value doubleValue]);
             break;
         case NSFloatAttributeType:
-            return [NSNumber numberWithFloat:[value floatValue]];
+            return @([value floatValue]);
         case NSStringAttributeType:
             return [NSString stringWithString:value];
             break;
         case NSBooleanAttributeType:
-            return [NSNumber numberWithBool:[value boolValue]];
+            return @([value boolValue]);
         case NSDateAttributeType:
             
             if (!self.dateFormat) {

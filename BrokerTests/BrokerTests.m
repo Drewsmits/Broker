@@ -83,15 +83,15 @@ static NSString *kDog = @"Dog";
 
 - (void)tearDown {
     
-    [context release], context = nil;
+    context = nil;
     
     NSError *error = nil;
     STAssertTrue([coord removePersistentStore:store error:&error], 
                  @"couldn't remove persistent store: %@", error);
     
     store = nil;
-    [coord release], coord = nil;
-    [model release], model = nil;  
+    coord = nil;
+    model = nil;  
     
     [[Broker sharedInstance] reset];
     
@@ -179,7 +179,7 @@ static NSString *kDog = @"Dog";
     NSEntityDescription *entityDescription = [NSEntityDescription entityForName:kEmployee 
                                                          inManagedObjectContext:context];
     
-    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
     
     [request setEntity:entityDescription];
     [request setPredicate:[NSPredicate predicateWithFormat:@"1 = 1"]];
@@ -290,8 +290,8 @@ static NSString *kDog = @"Dog";
 
 - (void)testTransformJSONDictionaryClassesAreCorrect {
         
-    NSDictionary *fakeJSON = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Andrew", @"Smith", @"5678", @"2011/10/06 00:51:10 -0700", nil]
-                                                         forKeys:[NSArray arrayWithObjects:@"firstname", @"lastname", @"employeeID", @"startDate", nil]];
+    NSDictionary *fakeJSON = [NSDictionary dictionaryWithObjects:@[@"Andrew", @"Smith", @"5678", @"2011/10/06 00:51:10 -0700"]
+                                                         forKeys:@[@"firstname", @"lastname", @"employeeID", @"startDate"]];
     
     [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
     
@@ -312,8 +312,8 @@ static NSString *kDog = @"Dog";
 
 - (void)testTransformJSONDictionaryValuesAreCorrect {
     
-    NSDictionary *fakeJSON = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Andrew", @"Smith", @"5678", @"2011/10/06 00:51:10 -0700", nil]
-                                                         forKeys:[NSArray arrayWithObjects:@"firstname", @"lastname", @"employeeID", @"startDate", nil]];
+    NSDictionary *fakeJSON = [NSDictionary dictionaryWithObjects:@[@"Andrew", @"Smith", @"5678", @"2011/10/06 00:51:10 -0700"]
+                                                         forKeys:@[@"firstname", @"lastname", @"employeeID", @"startDate"]];
     
     [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
     
@@ -333,7 +333,7 @@ static NSString *kDog = @"Dog";
     
     STAssertEqualObjects([transformedDict valueForKey:@"firstname"], @"Andrew", @"Attributes should be set correctly");
     STAssertEqualObjects([transformedDict valueForKey:@"lastname"], @"Smith", @"Attributes should be set correctly");
-    STAssertEqualObjects([transformedDict valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Attributes should be set correctly");
+    STAssertEqualObjects([transformedDict valueForKey:@"employeeID"], @5678, @"Attributes should be set correctly");
     STAssertEqualObjects([transformedDict valueForKey:@"startDate"], date, @"Attributes should be set correctly");
 }
 
@@ -376,7 +376,7 @@ static NSString *kDog = @"Dog";
     
     STAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Attributes should be set correctly");
     STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Attributes should be set correctly");
-    STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Attributes should be set correctly");
+    STAssertEqualObjects([employee valueForKey:@"employeeID"], @5678, @"Attributes should be set correctly");
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
 }
 
@@ -422,7 +422,7 @@ static NSString *kDog = @"Dog";
     
     STAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Attributes should be set correctly");
     STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Attributes should be set correctly");
-    STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Attributes should be set correctly");
+    STAssertEqualObjects([employee valueForKey:@"employeeID"], @5678, @"Attributes should be set correctly");
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
 }
 
@@ -465,14 +465,13 @@ static NSString *kDog = @"Dog";
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:kEmployeeStartDateFormat];
     NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
-
     
     STAssertEqualObjects([contactInfo valueForKey:@"email"], @"andrew@smith.com", @"Should set nested object attributes correctly");
-    STAssertEqualObjects([contactInfo valueForKey:@"phone"], [NSNumber numberWithInt:4155556666], @"Should set nested object attributes correctly");
+    STAssertEqualObjects([contactInfo valueForKey:@"phone"], @4155556666, @"Should set nested object attributes correctly");
     
     STAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Should set attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Should set nested object attributes correctly");
-    STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Should set nested object attributes correctly");
+    STAssertEqualObjects([employee valueForKey:@"employeeID"], @5678, @"Should set nested object attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
 }
 
@@ -510,7 +509,7 @@ static NSString *kDog = @"Dog";
     NSManagedObject *dept = [context objectWithID:departmentID];
         
     STAssertEqualObjects([dept valueForKey:@"name"], @"Engineering", @"Attribute should be set correctly");
-    STAssertEqualObjects([dept valueForKey:@"departmentID"], [NSNumber numberWithInt:1234], @"Attribute should be set correctly");
+    STAssertEqualObjects([dept valueForKey:@"departmentID"], @1234, @"Attribute should be set correctly");
 
     NSSet *employees = (NSSet *)[dept valueForKey:@"employees"];
     int num = [employees count];
@@ -635,7 +634,7 @@ static NSString *kDog = @"Dog";
     
     STAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Should set attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Should set nested object attributes correctly");
-    STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Should set nested object attributes correctly");
+    STAssertEqualObjects([employee valueForKey:@"employeeID"], @5678, @"Should set nested object attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");    
 }
 
@@ -677,7 +676,7 @@ static NSString *kDog = @"Dog";
         
     STAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Should set attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Should set nested object attributes correctly");
-    STAssertEqualObjects([employee valueForKey:@"employeeID"], [NSNumber numberWithInt:5678], @"Should set nested object attributes correctly");
+    STAssertEqualObjects([employee valueForKey:@"employeeID"], @5678, @"Should set nested object attributes correctly");
     STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");    
 }
 
@@ -1022,7 +1021,7 @@ static NSString *kDog = @"Dog";
     BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
     
     NSManagedObject *foundEmployee = [context findOrCreateObjectForEntityDescribedBy:desc
-                                                                 withPrimaryKeyValue:[NSNumber numberWithInt:12345]
+                                                                 withPrimaryKeyValue:@12345
                                                                         shouldCreate:NO];
     
     STAssertEqualObjects(employee, foundEmployee, @"Found URI should be the same as the first created");
@@ -1045,18 +1044,20 @@ static NSString *kDog = @"Dog";
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
       
     BKJSONOperationPreFilterBlock removeEmployeeWithID6 = (id)^(NSManagedObjectContext *context, id jsonObject) {
+
+        NSMutableArray *newCollection = [jsonObject mutableCopy];
+        
         if ([jsonObject isKindOfClass:[NSArray class]]) {
-            NSMutableArray *newCollection = [[jsonObject mutableCopy] autorelease];
             for (id dictionary in jsonObject) {
                 if ([dictionary isKindOfClass:[NSDictionary class]]) {
-                    if ([[dictionary valueForKey:@"employeeID"] isEqualToNumber:[NSNumber numberWithInt:6]]) {
+                    if ([[dictionary valueForKey:@"employeeID"] isEqualToNumber:@6]) {
                         [newCollection removeObject:dictionary];
                     }
                 }
             }
-            return newCollection;
         }
-        return nil;
+        
+        return newCollection;
     };
     
     __block BOOL hasFinished = NO;
@@ -1085,7 +1086,7 @@ static NSString *kDog = @"Dog";
         
     BOOL removedEmployee6 = YES;
     for (id employee in employees) {
-        if ([[employee valueForKey:@"employeeID"] isEqualToNumber:[NSNumber numberWithInt:6]]) {
+        if ([[employee valueForKey:@"employeeID"] isEqualToNumber:@6]) {
             removedEmployee6 = NO;
         }
     }

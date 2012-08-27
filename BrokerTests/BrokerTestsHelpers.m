@@ -38,7 +38,7 @@
     NSManagedObject *employee = [NSEntityDescription insertNewObjectForEntityForName:@"Employee" 
                                                               inManagedObjectContext:context];
     
-    [employee setValue:[NSNumber numberWithInt:12345] forKey:@"employeeID"];
+    [employee setValue:@12345 forKey:@"employeeID"];
     [employee setValue:@"Kevin" forKey:@"firstname"];
     [employee setValue:@"Bacon" forKey:@"lastname"];
     
@@ -58,7 +58,7 @@
     NSEntityDescription *entityDescription = [NSEntityDescription entityForName:entityName 
                                                          inManagedObjectContext:context];
     
-    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
         
     [request setEntity:entityDescription];
     
