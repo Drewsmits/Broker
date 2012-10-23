@@ -14,7 +14,7 @@
 - (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityPropertiesDescription *)description 
                                         withPrimaryKeyValue:(id)value
                                                shouldCreate:(BOOL)create 
-{  
+{
     NSAssert(description, @"Must have a description");
     if (!description) return nil;
     
@@ -26,7 +26,7 @@
     if (description.primaryKey) {
         [request setPredicate:[NSPredicate predicateWithFormat:@"SELF.%@ == %@", description.primaryKey, value]];
         
-        NSError *error = nil;
+        NSError *error;
         fetchedObjects = [self executeFetchRequest:request error:&error];
         if (error) {
             NSLog(@"Fetch Error: %@", error);
@@ -37,7 +37,7 @@
         NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.entityName 
                                                                 inManagedObjectContext:self];
         return object;
-    } else if (fetchedObjects.count == 1) {
+    } else if (fetchedObjects.count >= 1) {
         return (NSManagedObject *)[fetchedObjects objectAtIndex:0];
     }
     

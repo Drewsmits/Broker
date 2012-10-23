@@ -88,10 +88,13 @@
             }
             
             return [self.dateFormatter dateFromString:value];
+            break;
         case NSBinaryDataAttributeType:
             return nil;
+            break;
         case NSTransformableAttributeType:
             return nil;
+            break;
         case NSObjectIDAttributeType:
             return nil;
             break;

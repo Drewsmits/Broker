@@ -61,6 +61,12 @@
     @autoreleasepool {    
         [super start];
         
+        if (!self.jsonPayload) {
+            WLog(@"Nil json payload!");
+            [self finish];
+            return;
+        }
+        
         // Register for change
         [[NSNotificationCenter defaultCenter] addObserver:self 
                                                  selector:@selector(contextDidChange:) 
@@ -73,7 +79,7 @@
                                                         options:NSJSONReadingMutableContainers 
                                                           error:&error];
 
-        if (!jsonObject) {
+        if (!jsonObject || error) {
             WLog(@"Unable to create JSON object from JSON data. ERROR: %@", error);
             DLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
                                                       encoding:NSUTF8StringEncoding]);
@@ -84,6 +90,14 @@
         // If there is a pre-filter, apply it now
         if (self.preFilterBlock) {
             jsonObject = [self applyJSONPreFilterBlockToJSONObject:jsonObject];
+        }
+        
+        if (!jsonObject) {
+            WLog(@"Something went wrong. Filter block returned nothing.");
+            DLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
+                                                      encoding:NSUTF8StringEncoding]);
+            [self finish];
+            return;
         }
         
         // Process

@@ -36,7 +36,6 @@
 
 @interface Broker : Conductor {
 @private
-    NSManagedObjectContext *mainContext;
     NSMutableDictionary *entityDescriptions;
 }
 

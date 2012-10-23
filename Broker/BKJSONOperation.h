@@ -37,11 +37,11 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 /**
  The JSON data to be turned into a JSON object for processing
  */
-@property (strong) id jsonPayload;
-@property (weak) Broker *broker;
-@property (strong) NSManagedObjectID *objectID;
-@property (strong) BKEntityPropertiesDescription *entityDescription;
-@property (copy) NSString *relationshipName;
+@property (nonatomic, strong) id jsonPayload;
+@property (nonatomic, weak) Broker *broker;
+@property (nonatomic, strong) NSManagedObjectID *objectID;
+@property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
+@property (nonatomic, copy) NSString *relationshipName;
 
 /**
  The BKJSONOperationPreFilterBlock allows you to edit the JSON object before processing
