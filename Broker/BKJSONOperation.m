@@ -108,11 +108,10 @@
     }
 }
 
-- (void)finish {
-    
+- (void)finish
+{    
     // Save context
     [self saveBackgroundContext];
-    
     
     // Calls finish on superclass CDOperation, part of Conductor
     [super finish];    
