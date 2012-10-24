@@ -53,11 +53,13 @@
 
 @implementation BKJSONOperation
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)start {
+- (void)start
+{
     @autoreleasepool {    
         [super start];
         
@@ -119,8 +121,8 @@
 
 #pragma mark - Processing
                         
-- (void)processJSONObject:(id)jsonObject {
-    
+- (void)processJSONObject:(id)jsonObject
+{    
     // Execute empty JSON block if empty
     if (!jsonObject || [jsonObject count] == 0) {
         if (self.emptyJSONBlock) {
@@ -188,9 +190,9 @@
 - (void)processJSONCollection:(NSArray *)collection
                     forObject:(NSManagedObject *)object
         withEntityDescription:(BKEntityPropertiesDescription *)description
-              forRelationship:(NSString *)relationship {
-    
-    NSString *destinationEntityName = nil;
+              forRelationship:(NSString *)relationship
+{    
+    NSString *destinationEntityName;
     if (relationship) {
         destinationEntityName = [description destinationEntityNameForRelationship:relationship];
     } else {
@@ -214,8 +216,8 @@
 }
 
 - (NSSet *)processJSONCollection:(NSArray *)collection 
- asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description {
-    
+ asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description
+{    
     NSMutableSet *collectionObjects = [NSMutableSet setWithCapacity:collection.count];
     
     for (id dictionary in collection) {
@@ -251,8 +253,8 @@
 
 - (void)processJSONSubObject:(NSDictionary *)subDictionary 
                    forObject:(NSManagedObject *)object 
-             withDescription:(BKEntityPropertiesDescription *)description {
-    
+             withDescription:(BKEntityPropertiesDescription *)description
+{    
     for (NSString *property in subDictionary) {
         if ([description isPropertyRelationship:property]) {
             
@@ -301,8 +303,8 @@
     }
 }
 
-- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject {
-    
+- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject
+{    
     id newJSONObject = self.preFilterBlock(self.backgroundContext, jsonObject);
     
     NSAssert(newJSONObject, @"JSON Pre-filter blocks must not return nil! Did you forget to return a value with your block?");
@@ -313,8 +315,8 @@
 
 #pragma mark - Accessors
 
-- (NSManagedObject *)targetObject {
-    
+- (NSManagedObject *)targetObject
+{    
     // Grabs the object from the threaded context (thread safe)
     __block NSManagedObject *object = nil;
     
@@ -328,7 +330,8 @@
     return object;
 }
 
-- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object {
+- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object
+{
     BKEntityPropertiesDescription *description = [self.broker entityPropertyDescriptionForEntityName:object.entity.name];
     NSAssert(description, @"Entity named \"%@\" is not registered with Broker instance!", object.entity.name);
     return description;

@@ -28,14 +28,9 @@
 
 #import "BKPropertyDescription.h"
 
-@interface BKAttributeDescription : BKPropertyDescription {
-@private
-    NSString *dateFormat;
-    NSDateFormatter *dateFormatter;
-}
+@interface BKAttributeDescription : BKPropertyDescription {}
 
-@property (nonatomic, copy) NSString *dateFormat;
-@property (weak, nonatomic, readonly) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @property (nonatomic, assign) NSAttributeType attributeType;
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description;
@@ -47,5 +42,7 @@
  * Returns the correct object type with the given value
  */
 - (id)objectForValue:(id)value;
+
+- (void)setDateFormat:(NSString *)dateFormat;
 
 @end

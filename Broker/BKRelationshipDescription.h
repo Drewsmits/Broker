@@ -25,15 +25,9 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-
-//#import "BKEntityPropertiesDescription.h"
 #import "BKPropertyDescription.h"
 
-@interface BKRelationshipDescription : BKPropertyDescription {
-@private
-    NSString *destinationEntityName;
-    BOOL isToMany;
-}
+@interface BKRelationshipDescription : BKPropertyDescription {}
 
 @property (nonatomic, copy) NSString *destinationEntityName;
 @property (nonatomic, assign) BOOL isToMany;

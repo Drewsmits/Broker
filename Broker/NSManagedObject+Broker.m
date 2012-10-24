@@ -10,8 +10,8 @@
 
 @implementation NSManagedObject (Broker)
 
-- (BOOL)hasBeenDeleted {
-    
+- (BOOL)hasBeenDeleted
+{    
     /**
      Sometimes CoreData will fault a particular instance, while there is still
      the same object in the store.  Check to see if there is a clone.

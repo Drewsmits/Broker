@@ -27,8 +27,4 @@
 
 @implementation BKPropertyDescription
 
-@synthesize entityName, 
-            localPropertyName, 
-            networkPropertyName;
-
 @end

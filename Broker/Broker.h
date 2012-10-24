@@ -34,23 +34,20 @@
 #import "BKJSONOperation.h"
 
 
-@interface Broker : Conductor {
-@private
-    NSMutableDictionary *entityDescriptions;
-}
+@interface Broker : Conductor {}
 
 /** @name Properties */
 
 /**
  The NSManagedObjectContext in which the Broker instance performs its operations
  */
-@property (readonly) NSManagedObjectContext *mainContext;
+@property (nonatomic, strong) NSManagedObjectContext *mainContext;
 
 /**
  The dictionary containing all BKEntityPropertiesDescriptions registered with 
  the Broker instance.
  */
-@property (weak, nonatomic, readonly) NSMutableDictionary *entityDescriptions;
+@property (nonatomic, strong) NSMutableDictionary *entityDescriptions;
 
 /**
  Set this if you want to give the underlying conductor queue a name for future

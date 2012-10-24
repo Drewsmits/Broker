@@ -25,12 +25,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BKPropertyDescription : NSObject {
-@private
-    NSString *entityName;
-    NSString *localPropertyName;
-    NSString *networkPropertyName;
-}
+@interface BKPropertyDescription : NSObject {}
 
 @property (nonatomic, copy) NSString *entityName;
 @property (nonatomic, copy) NSString *localPropertyName;

@@ -27,13 +27,9 @@
 
 @implementation BKRelationshipDescription
 
-@synthesize destinationEntityName, 
-            isToMany;
-
-
-+ (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description {
-    
-    BKRelationshipDescription *map = [[BKRelationshipDescription alloc] init];
++ (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description
+{    
+    BKRelationshipDescription *map = [BKRelationshipDescription new];
 
     map.localPropertyName = description.name;
     map.destinationEntityName = description.destinationEntity.name;

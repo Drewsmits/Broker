@@ -33,9 +33,8 @@
 
 @implementation Broker
 
-@synthesize queueName = queueName_;
-
-+ (id)sharedInstance {
++ (id)sharedInstance
+{
     static dispatch_once_t pred = 0;
     __strong static Broker *_sharedInstance = nil;
     dispatch_once(&pred, ^{
@@ -44,14 +43,24 @@
     return _sharedInstance;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _entityDescriptions = [[NSMutableDictionary alloc] init];
+    }
+    return self;
 }
 
 + (Broker *)brokerWithContext:(NSManagedObjectContext *)context
                  andQueueName:(NSString *)queueName
 {
-    Broker *broker = [[Broker alloc] init];
+    Broker *broker = [Broker new];
     [broker setupWithContext:context andQueueName:queueName];
     return broker;
 }
@@ -87,15 +96,20 @@
                            forQueueNamed:self.queueName];
 }
 
-- (void)reset {
+- (void)reset
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     _mainContext = nil;
-    entityDescriptions = nil;
+    
+    _entityDescriptions = nil;
+    _entityDescriptions = [[NSMutableDictionary alloc] init];
 }
 
 #pragma mark - Registration
 
-- (void)registerEntityNamed:(NSString *)entityName {
+- (void)registerEntityNamed:(NSString *)entityName
+{
     [self registerEntityNamed:entityName
                withPrimaryKey:nil
       andMapNetworkProperties:nil 
@@ -103,7 +117,8 @@
 }
 
 - (void)registerEntityNamed:(NSString *)entityName 
-             withPrimaryKey:(NSString *)primaryKey {
+             withPrimaryKey:(NSString *)primaryKey
+{
     [self registerEntityNamed:entityName
                withPrimaryKey:primaryKey
       andMapNetworkProperties:nil 
@@ -113,8 +128,8 @@
 - (void)registerEntityNamed:(NSString *)entityName
              withPrimaryKey:(NSString *)primaryKey
       andMapNetworkProperty:(NSString *)networkProperty 
-            toLocalProperty:(NSString *)localProperty {
-    
+            toLocalProperty:(NSString *)localProperty
+{    
     [self registerEntityNamed:entityName
                withPrimaryKey:primaryKey
       andMapNetworkProperties:@[networkProperty] 
@@ -125,8 +140,8 @@
 - (void)registerEntityNamed:(NSString *)entityName
              withPrimaryKey:(NSString *)primaryKey
     andMapNetworkProperties:(NSArray *)networkProperties 
-          toLocalProperties:(NSArray *)localProperties {
-    
+          toLocalProperties:(NSArray *)localProperties
+{    
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     
 //    if ([self entityPropertyDescriptionForEntityName:entityName]) {
@@ -156,33 +171,32 @@
 
 - (void)setDateFormat:(NSString *)dateFormat 
           forProperty:(NSString *)property 
-             onEntity:(NSString *)entity {
-    
+             onEntity:(NSString *)entity
+{
     BKAttributeDescription *desc = [self attributeDescriptionForProperty:property onEntityName:entity];;
     desc.dateFormat = dateFormat;
 }
 
 - (void)setRootKeyPath:(NSString *)rootKeyPath 
-             forEntity:(NSString *)entity {
-
+             forEntity:(NSString *)entity
+{
     BKEntityPropertiesDescription *desc = [self entityPropertyDescriptionForEntityName:entity];
     desc.rootKeyPath = rootKeyPath;
 }
 
 - (void)mapNetworkProperty:(NSString *)networkProperty
            toLocalProperty:(NSString *)localProperty
-                 forEntity:(NSString *)entity {
-    
+                 forEntity:(NSString *)entity
+{    
     [self mapNetworkProperties:@[networkProperty]
              toLocalProperties:@[localProperty]
                      forEntity:entity];
-
 }
 
 - (void)mapNetworkProperties:(NSArray *)networkProperties
            toLocalProperties:(NSArray *)localProperties
-                   forEntity:(NSString *)entity {
-
+                   forEntity:(NSString *)entity
+{
     BKEntityPropertiesDescription *desc = [self entityPropertyDescriptionForEntityName:entity];
     
     NSAssert(desc, @"You must first register entity named before mapping properties.");
@@ -195,8 +209,8 @@
 
 - (void)processJSONPayload:(id)jsonPayload 
             targetObjectID:(NSManagedObjectID *)objectID
-       withCompletionBlock:(void (^)())completionBlock {
-    
+       withCompletionBlock:(void (^)())completionBlock
+{    
     [self processJSONPayload:jsonPayload
               targetObjectID:objectID
              forRelationship:nil
@@ -207,8 +221,8 @@
 - (void)processJSONPayload:(id)jsonPayload 
             targetObjectID:(NSManagedObjectID *)objectID 
         JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())completionBlock {
-    
+       withCompletionBlock:(void (^)())completionBlock
+{    
     [self processJSONPayload:jsonPayload
               targetObjectID:objectID
              forRelationship:nil
@@ -221,8 +235,8 @@
 - (void)processJSONPayload:(id)jsonPayload 
             targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
-       withCompletionBlock:(void (^)())completionBlock {
-    
+       withCompletionBlock:(void (^)())completionBlock
+{    
     [self processJSONPayload:jsonPayload
             targetObjectID:objectID
              forRelationship:relationshipName 
@@ -259,7 +273,8 @@
 
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName 
-       withCompletionBlock:(void (^)())completionBlock {
+       withCompletionBlock:(void (^)())completionBlock
+{
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:nil
@@ -271,8 +286,8 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 - (void)processJSONPayload:(id)jsonPayload 
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
-       withCompletionBlock:(void (^)())completionBlock {
-    
+       withCompletionBlock:(void (^)())completionBlock
+{    
     [self processJSONPayload:jsonPayload 
  asCollectionOfEntitiesNamed:entityName
           JSONPreFilterBlock:filterBlock
@@ -322,13 +337,14 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 
 #pragma mark - Accessors
 
-- (BKEntityPropertiesDescription *)entityPropertyDescriptionForEntityName:(NSString *)entityName {
+- (BKEntityPropertiesDescription *)entityPropertyDescriptionForEntityName:(NSString *)entityName
+{
     return (BKEntityPropertiesDescription *)[self.entityDescriptions objectForKey:entityName];
 }
 
 - (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)property 
-                                               onEntityName:(NSString *)entityName {
-    
+                                               onEntityName:(NSString *)entityName
+{    
     BKEntityPropertiesDescription *desc = [self.entityDescriptions objectForKey:entityName];
     if (desc) {
         return [desc attributeDescriptionForLocalProperty:property];
@@ -336,10 +352,9 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     return nil;
 }
 
-
 - (BKRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)property 
-                                                     onEntityName:(NSString *)entityName {
-    
+                                                     onEntityName:(NSString *)entityName
+{    
     BKEntityPropertiesDescription *desc = [self.entityDescriptions objectForKey:entityName];
     if (desc) {
         return [desc relationshipDescriptionForProperty:property];
@@ -348,21 +363,15 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 }
 
 - (BKEntityPropertiesDescription *)destinationEntityPropertiesDescriptionForRelationship:(NSString *)relationship
-                                                                           onEntityNamed:(NSString *)entityName {
-    
+                                                                           onEntityNamed:(NSString *)entityName
+{    
     BKRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship onEntityName:entityName];
     return [self entityPropertyDescriptionForEntityName:desc.destinationEntityName];
 }
 
-- (NSMutableDictionary *)entityDescriptions {
-    if (entityDescriptions) return entityDescriptions;
-    entityDescriptions = [[NSMutableDictionary alloc] init];
-    return entityDescriptions;
-}
-
 - (NSDictionary *)transformJSONDictionary:(NSDictionary *)jsonDictionary 
-         usingEntityPropertiesDescription:(BKEntityPropertiesDescription *)propertiesDescription {
-    
+         usingEntityPropertiesDescription:(BKEntityPropertiesDescription *)propertiesDescription
+{
     NSMutableDictionary *transformedDict = [[NSMutableDictionary alloc] init];
     
     if (propertiesDescription.rootKeyPath) {

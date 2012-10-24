@@ -34,8 +34,6 @@
 #import "BKJSONOperation.h"
 #import "NSManagedObjectContext+Broker.h"
 
-#define LOOP_WAIT_TIME 0.01
-
 // Department
 static NSString *kDepartment = @"Department";
 static NSString *kEmployeesRelationship = @"employees";
@@ -48,6 +46,8 @@ static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
 
 // Dog
 static NSString *kDog = @"Dog";
+
+static NSString *kBrokerTestQueue = @"BrokerTestQueue";
 
 
 @implementation BrokerTests
@@ -74,26 +74,20 @@ static NSString *kDog = @"Dog";
     // Build context
     context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     [context setPersistentStoreCoordinator:coord];
-
+    
     // Setup Broker
-    [[Broker sharedInstance] setupWithContext:context
-                                 andQueueName:@"BrokerTestQueue" 
-              withMaxConcurrentOperationCount:1];
+    broker = [Broker new];
+    [broker setupWithContext:context
+                andQueueName:kBrokerTestQueue withMaxConcurrentOperationCount:1];
 }
 
-- (void)tearDown {
-    
+- (void)tearDown
+{    
     context = nil;
     
     NSError *error = nil;
     STAssertTrue([coord removePersistentStore:store error:&error], 
                  @"couldn't remove persistent store: %@", error);
-    
-    store = nil;
-    coord = nil;
-    model = nil;  
-    
-    [[Broker sharedInstance] reset];
     
     DeleteDataStore();
     
@@ -102,11 +96,11 @@ static NSString *kDog = @"Dog";
 
 #pragma mark - Registration
 
-- (void)testRegisterRelationshipDescription {
+- (void)testRegisterRelationshipDescription
+{    
+    [broker registerEntityNamed:kDepartment withPrimaryKey:nil];
     
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:nil];
-    
-    BKRelationshipDescription *desc = [[Broker sharedInstance] relationshipDescriptionForProperty:kEmployeesRelationship 
+    BKRelationshipDescription *desc = [broker relationshipDescriptionForProperty:kEmployeesRelationship 
                                                                                      onEntityName:kDepartment];
     
     STAssertNotNil(desc, @"Should have an relationship description for property on registered entity");
@@ -116,11 +110,11 @@ static NSString *kDog = @"Dog";
     STAssertTrue(desc.isToMany, @"Relationship map should be isToMany");
 }
 
-- (void)testRegisterAttributeDescription {
+- (void)testRegisterAttributeDescription
+{    
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
-    
-    BKAttributeDescription *desc = [[Broker sharedInstance] attributeDescriptionForProperty:@"firstname"
+    BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"firstname"
                                                                                onEntityName:kEmployee];
     
     STAssertNotNil(desc, @"Should have an attribute description for property on registered entity");
@@ -129,14 +123,14 @@ static NSString *kDog = @"Dog";
     STAssertNil(desc.networkPropertyName, @"Attribute description shouldn't have a network attribute name");
 }
 
-- (void)testRegisterAttributeDescriptionWithPropertyMap {
-    
-    [[Broker sharedInstance] registerEntityNamed:kEmployee 
+- (void)testRegisterAttributeDescriptionWithPropertyMap
+{    
+    [broker registerEntityNamed:kEmployee 
                                   withPrimaryKey:nil 
                            andMapNetworkProperty:@"first-name"
                                  toLocalProperty:@"firstname"];
     
-    BKAttributeDescription *desc = [[Broker sharedInstance] attributeDescriptionForProperty:@"firstname"
+    BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"firstname"
                                                                                onEntityName:kEmployee];
     
     STAssertEqualObjects(desc.entityName, kEmployee, @"Attribute description entity name should be set correctly");
@@ -144,24 +138,24 @@ static NSString *kDog = @"Dog";
     STAssertEqualObjects(desc.networkPropertyName, @"first-name", @"Attribute description network attribute name should be set correctly");
 }
 
-- (void)testRegisterAttributeDescriptionWithPrimaryKey {
+- (void)testRegisterAttributeDescriptionWithPrimaryKey
+{    
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
 
     STAssertEqualObjects(desc.primaryKey, @"employeeID", @"Attribute description should have a primary key");
 }
 
 - (void)testAddSingleEntryToPropertyMapAfterRegistration {
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
 
-    [[Broker sharedInstance] mapNetworkProperty:@"first-name" 
+    [broker mapNetworkProperty:@"first-name" 
                                 toLocalProperty:@"firstname" 
                                       forEntity:kEmployee];
     
-    BKAttributeDescription *desc = [[Broker sharedInstance] attributeDescriptionForProperty:@"firstname"
+    BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"firstname"
                                                                                onEntityName:kEmployee];
     
     STAssertEqualObjects(desc.entityName, kEmployee, @"Attribute description entity name should be set correctly");
@@ -174,7 +168,7 @@ static NSString *kDog = @"Dog";
     // Could even register on a separate thread, using separate MOC to be super
     // safe and fast.  Use isReady flag to know if it can start processing shit.
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
     NSEntityDescription *entityDescription = [NSEntityDescription entityForName:kEmployee 
                                                          inManagedObjectContext:context];
@@ -193,30 +187,30 @@ static NSString *kDog = @"Dog";
 #pragma mark - Entity Properties Description
 
 - (void)testDescriptionForLocalProperty {
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     BKPropertyDescription *localPropDesc = [desc descriptionForLocalProperty:@"employeeID"];
     
     STAssertNotNil(localPropDesc, @"Should have an attribute description for a property on a registered entity");
 }
 
 - (void)testDescriptionForLocalPropertyThatDoesntExist {
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     BKPropertyDescription *localPropDesc = [desc descriptionForLocalProperty:@"blah"];
     
     STAssertNil(localPropDesc, @"Should not have an attribute description for a fake property on a registered entity");
 }
 
 - (void)testDescriptionForNetworkPropertyThatDoesntExist {
-    [[Broker sharedInstance] registerEntityNamed:kEmployee 
+    [broker registerEntityNamed:kEmployee 
                                   withPrimaryKey:@"employeeID" 
                            andMapNetworkProperty:@"first-name" 
                                  toLocalProperty:@"firstname"];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     BKPropertyDescription *networkPropDesc = [desc descriptionForNetworkProperty:@"blah"];
     
     STAssertNil(networkPropDesc, @"Should not have an attribute description for a fake network property on a registered entity");
@@ -261,26 +255,28 @@ static NSString *kDog = @"Dog";
 #pragma mark - Accessors
 
 - (void)testEntityPropertyDescriptionForEntityName {
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     
     STAssertNotNil(desc, @"Should have entity property description for registered entity");
 }
 
-- (void)testAttributeDescriptionForPropertyOnEntityName {
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+- (void)testAttributeDescriptionForPropertyOnEntityName
+{
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
 
-    BKAttributeDescription *desc = [[Broker sharedInstance] attributeDescriptionForProperty:@"employeeID" 
+    BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"employeeID" 
                                                               onEntityName:kEmployee];
     
     STAssertNotNil(desc, @"Should have an attribute description for a property on a registered entity");
 }
 
-- (void)testRelationshipDescriptionForPropertyOnEntityName {
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+- (void)testRelationshipDescriptionForPropertyOnEntityName
+{
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
-    BKRelationshipDescription *desc = [[Broker sharedInstance] relationshipDescriptionForProperty:@"department"
+    BKRelationshipDescription *desc = [broker relationshipDescriptionForProperty:@"department"
                                                                     onEntityName:@"Employee"];
     
     STAssertNotNil(desc, @"Should have a relationship description for a property on a registered entity");
@@ -288,20 +284,20 @@ static NSString *kDog = @"Dog";
 
 #pragma mark - Transform
 
-- (void)testTransformJSONDictionaryClassesAreCorrect {
-        
+- (void)testTransformJSONDictionaryClassesAreCorrect
+{        
     NSDictionary *fakeJSON = [NSDictionary dictionaryWithObjects:@[@"Andrew", @"Smith", @"5678", @"2011/10/06 00:51:10 -0700"]
                                                          forKeys:@[@"firstname", @"lastname", @"employeeID", @"startDate"]];
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
     
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker setDateFormat:kEmployeeStartDateFormat 
               forProperty:@"startDate" 
                  onEntity:kEmployee];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
         
-    NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:fakeJSON 
+    NSDictionary *transformedDict = [broker transformJSONDictionary:fakeJSON 
                                    usingEntityPropertiesDescription:desc];
 
     STAssertTrue([[transformedDict objectForKey:@"firstname"] isKindOfClass:[NSString class]], @"Transform dictionary should properly set class type");
@@ -310,20 +306,20 @@ static NSString *kDog = @"Dog";
     STAssertTrue([[transformedDict objectForKey:@"startDate"] isKindOfClass:[NSDate class]], @"Transform dictionary should properly set class type");
 }
 
-- (void)testTransformJSONDictionaryValuesAreCorrect {
-    
+- (void)testTransformJSONDictionaryValuesAreCorrect
+{    
     NSDictionary *fakeJSON = [NSDictionary dictionaryWithObjects:@[@"Andrew", @"Smith", @"5678", @"2011/10/06 00:51:10 -0700"]
                                                          forKeys:@[@"firstname", @"lastname", @"employeeID", @"startDate"]];
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
     
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker setDateFormat:kEmployeeStartDateFormat 
               forProperty:@"startDate" 
                  onEntity:kEmployee];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     
-    NSDictionary *transformedDict = [[Broker sharedInstance] transformJSONDictionary:fakeJSON 
+    NSDictionary *transformedDict = [broker transformJSONDictionary:fakeJSON 
                                                     usingEntityPropertiesDescription:desc];
     
     
@@ -339,12 +335,12 @@ static NSString *kDog = @"Dog";
 
 #pragma mark - Processing
 
-- (void)testFlatEmployeeJSONProcessing {
-    
+- (void)testFlatEmployeeJSONProcessing
+{
     NSData *jsonData = DataFromFile(@"employee_flat.json");
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
+    [broker setDateFormat:kEmployeeStartDateFormat 
               forProperty:@"startDate" 
                  onEntity:kEmployee];
 
@@ -355,17 +351,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
 
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData
+    [broker processJSONPayload:jsonData
                   targetObjectID:employeeID
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Re-fetch
     NSManagedObject *employee = [context objectWithID:employeeID];
@@ -384,13 +376,13 @@ static NSString *kDog = @"Dog";
     
     NSData *jsonData = DataFromFile(@"employee_network_property.json");
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
     
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
-    [[Broker sharedInstance] mapNetworkProperty:@"id" 
+    [broker mapNetworkProperty:@"id" 
                                 toLocalProperty:@"employeeID" 
                                       forEntity:kEmployee];
     
@@ -401,17 +393,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData
+    [broker processJSONPayload:jsonData
                                  targetObjectID:employeeID
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Re-fetch
     NSManagedObject *employee = [context objectWithID:employeeID];
@@ -430,9 +418,9 @@ static NSString *kDog = @"Dog";
     
     NSData *jsonData = DataFromFile(@"employee_nested.json");
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:nil];
-    [[Broker sharedInstance] registerEntityNamed:@"ContactInfo" withPrimaryKey:nil];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
+    [broker registerEntityNamed:@"ContactInfo" withPrimaryKey:nil];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
 
@@ -443,17 +431,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData
+    [broker processJSONPayload:jsonData
                                  targetObjectID:employeeID
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Re-fetch
     NSManagedObject *employee = [context objectWithID:employeeID];
@@ -480,9 +464,9 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_nested.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat
+    [broker registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
 
@@ -493,18 +477,14 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData
+    [broker processJSONPayload:jsonData
                                  targetObjectID:departmentID
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
-    
+    [broker waitForQueueNamed:kBrokerTestQueue];
+
     // Re-fetch
     NSManagedObject *dept = [context objectWithID:departmentID];
         
@@ -522,9 +502,9 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_employees.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:nil];
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kDepartment withPrimaryKey:nil];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
@@ -535,18 +515,14 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                                  targetObjectID:departmentID 
                                 forRelationship:@"employees" 
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Fetch
     NSManagedObject *dept = [context objectWithID:departmentID];
@@ -562,9 +538,9 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_nested.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
               forProperty:@"startDate" 
                  onEntity:kEmployee];
 
@@ -575,18 +551,14 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                                  targetObjectID:departmentID 
                                 forRelationship:@"employees" 
                             withCompletionBlock:^ {
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Fetch
     NSManagedObject *dept = [context objectWithID:departmentID];
@@ -601,8 +573,8 @@ static NSString *kDog = @"Dog";
     
     NSData *jsonData = DataFromFile(@"employee_nested.json");
     
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
@@ -613,17 +585,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData
+    [broker processJSONPayload:jsonData
                                    targetObjectID:employeeID
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME]; 
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Re-fetch
     NSManagedObject *employee = [context objectWithID:employeeID];
@@ -642,9 +610,9 @@ static NSString *kDog = @"Dog";
     
     NSData *jsonData = DataFromFile(@"employee_root_key.json");
         
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setRootKeyPath:@"response.employee" forEntity:kEmployee];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setRootKeyPath:@"response.employee" forEntity:kEmployee];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
@@ -655,17 +623,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData
+    [broker processJSONPayload:jsonData
                                  targetObjectID:employeeID
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Re-fetch
     NSManagedObject *employee = [context objectWithID:employeeID];
@@ -685,8 +649,8 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_employees.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
@@ -694,17 +658,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
         
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -716,8 +676,8 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_employees_200.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
@@ -725,17 +685,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -747,31 +703,27 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_employees_200.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
         
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:nil];
             
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
-    
+    [broker waitForQueueNamed:kBrokerTestQueue];
+
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
     
@@ -782,13 +734,13 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_employees_200.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
             
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:nil];
     
@@ -801,18 +753,13 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    // Wait for async code to finish
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];   
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }  
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -826,12 +773,12 @@ static NSString *kDog = @"Dog";
     NSData *jsonData100 = DataFromFile(@"department_employees_100.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
         
-    [[Broker sharedInstance] processJSONPayload:jsonData200 
+    [broker processJSONPayload:jsonData200 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:nil];
 
@@ -854,7 +801,7 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData100
+    [broker processJSONPayload:jsonData100
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
                           contextDidChangeBlock:didChangeBlock
@@ -863,12 +810,7 @@ static NSString *kDog = @"Dog";
                                 hasFinished = YES;
                             }];
     
-    // Wait for async code to finish
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }  
+    [broker waitForQueueNamed:kBrokerTestQueue]; 
 
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
@@ -881,13 +823,13 @@ static NSString *kDog = @"Dog";
     NSData *jsonData0   = DataFromFile(@"department_employees_0.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
     
-    [[Broker sharedInstance] processJSONPayload:jsonData200 
+    [broker processJSONPayload:jsonData200 
                     asCollectionOfEntitiesNamed:@"Employee"
                             withCompletionBlock:nil];
     
@@ -903,7 +845,7 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData0
+    [broker processJSONPayload:jsonData0
                     asCollectionOfEntitiesNamed:@"Employee"
                              JSONPreFilterBlock:nil
                           contextDidChangeBlock:nil
@@ -912,13 +854,8 @@ static NSString *kDog = @"Dog";
                                 hasFinished = YES;
                             }];
     
-    // Wait for async code to finish
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }  
-    
+    [broker waitForQueueNamed:kBrokerTestQueue];
+
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     NSInteger num = employees.count;
     
@@ -927,12 +864,13 @@ static NSString *kDog = @"Dog";
 
 #pragma mark - Primary Key
 
-- (void)testCollectionWithNoPrimaryKey {
+- (void)testCollectionWithNoPrimaryKey
+{
     NSData *jsonData = DataFromFile(@"department_dogs_nested.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kDog];
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
+    [broker registerEntityNamed:kDog];
+    [broker registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
     
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
@@ -941,20 +879,15 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                                  targetObjectID:departmentID 
                                 forRelationship:@"dogs" 
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
     
-    // Wait for async code to finish
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];   
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }    
-        
+    [broker waitForQueueNamed:kBrokerTestQueue];
+    
     // Fetch
     NSManagedObject *dept = [context objectWithID:departmentID];
     
@@ -969,15 +902,15 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_dogs_nested.json");
     
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kDog];
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
+    [broker registerEntityNamed:kDog];
+    [broker registerEntityNamed:kDepartment withPrimaryKey:@"departmentID"];
     
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
 
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                                  targetObjectID:departmentID 
                                 forRelationship:@"dogs" 
                             withCompletionBlock:nil];
@@ -985,19 +918,14 @@ static NSString *kDog = @"Dog";
     // Wait
     __block BOOL hasFinished = NO;
     
-    [[Broker sharedInstance] processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData 
                                  targetObjectID:departmentID 
                                 forRelationship:@"dogs" 
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
 
-    // Wait for async code to finish
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];    
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     // Fetch
     NSManagedObject *dept = [context objectWithID:departmentID];
@@ -1013,12 +941,12 @@ static NSString *kDog = @"Dog";
 
 - (void)testFindEntityWithPrimaryKey {
 
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
     
     NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewFilledOutEmployee:context];
     NSManagedObject *employee = [context objectWithID:employeeID];
     
-    BKEntityPropertiesDescription *desc = [[Broker sharedInstance] entityPropertyDescriptionForEntityName:kEmployee];
+    BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     
     NSManagedObject *foundEmployee = [context findOrCreateObjectForEntityDescribedBy:desc
                                                                  withPrimaryKeyValue:@12345
@@ -1034,9 +962,9 @@ static NSString *kDog = @"Dog";
     NSData *jsonData = DataFromFile(@"department_employees.json");
    
     // Register Entities
-    [[Broker sharedInstance] registerEntityNamed:kDepartment withPrimaryKey:nil];
-    [[Broker sharedInstance] registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
-    [[Broker sharedInstance] setDateFormat:kEmployeeStartDateFormat 
+    [broker registerEntityNamed:kDepartment withPrimaryKey:nil];
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat 
                               forProperty:@"startDate" 
                                  onEntity:kEmployee];
    
@@ -1063,20 +991,15 @@ static NSString *kDog = @"Dog";
     __block BOOL hasFinished = NO;
     
     // Chunk dat
-    [[Broker sharedInstance] processJSONPayload:jsonData 
-                                 targetObjectID:departmentID 
-                                forRelationship:@"employees"
+    [broker processJSONPayload:jsonData 
+                targetObjectID:departmentID
+               forRelationship:@"employees"
                              JSONPreFilterBlock:removeEmployeeWithID6
                             withCompletionBlock:^{
                                 hasFinished = YES;
                             }];
    
-    // Wait for async code to finish
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:LOOP_WAIT_TIME];  
-    while (hasFinished == NO) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                                 beforeDate:loopUntil];
-    }
+    [broker waitForQueueNamed:kBrokerTestQueue];
    
     // Fetch
     NSManagedObject *dept = [context objectWithID:departmentID];

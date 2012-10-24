@@ -27,19 +27,25 @@
 
 @implementation BKAttributeDescription
 
-@synthesize dateFormat,
-            attributeType;
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _dateFormatter = [[NSDateFormatter alloc] init];
+    }
+    return self;
+}
 
-
-+ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description {
++ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
+{
     return [self descriptionWithAttributeDescription:description
                      andMapToNetworkAttributeName:nil];
 }
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
-                                   andMapToNetworkAttributeName:(NSString *)networkAttributeName {
-    
-    BKAttributeDescription *map = [[BKAttributeDescription alloc] init];
+                                   andMapToNetworkAttributeName:(NSString *)networkAttributeName
+{    
+    BKAttributeDescription *map = [BKAttributeDescription new];
     
     map.entityName = description.entity.name;
     map.localPropertyName = description.name;
@@ -49,8 +55,8 @@
     return map;
 }
 
-- (id)objectForValue:(id)value {
-    
+- (id)objectForValue:(id)value
+{    
     NSAttributeType type = [self attributeType];
     
     switch (type) {
@@ -81,7 +87,7 @@
             return @([value boolValue]);
         case NSDateAttributeType:
             
-            if (!self.dateFormat) {
+            if (!self.dateFormatter.dateFormat) {
                 WLog(@"NSDate attribute named \"%@\" on entity \"%@\" requires " 
                      @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.localPropertyName, self.entityName);
                 return nil;
@@ -106,13 +112,9 @@
 
 #pragma mark - Accessors
 
-- (NSDateFormatter *)dateFormatter {
-    if (dateFormatter) return dateFormatter;
-    
-    dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:self.dateFormat];
-    
-    return dateFormatter;
+- (void)setDateFormat:(NSString *)dateFormat
+{
+    [self.dateFormatter setDateFormat:dateFormat];
 }
 
 @end
