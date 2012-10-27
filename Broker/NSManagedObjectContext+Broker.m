@@ -20,8 +20,9 @@
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:description.entityDescription];
+    request.includesSubentities = NO;
     
-    NSArray *fetchedObjects = nil;
+    NSArray *fetchedObjects;
     
     if (description.primaryKey) {
         [request setPredicate:[NSPredicate predicateWithFormat:@"SELF.%@ == %@", description.primaryKey, value]];
