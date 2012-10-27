@@ -259,7 +259,8 @@
     operation.broker = self;
     operation.objectID = objectID;
     operation.relationshipName = relationshipName;
-    operation.mainContext = self.mainContext;;
+    operation.mainContext = self.mainContext;
+    operation.identifier = [[objectID URIRepresentation] path];
     
     // Blocks
     operation.preFilterBlock = filterBlock;
