@@ -38,7 +38,7 @@
     static dispatch_once_t pred = 0;
     __strong static Broker *_sharedInstance = nil;
     dispatch_once(&pred, ^{
-        _sharedInstance = [[Broker alloc] init];
+        _sharedInstance = [Broker new];
     });
     return _sharedInstance;
 }
@@ -58,43 +58,13 @@
 }
 
 + (Broker *)brokerWithContext:(NSManagedObjectContext *)context
-                 andQueueName:(NSString *)queueName
 {
     Broker *broker = [Broker new];
-    [broker setupWithContext:context andQueueName:queueName];
+    broker.mainContext = context;    
     return broker;
 }
 
-
-#pragma mark - Setup
-
-- (void)setupWithContext:(NSManagedObjectContext *)context
-            andQueueName:(NSString *)queueName
-{
-    NSAssert(context, @"Context must not be nil!");
-    if (!context) return;
-    
-    // Share the main context
-    _mainContext = context;
-    
-    // This is the name of the queue that will be used to keep track of the 
-    // parse operations
-    self.queueName = queueName;
-}
-
-- (void)setupWithContext:(NSManagedObjectContext *)context
-            andQueueName:(NSString *)queueName
-    withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount
-{
-    [self setupWithContext:context andQueueName:queueName];
-    
-    // Presist JSON processing queue
-    self.removeQueuesWhenEmpty = NO;
-        
-    // Set max operation count
-    [self setMaxConcurrentOperationCount:maxOperationCount 
-                           forQueueNamed:self.queueName];
-}
+#pragma mark - Reset
 
 - (void)reset
 {
@@ -143,11 +113,6 @@
           toLocalProperties:(NSArray *)localProperties
 {    
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
-    
-//    if ([self entityPropertyDescriptionForEntityName:entityName]) {
-//        WLog(@"Entity named \"%@\" already registered with Broker", entityName);
-//        return;
-//    }
     
     // create new object
     NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:entityName 
@@ -205,46 +170,10 @@
     [desc mapNetworkProperties:networkProperties toLocalProperties:localProperties];
 }
 
-#pragma mark - Object
-
-- (void)processJSONPayload:(id)jsonPayload 
-            targetObjectID:(NSManagedObjectID *)objectID
-       withCompletionBlock:(void (^)())completionBlock
-{    
-    [self processJSONPayload:jsonPayload
-              targetObjectID:objectID
-             forRelationship:nil
-          JSONPreFilterBlock:nil
-         withCompletionBlock:completionBlock];
-}
-
-- (void)processJSONPayload:(id)jsonPayload 
-            targetObjectID:(NSManagedObjectID *)objectID 
-        JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())completionBlock
-{    
-    [self processJSONPayload:jsonPayload
-              targetObjectID:objectID
-             forRelationship:nil
-          JSONPreFilterBlock:FilterBlock
-         withCompletionBlock:completionBlock];
-}
-
 #pragma mark - Relationship Object Collection
 
-- (void)processJSONPayload:(id)jsonPayload 
-            targetObjectID:(NSManagedObjectID *)objectID
-           forRelationship:(NSString *)relationshipName
-       withCompletionBlock:(void (^)())completionBlock
-{    
-    [self processJSONPayload:jsonPayload
-            targetObjectID:objectID
-             forRelationship:relationshipName 
-          JSONPreFilterBlock:nil
-         withCompletionBlock:completionBlock];
-}
-
 - (void)processJSONPayload:(id)jsonPayload
+           usingQueueNamed:(NSString *)queueName
             targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
         JSONPreFilterBlock:(id (^)())filterBlock
@@ -267,42 +196,18 @@
     operation.completionBlock = completionBlock;
     
     // Add operation
-    [self addOperation:operation toQueueNamed:self.queueName];
+    [self addOperation:operation toQueueNamed:queueName];
 }
 
 #pragma mark - Object Collection
 
-- (void)processJSONPayload:(id)jsonPayload 
-asCollectionOfEntitiesNamed:(NSString *)entityName 
-       withCompletionBlock:(void (^)())completionBlock
-{
-    [self processJSONPayload:jsonPayload 
- asCollectionOfEntitiesNamed:entityName
-          JSONPreFilterBlock:nil
-       contextDidChangeBlock:nil
-              emptyJSONBlock:nil
-         withCompletionBlock:completionBlock];
-}
-
-- (void)processJSONPayload:(id)jsonPayload 
-asCollectionOfEntitiesNamed:(NSString *)entityName
-        JSONPreFilterBlock:(id (^)())filterBlock
-       withCompletionBlock:(void (^)())completionBlock
-{    
-    [self processJSONPayload:jsonPayload 
- asCollectionOfEntitiesNamed:entityName
-          JSONPreFilterBlock:filterBlock
-       contextDidChangeBlock:nil
-              emptyJSONBlock:nil
-         withCompletionBlock:completionBlock];
-}
-
-- (void)processJSONPayload:(id)jsonPayload 
+- (void)processJSONPayload:(id)jsonPayload
+           usingQueueNamed:(NSString *)queueName
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
      contextDidChangeBlock:(void (^)())didChangeBlock
             emptyJSONBlock:(void (^)())emptyJSONBlock
-       withCompletionBlock:(void (^)())completionBlock
+           completionBlock:(void (^)())completionBlock
 {    
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     if (!self.mainContext) return;
@@ -333,7 +238,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     operation.completionBlock = completionBlock;
     
     // Add operation
-    [self addOperation:operation toQueueNamed:self.queueName];
+    [self addOperation:operation toQueueNamed:queueName];
 }
 
 #pragma mark - Accessors

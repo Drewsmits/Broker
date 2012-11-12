@@ -76,9 +76,11 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     [context setPersistentStoreCoordinator:coord];
     
     // Setup Broker
-    broker = [Broker new];
-    [broker setupWithContext:context
-                andQueueName:kBrokerTestQueue withMaxConcurrentOperationCount:1];
+    broker = [Broker brokerWithContext:context];
+    
+    CDOperationQueue *testQueue = [CDOperationQueue queueWithName:kBrokerTestQueue];
+    [testQueue setMaxConcurrentOperationCount:1];
+    [broker addQueue:testQueue];
 }
 
 - (void)tearDown
@@ -101,7 +103,7 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     [broker registerEntityNamed:kDepartment withPrimaryKey:nil];
     
     BKRelationshipDescription *desc = [broker relationshipDescriptionForProperty:kEmployeesRelationship 
-                                                                                     onEntityName:kDepartment];
+                                                                    onEntityName:kDepartment];
     
     STAssertNotNil(desc, @"Should have an relationship description for property on registered entity");
     STAssertEqualObjects(desc.localPropertyName, kEmployeesRelationship, @"Relationship map should be named correctly");    
@@ -126,9 +128,9 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
 - (void)testRegisterAttributeDescriptionWithPropertyMap
 {    
     [broker registerEntityNamed:kEmployee 
-                                  withPrimaryKey:nil 
-                           andMapNetworkProperty:@"first-name"
-                                 toLocalProperty:@"firstname"];
+                 withPrimaryKey:nil
+        andMapNetworkProperties:@[@"first-name"]
+              toLocalProperties:@[@"firstname"]];
     
     BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"firstname"
                                                                                onEntityName:kEmployee];
@@ -151,9 +153,9 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     
     [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
 
-    [broker mapNetworkProperty:@"first-name" 
-                                toLocalProperty:@"firstname" 
-                                      forEntity:kEmployee];
+    [broker mapNetworkProperties:@[@"first-name"]
+               toLocalProperties:@[@"firstname"]
+                     forEntity:kEmployee];
     
     BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"firstname"
                                                                                onEntityName:kEmployee];
@@ -206,9 +208,9 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
 
 - (void)testDescriptionForNetworkPropertyThatDoesntExist {
     [broker registerEntityNamed:kEmployee 
-                                  withPrimaryKey:@"employeeID" 
-                           andMapNetworkProperty:@"first-name" 
-                                 toLocalProperty:@"firstname"];
+                 withPrimaryKey:@"employeeID" 
+        andMapNetworkProperties:@[@"first-name"]
+              toLocalProperties:@[@"firstname"]];
     
     BKEntityPropertiesDescription *desc = [broker entityPropertyDescriptionForEntityName:kEmployee];
     BKPropertyDescription *networkPropDesc = [desc descriptionForNetworkProperty:@"blah"];
@@ -347,15 +349,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Add a new Employee to the store
     NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-
     // Chunk dat
     [broker processJSONPayload:jsonData
-                  targetObjectID:employeeID
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:employeeID
+               forRelationship:nil
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -382,22 +382,20 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
-    [broker mapNetworkProperty:@"id" 
-                                toLocalProperty:@"employeeID" 
-                                      forEntity:kEmployee];
+    [broker mapNetworkProperties:@[@"id"]
+               toLocalProperties:@[@"employeeID"]
+                       forEntity:kEmployee];
     
     // Add a new Employee to the store
     NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
     // Chunk dat
     [broker processJSONPayload:jsonData
-                                 targetObjectID:employeeID
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:employeeID
+               forRelationship:nil
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -427,15 +425,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Add a new Employee to the store
     NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
     // Chunk dat
     [broker processJSONPayload:jsonData
-                                 targetObjectID:employeeID
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:employeeID
+               forRelationship:nil
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -472,16 +468,14 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
 
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
-    
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
+        
     // Chunk dat
     [broker processJSONPayload:jsonData
-                                 targetObjectID:departmentID
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:departmentID
+               forRelationship:nil
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
 
@@ -511,16 +505,12 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
-    [broker processJSONPayload:jsonData 
-                                 targetObjectID:departmentID 
-                                forRelationship:@"employees" 
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:departmentID
+               forRelationship:@"employees"
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -547,16 +537,12 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
-    [broker processJSONPayload:jsonData 
-                                 targetObjectID:departmentID 
-                                forRelationship:@"employees" 
-                            withCompletionBlock:^ {
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:departmentID
+               forRelationship:@"employees"
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -581,15 +567,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Add a new Employee to the store
     NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
     // Chunk dat
     [broker processJSONPayload:jsonData
-                                   targetObjectID:employeeID
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:employeeID
+               forRelationship:nil
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -619,15 +603,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Add a new Employee to the store
     NSManagedObjectID *employeeID = [BrokerTestsHelpers createNewEmployee:context];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
     // Chunk dat
     [broker processJSONPayload:jsonData
-                                 targetObjectID:employeeID
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:employeeID
+               forRelationship:nil
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -654,15 +636,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
-    [broker processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
         
@@ -681,15 +661,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
-    // Use to hold main thread while bg tasks complete
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
-    [broker processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -708,19 +686,23 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
         
+    // Chunk dat    
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
+                
     // Chunk dat
-    [broker processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:nil];
-            
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
-    [broker processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
 
@@ -740,24 +722,28 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                   onEntity:kEmployee];
             
     // Chunk dat
-    [broker processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:nil];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     
     NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
     for (NSManagedObject *object in employees) {
         [context deleteObject:object];
     }
-        
-    __block BOOL hasFinished = NO;
-    
+            
     // Chunk dat
-    [broker processJSONPayload:jsonData 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -778,10 +764,14 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
         
-    [broker processJSONPayload:jsonData200 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:nil];
-
+    [broker processJSONPayload:jsonData200
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
+    
     // This will delete all stale employee objects.  IE objects not included in
     // the new JSON response during the second processing
     BKJSONOperationContextDidChangeBlock didChangeBlock = ^(NSManagedObjectContext *aContext, NSNotification *notification) {
@@ -797,18 +787,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
 
     };
     
-    // Wait
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
     [broker processJSONPayload:jsonData100
-                    asCollectionOfEntitiesNamed:@"Employee"
-                             JSONPreFilterBlock:nil
-                          contextDidChangeBlock:didChangeBlock
-                                 emptyJSONBlock:nil
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:didChangeBlock
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue]; 
 
@@ -828,10 +813,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                                forProperty:@"startDate" 
                                   onEntity:kEmployee];
     
-    
-    [broker processJSONPayload:jsonData200 
-                    asCollectionOfEntitiesNamed:@"Employee"
-                            withCompletionBlock:nil];
+    [broker processJSONPayload:jsonData200
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:nil
+               completionBlock:nil];
     
     // Delete all employees on an empty JSON list
     BKJSONOperationEmptyJSONBlock emptyJSONBlock = ^(NSManagedObjectContext *aContext) {
@@ -841,18 +829,14 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
         }
     };
     
-    // Wait
-    __block BOOL hasFinished = NO;
-    
     // Chunk dat
     [broker processJSONPayload:jsonData0
-                    asCollectionOfEntitiesNamed:@"Employee"
-                             JSONPreFilterBlock:nil
-                          contextDidChangeBlock:nil
-                                 emptyJSONBlock:emptyJSONBlock
-                            withCompletionBlock:^ {
-                                hasFinished = YES;
-                            }];
+               usingQueueNamed:kBrokerTestQueue
+   asCollectionOfEntitiesNamed:@"Employee"
+            JSONPreFilterBlock:nil
+         contextDidChangeBlock:nil
+                emptyJSONBlock:emptyJSONBlock
+               completionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
 
@@ -875,16 +859,13 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
     
-    // Wait
-    __block BOOL hasFinished = NO;
-    
     // Chunk dat
-    [broker processJSONPayload:jsonData 
-                                 targetObjectID:departmentID 
-                                forRelationship:@"dogs" 
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:departmentID
+               forRelationship:@"dogs"
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
     
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -907,23 +888,22 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     
     // Build Deparment
     NSManagedObjectID *departmentID = [BrokerTestsHelpers createNewDepartment:context];
-
     
     // Chunk dat
-    [broker processJSONPayload:jsonData 
-                                 targetObjectID:departmentID 
-                                forRelationship:@"dogs" 
-                            withCompletionBlock:nil];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:departmentID
+               forRelationship:@"dogs"
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
+
     
-    // Wait
-    __block BOOL hasFinished = NO;
-    
-    [broker processJSONPayload:jsonData 
-                                 targetObjectID:departmentID 
-                                forRelationship:@"dogs" 
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
+                targetObjectID:departmentID
+               forRelationship:@"dogs"
+            JSONPreFilterBlock:nil
+           withCompletionBlock:nil];
 
     [broker waitForQueueNamed:kBrokerTestQueue];
     
@@ -988,16 +968,12 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
         return newCollection;
     };
     
-    __block BOOL hasFinished = NO;
-    
-    // Chunk dat
-    [broker processJSONPayload:jsonData 
+    [broker processJSONPayload:jsonData
+               usingQueueNamed:kBrokerTestQueue
                 targetObjectID:departmentID
                forRelationship:@"employees"
-                             JSONPreFilterBlock:removeEmployeeWithID6
-                            withCompletionBlock:^{
-                                hasFinished = YES;
-                            }];
+            JSONPreFilterBlock:removeEmployeeWithID6
+           withCompletionBlock:nil];
    
     [broker waitForQueueNamed:kBrokerTestQueue];
    

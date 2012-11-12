@@ -33,7 +33,6 @@
 #import "BKRelationshipDescription.h"
 #import "BKJSONOperation.h"
 
-
 @interface Broker : Conductor {}
 
 /** @name Properties */
@@ -49,37 +48,9 @@
  */
 @property (nonatomic, strong) NSMutableDictionary *entityDescriptions;
 
-/**
- Set this if you want to give the underlying conductor queue a name for future
- reference.
- */
-@property (nonatomic, copy) NSString *queueName;
-
-+ (Broker *)brokerWithContext:(NSManagedObjectContext *)context
-                 andQueueName:(NSString *)queueName;
++ (Broker *)brokerWithContext:(NSManagedObjectContext *)context;
 
 /** @name Setup */
-
-/**
- Performs basic setup operations with the provided NSManagedObjectContext
- @param context Typically this is the main app context.
- @param queueName This is the name of the queue that controls the JSON parsing 
- operations.  Keep track of this queue name to modify the queue behavior later.
- */
-- (void)setupWithContext:(NSManagedObjectContext *)context 
-            andQueueName:(NSString *)queueName;
-
-/**
- Performs basic setup operations with the provided NSManagedObjectContext
- @param context Typically this is the main app context.
- @param queueName This is the name of the queue that controls the JSON parsing 
- operations.  Keep track of this queue name to modify the queue behavior later.
- @param maxOperationCount The maximum simultanious parse operations that can 
- run at once. Set this to 1 for a serial queue.  
- */
-- (void)setupWithContext:(NSManagedObjectContext *)context 
-            andQueueName:(NSString *)queueName
-withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount;
 
 /**
  Resets Broker instance by clearing the context and entityDescriptions.
@@ -113,7 +84,7 @@ withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount;
 - (void)registerEntityNamed:(NSString *)entityName
              withPrimaryKey:(NSString *)primaryKey
       andMapNetworkProperty:(NSString *)networkProperty 
-            toLocalProperty:(NSString *)localProperty;
+            toLocalProperty:(NSString *)localProperty DEPRECATED_ATTRIBUTE;
 
 /**
  Register object where some of the network attribute names are not the same as
@@ -181,7 +152,7 @@ withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount;
  */
 - (void)mapNetworkProperty:(NSString *)networkProperty
            toLocalProperty:(NSString *)localProperty
-                 forEntity:(NSString *)entity;
+                 forEntity:(NSString *)entity DEPRECATED_ATTRIBUTE;
 
 /**
  Map several network properties to a local properties for an entity that is already 
@@ -201,53 +172,6 @@ withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount;
 /** @name Processing */
 
 /**
- Processes a JSON payload returned from an API onto the target entity.
- 
- @param jsonPayload The data returned from the API
- @param objectID The URI representation of the managed object to process the
- JSON for
- @param completionBlock The block to run when the operation is complete
- */
-- (void)processJSONPayload:(id)jsonPayload 
-            targetObjectID:(NSManagedObjectID *)objectID
-       withCompletionBlock:(void (^)())completionBlock;
-
-/**
- Processes a JSON payload returned from an API onto the target entity.
- 
- @param jsonPayload The data returned from the API
- @param objectID The URI representation of the managed object to process the
- JSON for
- @param FilterBlock A block passed in to apply to the incoming JSON before
- any processing takes place.
- @param completionBlock The block to run when the operation is complete
- */
-- (void)processJSONPayload:(id)jsonPayload
-            targetObjectID:(NSManagedObjectID *)objectID
-        JSONPreFilterBlock:(id (^)())FilterBlock
-       withCompletionBlock:(void (^)())completionBlock;
-
-/**
- Process a JSON payload returned from an API for a given relationship on an entity.
- You might have a Department with many Employees.  If your Department object has
- a method called getEmployees, it would hit the API and return a chunk of JSON that
- is a list of Employees.  In that case, you would call
- 
- [myBrokerInstance processJSONPayload:apiJSONData targetEntity:departmentURI forRelationship:@"employees" withCompletionBlock:myBlock]
- 
- @param jsonPayload The data returned from the API
- @param objectID The URI representation of the managed object to process the
- JSON for
- @param relationshipName The name of the relationship on the entity to recieve the
- processed JSON objects
- @param completionBlock The block to run when the operation is complete
- */
-- (void)processJSONPayload:(id)jsonPayload 
-            targetObjectID:(NSManagedObjectID *)objectID
-           forRelationship:(NSString *)relationshipName
-       withCompletionBlock:(void (^)())completionBlock;
-
-/**
  Process a JSON payload returned from an API for a given relationship on an entity.
  The JSON pre filter block will allow you to massage and returned JSON before it
  is processed into Core Data objects.  You may want to remove some entities based
@@ -256,29 +180,9 @@ withMaxConcurrentOperationCount:(NSUInteger)maxOperationCount;
  @see [Broker processJSONPayload:targetEntity:forRelationship:withCompletionBlock:]
  */
 - (void)processJSONPayload:(id)jsonPayload
+           usingQueueNamed:(NSString *)queueName
             targetObjectID:(NSManagedObjectID *)objectID
            forRelationship:(NSString *)relationshipName
-        JSONPreFilterBlock:(id (^)())filterBlock
-       withCompletionBlock:(void (^)())completionBlock;
-
-/**
- Process a JSON payload returned from an API as a collection of a particluar
- type of entity.
- 
- @see [Broker processJSONPayload:asCollectionOfEntitiesNamed:JSONPreFilterBlock:withCompletionBlock]
- */
-- (void)processJSONPayload:(id)jsonPayload 
-asCollectionOfEntitiesNamed:(NSString *)entityName 
-       withCompletionBlock:(void (^)())completionBlock;
-
-/**
- Process a JSON payload returned from an API as a collection of a particluar
- type of entity and run a JSON pre filter on the payload before processing.
- 
- @see [Broker processJSONPayload:asCollectionOfEntitiesNamed:JSONPreFilterBlock:withCompletionBlock]
- */
-- (void)processJSONPayload:(id)jsonPayload 
-asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
        withCompletionBlock:(void (^)())completionBlock;
 
@@ -288,19 +192,17 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
  
  @param jsonPayload The data returned from the API
  @param entityName The name of the objects in the returned collection
- @param FilterBlock A block passed in to apply to the incoming JSON before
+ @param filterBlock A block passed in to apply to the incoming JSON before
  any processing takes place.
- @param deleteStaleEntities If YES, Broker will delete all entities of the type specified
- by entityName that were not included in the jsonPayload.  This is useful if you
- want to delete objects when you get an empty JSON response.
  @param CompletionBlock The block to run when the operation is complete
  */
-- (void)processJSONPayload:(id)jsonPayload 
+- (void)processJSONPayload:(id)jsonPayload
+           usingQueueNamed:(NSString *)queueName
 asCollectionOfEntitiesNamed:(NSString *)entityName
         JSONPreFilterBlock:(id (^)())filterBlock
      contextDidChangeBlock:(void (^)())didChangeBlock
             emptyJSONBlock:(void (^)())emptyJSONBlock
-       withCompletionBlock:(void (^)())completionBlock;
+           completionBlock:(void (^)())completionBlock;
 
 /** @name Accessors */
 
