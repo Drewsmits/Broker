@@ -182,7 +182,7 @@
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     if (!self.mainContext) return;
     
-    BKJSONOperation *operation = [BKJSONOperation operation];
+    BKJSONOperation *operation = [BKJSONOperation new];
     
     operation.jsonPayload = jsonPayload;
     operation.broker = self;
@@ -212,7 +212,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     NSAssert(self.mainContext, @"Broker must be setup with setupWithContext!");
     if (!self.mainContext) return;
     
-    BKJSONOperation *operation = [BKJSONOperation operation];
+    BKJSONOperation *operation = [BKJSONOperation new];
     
     operation.jsonPayload = jsonPayload;
     operation.broker = self;
