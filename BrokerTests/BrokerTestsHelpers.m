@@ -72,6 +72,23 @@
     
 }
 
++ (void)writeFakeJSON
+{
+//    NSArray *firstNames = @[@"Will", @"Andrew", @"Erem", @"Eric", @"David", @"Gabe", @"Sarah", @"Lucy", @"Uma"];
+//    NSArray *lastNames = @[@"Chan", @"Smith", @"Boto", @"Feeny", @"Auld", @"Kapler", @"Smart", @"Lawless", @"Thurman"];
+//    
+//    __block NSMutableString *jsonString = @"[";
+//    __block NSUInteger employeeID = 1;
+//    
+//    [firstNames enumerateObjectsUsingBlock:^(NSString *firstName, NSUInteger idx, BOOL *stop) {
+//        NSString *first = [NSString stringWithFormat:@"{\"firstname\":\"%@\",", firstName];
+//        NSString *last = [NSString stringWithFormat:@"\"lastname\":\"%@\",", [lastNames objectAtIndex:idx]];
+//        NSString *idString = [NSString stringWithFormat:@"\"employeeID\":%i", employeeID];        
+//    }];
+//
+//    
+}
+
 NSString *PathForTestResource(NSString *resouce) {
     
     NSString *testBundlePath = [[NSBundle bundleForClass:[BrokerTestsHelpers class]] pathForResource:@"TestResources" 

@@ -712,6 +712,34 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     STAssertEquals(num, 200, @"Should have 200 employee objects");
 }
 
+- (void)testProcess200EmployeeCollectionManyTimes {
+    NSData *jsonData = DataFromFile(@"department_employees_200.json");
+    
+    // Register Entities
+    [broker registerEntityNamed:kEmployee withPrimaryKey:@"employeeID"];
+    [broker setDateFormat:kEmployeeStartDateFormat
+              forProperty:@"startDate"
+                 onEntity:kEmployee];
+    
+    for (int i = 0; i < 5; i++){
+        // Chunk dat
+        [broker processJSONPayload:jsonData
+                   usingQueueNamed:kBrokerTestQueue
+       asCollectionOfEntitiesNamed:@"Employee"
+                JSONPreFilterBlock:nil
+             contextDidChangeBlock:nil
+                    emptyJSONBlock:nil
+                   completionBlock:nil];
+    }
+    
+    [broker waitForQueueNamed:kBrokerTestQueue];
+    
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:@"Employee" inContext:context];
+    NSInteger num = employees.count;
+    
+    STAssertEquals(num, 200, @"Should have 200 employee objects");
+}
+
 - (void)testProcess200EmployeeCollectionTwiceWithDelete {
     NSData *jsonData = DataFromFile(@"department_employees_200.json");
     

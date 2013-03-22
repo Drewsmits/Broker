@@ -28,6 +28,7 @@
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
 		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
 		DBA5F95C145610C500EBFF68 /* Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB4C0E2A143D2F4F0090F5E3 /* Broker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DBC8EBAD16FCD48900987EB2 /* BrokerHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */; };
 		DBCD67521443F47A000FD78D /* BKPropertyDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCD67501443F47A000FD78D /* BKPropertyDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DBCD67531443F47A000FD78D /* BKPropertyDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCD67511443F47A000FD78D /* BKPropertyDescription.m */; };
 		DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */; };
@@ -74,6 +75,13 @@
 			remoteGlobalIDString = DB83D1991451F1B200D94890;
 			remoteInfo = Conductor;
 		};
+		DBC8EBB016FCD48A00987EB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DBD17290167948B80019FF3D;
+			remoteInfo = ConductorApp;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -101,6 +109,7 @@
 		DB576E0C14572D0F006021CE /* BKJSONOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKJSONOperation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+Broker.h"; sourceTree = "<group>"; };
 		DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+Broker.m"; sourceTree = "<group>"; };
+		DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrokerHeaders.h; sourceTree = "<group>"; };
 		DBCD67501443F47A000FD78D /* BKPropertyDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKPropertyDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DBCD67511443F47A000FD78D /* BKPropertyDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKPropertyDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DBFF95C8143D8D80008511EA /* BrokerTestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BrokerTestModel.xcdatamodel; sourceTree = "<group>"; };
@@ -150,6 +159,7 @@
 			children = (
 				DB394878145737D900BFF50E /* libConductor.a */,
 				DB39487A145737D900BFF50E /* ConductorTests.octest */,
+				DBC8EBB116FCD48A00987EB2 /* ConductorApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -188,6 +198,7 @@
 		DB4C0E27143D2F4F0090F5E3 /* Broker */ = {
 			isa = PBXGroup;
 			children = (
+				DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */,
 				DB4C0E2A143D2F4F0090F5E3 /* Broker.h */,
 				DB4C0E2B143D2F4F0090F5E3 /* Broker.m */,
 				DBFF95E9143E568C008511EA /* BKEntityPropertiesDescription.h */,
@@ -255,6 +266,7 @@
 				DB576E0D14572D0F006021CE /* BKJSONOperation.h in Headers */,
 				DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */,
 				DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */,
+				DBC8EBAD16FCD48900987EB2 /* BrokerHeaders.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,6 +357,13 @@
 			fileType = wrapper.cfbundle;
 			path = ConductorTests.octest;
 			remoteRef = DB394879145737D900BFF50E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DBC8EBB116FCD48A00987EB2 /* ConductorApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ConductorApp.app;
+			remoteRef = DBC8EBB016FCD48A00987EB2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

@@ -26,7 +26,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-#import "Conductor/Conductor.h"
+#import <Conductor/Conductor.h>
 
 #import "BKEntityPropertiesDescription.h"
 #import "BKAttributeDescription.h"
