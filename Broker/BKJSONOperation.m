@@ -58,65 +58,71 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)start
-{
-    @autoreleasepool {    
-        [super start];
-        
-        if (!self.jsonPayload) {
-            WLog(@"Nil json payload!");
-            [self finish];
-            return;
-        }
-        
-        // Register for change
-        [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(contextDidChange:) 
-                                                     name:NSManagedObjectContextObjectsDidChangeNotification
-                                                   object:self.backgroundContext];
-        
-        // Convert JSON payload data to JSON object
-        NSError *error;
-        id jsonObject = [NSJSONSerialization JSONObjectWithData:self.jsonPayload 
-                                                        options:NSJSONReadingMutableContainers 
-                                                          error:&error];
-
-        if (!jsonObject || error) {
-            WLog(@"Unable to create JSON object from JSON data. ERROR: %@", error);
-            DLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
-                                                      encoding:NSUTF8StringEncoding]);
-            [self finish];
-            return;
-        }
-        
-        // If there is a pre-filter, apply it now
-        if (self.preFilterBlock) {
-            jsonObject = [self applyJSONPreFilterBlockToJSONObject:jsonObject];
-        }
-        
-        if (!jsonObject) {
-            WLog(@"Something went wrong. Filter block returned nothing.");
-            DLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
-                                                      encoding:NSUTF8StringEncoding]);
-            [self finish];
-            return;
-        }
-        
-        // Process
-        [self processJSONObject:jsonObject];
-        
-        // Clean up
-        [self finish];
+- (void)work
+{        
+    id jsonObject = [self jsonObjectFromPayload:self.jsonPayload];
+    if (!jsonObject) [self finish];
+   
+    //
+    // Register for change
+    //
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contextDidChange:) 
+                                                 name:NSManagedObjectContextObjectsDidChangeNotification
+                                               object:self.backgroundContext];
+    
+    //
+    // If there is a pre-filter, apply it now
+    //
+    if (self.preFilterBlock) {
+        jsonObject = [self applyJSONPreFilterBlockToJSONObject:jsonObject];
     }
+    
+    if (!jsonObject) {
+        BrokerWarningLog(@"Something went wrong. Filter block returned nothing.");
+        BrokerLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
+                                                  encoding:NSUTF8StringEncoding]);
+        [self finish];
+        return;
+    }
+    
+    // Process
+    [self processJSONObject:jsonObject];
 }
 
-- (void)finish
+- (void)cleanup
 {    
-    // Save context
     [self saveBackgroundContext];
+}
+
+#pragma mark - JSON Object From Payload
+
+- (id)jsonObjectFromPayload:(id)jsonPayload
+{
+    if (!jsonPayload) {
+        BrokerWarningLog(@"Attempted to convert nil payload to JSON object!");
+        return nil;
+    }
     
-    // Calls finish on superclass CDOperation, part of Conductor
-    [super finish];    
+    //
+    // Convert JSON payload data to JSON object
+    //
+    NSError *error;
+    id jsonObject = [NSJSONSerialization JSONObjectWithData:jsonPayload
+                                                    options:NSJSONReadingMutableContainers
+                                                      error:&error];
+    
+    //
+    // Check for serialization errors
+    //
+    if (!jsonObject || error) {
+        BrokerWarningLog(@"Unable to create JSON object from JSON data. ERROR: %@", error);
+        BrokerLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
+                                                       encoding:NSUTF8StringEncoding]);
+        return nil;
+    }
+
+    return jsonObject;
 }
 
 #pragma mark - Processing
@@ -136,7 +142,7 @@
         
         NSManagedObject *object = [self targetObject];
         if (!object) {
-            WLog(@"Could not find object!");
+            BrokerWarningLog(@"Could not find object!");
             return;
         }
         
@@ -160,7 +166,7 @@
             
             NSManagedObject *object = [self targetObject];
             if (!object) {
-                WLog(@"Could not find object!");
+                BrokerWarningLog(@"Could not find object!");
                 return;
             }
             // Grab the entity property description for the current working objects name,
@@ -182,7 +188,7 @@
             return;
         }
         
-        WLog(@"Neither relationship name or entity description specified!");
+        BrokerWarningLog(@"Neither relationship name or entity description specified!");
     }
     
 }
@@ -237,7 +243,7 @@
                                                                                               shouldCreate:YES];
         
         if (!collectionObject) {
-            WLog(@"Got nil back for collection object!");
+            BrokerWarningLog(@"Got nil back for collection object!");
             continue;
         }
         
@@ -264,11 +270,13 @@
                                                                                                                         onEntityNamed:object.entity.name];
             
             if (!destinationEntityDesc) {
-                WLog(@"Destination entity for relationship \"%@\" on entity \"%@\" not registered with Broker!  Skipping...", property, [object.objectID.entity name]);
+                BrokerWarningLog(@"Destination entity for relationship \"%@\" on entity \"%@\" not registered with Broker!  Skipping...", property, [object.objectID.entity name]);
                 continue;
             }
             
+            //
             // Flat
+            //
             if ([value isKindOfClass:[NSDictionary class]]) {
                 
                 NSDictionary *transformedDict = [self.broker transformJSONDictionary:value 
@@ -288,7 +296,9 @@
                 [object setValue:relationshipObject forKey:property];
             }
             
+            //
             // Collection
+            //
             if ([value isKindOfClass:[NSArray class]]) {
                 [self processJSONCollection:value
                                   forObject:object
@@ -317,7 +327,9 @@
 
 - (NSManagedObject *)targetObject
 {    
+    //
     // Grabs the object from the threaded context (thread safe)
+    //
     __block NSManagedObject *object = nil;
     
     [self.backgroundContext performBlockAndWait:^ {
@@ -341,14 +353,17 @@
 
 - (void)contextDidChange:(NSNotification *)notification 
 {    
+    //
     // Make sure this is only called once
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    //
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:NSManagedObjectContextObjectsDidChangeNotification 
                                                   object:self.backgroundContext];
     
-    if (self.didChangeBlock) {
-        self.didChangeBlock(self.backgroundContext, notification);
-    };
+    //
+    // Process changes by passing notification to change block
+    //
+    if (self.didChangeBlock) self.didChangeBlock(self.backgroundContext, notification);
 }
 
 @end

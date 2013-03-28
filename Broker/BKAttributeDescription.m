@@ -86,10 +86,9 @@
         case NSBooleanAttributeType:
             return @([value boolValue]);
         case NSDateAttributeType:
-            
             if (!self.dateFormatter.dateFormat) {
-                WLog(@"NSDate attribute named \"%@\" on entity \"%@\" requires " 
-                     @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.localPropertyName, self.entityName);
+                BrokerWarningLog(@"NSDate attribute named \"%@\" on entity \"%@\" requires "
+                                 @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.localPropertyName, self.entityName);
                 return nil;
             }
             

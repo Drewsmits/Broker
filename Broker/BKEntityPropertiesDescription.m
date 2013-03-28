@@ -59,7 +59,9 @@
         // Either an NSAttributeDescription or an NSRelationshipDescription
         id description = [properties objectForKey:property];
         
+        //
         // Attribute
+        //
         if ([description isKindOfClass:[NSAttributeDescription class]]) {
             BKAttributeDescription *attrDescription = [BKAttributeDescription descriptionWithAttributeDescription:(NSAttributeDescription *)description
                                                                                      andMapToNetworkAttributeName:[propertiesDescription.localToNetworkPropertiesMap valueForKey:property]];
@@ -67,7 +69,9 @@
             [tempPropertiesDescriptions setObject:attrDescription forKey:property];
         }
         
+        //
         // Relationship
+        //
         if ([description isKindOfClass:[NSRelationshipDescription class]]) {
             BKRelationshipDescription *relationshipDescription = 
                     [BKRelationshipDescription descriptionWithRelationshipDescription:(NSRelationshipDescription *)description];            
@@ -75,11 +79,15 @@
         }
     }
     
+    //
     // Set property descriptions
+    //
     propertiesDescription.propertiesDescriptions = tempPropertiesDescriptions;
     
+    //
     // Map any network properties to local properties
-    [propertiesDescription mapNetworkProperties:networkProperties 
+    //
+    [propertiesDescription mapNetworkProperties:networkProperties
                               toLocalProperties:localProperties];
     
     return propertiesDescription;
@@ -102,7 +110,7 @@
         BKAttributeDescription *attrDescription = [self attributeDescriptionForProperty:localProperty];
 
         if (!attrDescription) 
-            DLog(@"shmu?");
+            BrokerWarningLog(@"Couldn't find attribute description?");
         
         [self.networkToLocalPropertiesMap setValue:localProperty forKey:networkProperty];
         
@@ -116,14 +124,15 @@
 
 #pragma mark - Accessors
 
-- (BKPropertyDescription *)descriptionForProperty:(NSString *)property {
+- (BKPropertyDescription *)descriptionForProperty:(NSString *)property
+{
     BKPropertyDescription *desc = [self descriptionForLocalProperty:property];
     
     if (!desc) {
         desc = [self descriptionForNetworkProperty:property];
     }
     
-    if (!desc) {DLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.", property, self.entityName);}
+    if (!desc) {BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.", property, self.entityName);}
 
     return desc;
 }
@@ -137,7 +146,7 @@
 {    
     BKPropertyDescription *desc = [self descriptionForLocalProperty:[self.networkToLocalPropertiesMap objectForKey:property]];
     if (!desc) {
-        DLog(@"\"%@\" is not a known network property on entity \"%@\"", property, self.entityName);
+        BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", property, self.entityName);
         return nil;
     }
     

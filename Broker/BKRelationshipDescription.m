@@ -25,18 +25,39 @@
 
 #import "BKRelationshipDescription.h"
 
+@interface BKRelationshipDescription ()
+
+@property (nonatomic, strong) NSRelationshipDescription *relationshipDescription;
+
+@end
+
 @implementation BKRelationshipDescription
 
 + (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description
 {    
-    BKRelationshipDescription *map = [BKRelationshipDescription new];
+    BKRelationshipDescription *bkDescription = [BKRelationshipDescription new];
+    bkDescription.relationshipDescription = description;
+    return bkDescription;
+}
 
-    map.localPropertyName = description.name;
-    map.destinationEntityName = description.destinationEntity.name;
-    map.entityName = description.entity.name;
-    map.isToMany = description.isToMany;
-        
-    return map;
+- (NSString *)name
+{
+    return self.relationshipDescription.name;
+}
+
+- (NSEntityDescription *)entity
+{
+    return self.relationshipDescription.entity;
+}
+
+- (NSEntityDescription *)destinationEntity
+{
+    return self.relationshipDescription.destinationEntity;
+}
+
+- (BOOL)isToMany
+{
+    return self.relationshipDescription.isToMany;
 }
 
 @end

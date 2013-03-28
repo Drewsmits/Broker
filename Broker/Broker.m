@@ -221,7 +221,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
     BKEntityPropertiesDescription *description = [self entityPropertyDescriptionForEntityName:entityName];
     
     if (!description) {
-        WLog(@"No entity description found!  Did you remember to register it?");
+        BrokerWarningLog(@"No entity description found!  Did you remember to register it?");
         return;
     }
     

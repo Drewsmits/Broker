@@ -29,7 +29,7 @@
 #import "BKRelationshipDescription.h"
 
 
-@interface BKEntityPropertiesDescription : NSObject {}
+@interface BKEntityPropertiesDescription : NSObject
 
 /**
   The name of the entity, capitalized.

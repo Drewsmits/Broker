@@ -25,7 +25,6 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-
 #import <Conductor/Conductor.h>
 
 #import "BKEntityPropertiesDescription.h"
@@ -33,7 +32,7 @@
 #import "BKRelationshipDescription.h"
 #import "BKJSONOperation.h"
 
-@interface Broker : Conductor {}
+@interface Broker : CDQueueController
 
 /** @name Properties */
 
