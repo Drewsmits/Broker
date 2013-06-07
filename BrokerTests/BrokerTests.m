@@ -107,7 +107,7 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     
     STAssertNotNil(desc, @"Should have an relationship description for property on registered entity");
     STAssertEqualObjects(desc.localPropertyName, kEmployeesRelationship, @"Relationship map should be named correctly");    
-    STAssertEqualObjects(desc.destinationEntityName, kEmployee, @"Relationship map should have correct destination entity name");
+    STAssertEqualObjects(desc.destinationEntity.name, kEmployee, @"Relationship map should have correct destination entity name");
     STAssertEqualObjects(desc.entityName, kDepartment, @"Relationship map should have correct entity name");
     STAssertTrue(desc.isToMany, @"Relationship map should be isToMany");
 }
@@ -924,7 +924,8 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
                forRelationship:@"dogs"
             JSONPreFilterBlock:nil
            withCompletionBlock:nil];
-
+    
+    [broker waitForQueueNamed:kBrokerTestQueue];
     
     [broker processJSONPayload:jsonData
                usingQueueNamed:kBrokerTestQueue
