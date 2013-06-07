@@ -41,7 +41,6 @@ static NSString *kEmployeesRelationship = @"employees";
 // Employee
 static NSString *kEmployee = @"Employee";
 static NSString *kEmployeeFirstname = @"firstname";
-static NSString *kDepartmentRelationship = @"department";
 static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
 
 // Dog

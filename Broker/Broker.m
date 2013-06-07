@@ -272,7 +272,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
                                                                            onEntityNamed:(NSString *)entityName
 {    
     BKRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship onEntityName:entityName];
-    return [self entityPropertyDescriptionForEntityName:desc.destinationEntity];
+    return [self entityPropertyDescriptionForEntityName:desc.destinationEntity.name];
 }
 
 - (NSDictionary *)transformJSONDictionary:(NSDictionary *)jsonDictionary 
