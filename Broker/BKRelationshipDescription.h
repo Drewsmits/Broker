@@ -26,13 +26,6 @@
 #import <Foundation/Foundation.h>
 #import "BKPropertyDescription.h"
 
-@interface BKRelationshipDescription : BKPropertyDescription
-
-@property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) NSEntityDescription *entity;
-@property (nonatomic, readonly) NSEntityDescription *destinationEntity;
-@property (nonatomic, readonly) BOOL isToMany;
-
-+ (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description;
+@interface BKRelationshipDescription : NSRelationshipDescription
 
 @end

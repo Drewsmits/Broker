@@ -33,31 +33,4 @@
 
 @implementation BKRelationshipDescription
 
-+ (BKRelationshipDescription *)descriptionWithRelationshipDescription:(NSRelationshipDescription *)description
-{    
-    BKRelationshipDescription *bkDescription = [BKRelationshipDescription new];
-    bkDescription.relationshipDescription = description;
-    return bkDescription;
-}
-
-- (NSString *)name
-{
-    return self.relationshipDescription.name;
-}
-
-- (NSEntityDescription *)entity
-{
-    return self.relationshipDescription.entity;
-}
-
-- (NSEntityDescription *)destinationEntity
-{
-    return self.relationshipDescription.destinationEntity;
-}
-
-- (BOOL)isToMany
-{
-    return self.relationshipDescription.isToMany;
-}
-
 @end

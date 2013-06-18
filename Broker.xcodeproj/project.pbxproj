@@ -28,6 +28,8 @@
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
 		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
 		DBA5F95C145610C500EBFF68 /* Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB4C0E2A143D2F4F0090F5E3 /* Broker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DBBC61D81761855C007D0B76 /* BKEntityController.h in Headers */ = {isa = PBXBuildFile; fileRef = DBBC61D61761855C007D0B76 /* BKEntityController.h */; };
+		DBBC61D91761855C007D0B76 /* BKEntityController.m in Sources */ = {isa = PBXBuildFile; fileRef = DBBC61D71761855C007D0B76 /* BKEntityController.m */; };
 		DBC8EBAD16FCD48900987EB2 /* BrokerHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */; };
 		DBCD67521443F47A000FD78D /* BKPropertyDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCD67501443F47A000FD78D /* BKPropertyDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DBCD67531443F47A000FD78D /* BKPropertyDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCD67511443F47A000FD78D /* BKPropertyDescription.m */; };
@@ -109,6 +111,8 @@
 		DB576E0C14572D0F006021CE /* BKJSONOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKJSONOperation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+Broker.h"; sourceTree = "<group>"; };
 		DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+Broker.m"; sourceTree = "<group>"; };
+		DBBC61D61761855C007D0B76 /* BKEntityController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKEntityController.h; sourceTree = "<group>"; };
+		DBBC61D71761855C007D0B76 /* BKEntityController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEntityController.m; sourceTree = "<group>"; };
 		DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrokerHeaders.h; sourceTree = "<group>"; };
 		DBCD67501443F47A000FD78D /* BKPropertyDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKPropertyDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DBCD67511443F47A000FD78D /* BKPropertyDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKPropertyDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -199,6 +203,8 @@
 			isa = PBXGroup;
 			children = (
 				DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */,
+				DBBC61D61761855C007D0B76 /* BKEntityController.h */,
+				DBBC61D71761855C007D0B76 /* BKEntityController.m */,
 				DB4C0E2A143D2F4F0090F5E3 /* Broker.h */,
 				DB4C0E2B143D2F4F0090F5E3 /* Broker.m */,
 				DBFF95E9143E568C008511EA /* BKEntityPropertiesDescription.h */,
@@ -267,6 +273,7 @@
 				DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */,
 				DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */,
 				DBC8EBAD16FCD48900987EB2 /* BrokerHeaders.h in Headers */,
+				DBBC61D81761855C007D0B76 /* BKEntityController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,6 +416,7 @@
 				DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */,
 				DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */,
 				DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */,
+				DBBC61D91761855C007D0B76 /* BKEntityController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

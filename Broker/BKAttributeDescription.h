@@ -26,17 +26,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-#import "BKPropertyDescription.h"
-
-@interface BKAttributeDescription : BKPropertyDescription {}
+@interface BKAttributeDescription : NSAttributeDescription
 
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
-@property (nonatomic, assign) NSAttributeType attributeType;
-
-+ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description;
-
-+ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
-                                   andMapToNetworkAttributeName:(NSString *)networkAttributeName;
+@property (nonatomic, copy) NSString *networkPropertyName;
 
 /**
  * Returns the correct object type with the given value

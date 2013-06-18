@@ -63,9 +63,8 @@
         // Attribute
         //
         if ([description isKindOfClass:[NSAttributeDescription class]]) {
-            BKAttributeDescription *attrDescription = [BKAttributeDescription descriptionWithAttributeDescription:(NSAttributeDescription *)description
-                                                                                     andMapToNetworkAttributeName:[propertiesDescription.localToNetworkPropertiesMap valueForKey:property]];
-                        
+            BKAttributeDescription *attrDescription = description;
+            attrDescription.networkPropertyName = [propertiesDescription.localToNetworkPropertiesMap valueForKey:property];
             [tempPropertiesDescriptions setObject:attrDescription forKey:property];
         }
         

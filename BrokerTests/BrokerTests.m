@@ -116,7 +116,7 @@ static NSString *kBrokerTestQueue = @"BrokerTestQueue";
     [broker registerEntityNamed:kEmployee withPrimaryKey:nil];
     
     BKAttributeDescription *desc = [broker attributeDescriptionForProperty:@"firstname"
-                                                                               onEntityName:kEmployee];
+                                                              onEntityName:kEmployee];
     
     STAssertNotNil(desc, @"Should have an attribute description for property on registered entity");
     STAssertEqualObjects(desc.entityName, kEmployee, @"Attribute description entity name should be set correctly");

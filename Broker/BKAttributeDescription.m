@@ -45,14 +45,13 @@
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
                                    andMapToNetworkAttributeName:(NSString *)networkAttributeName
 {    
-    BKAttributeDescription *map = [BKAttributeDescription new];
+    BKAttributeDescription *attributeDescription = [BKAttributeDescription new];
     
-    map.entityName = description.entity.name;
-    map.localPropertyName = description.name;
-    map.networkPropertyName = networkAttributeName;
-    map.attributeType = description.attributeType;
+    attributeDescription
+    attributeDescription.networkPropertyName = networkAttributeName;
+    attributeDescription.attributeType = description.attributeType;
     
-    return map;
+    return attributeDescription;
 }
 
 - (id)objectForValue:(id)value
@@ -88,7 +87,7 @@
         case NSDateAttributeType:
             if (!self.dateFormatter.dateFormat) {
                 BrokerWarningLog(@"NSDate attribute named \"%@\" on entity \"%@\" requires "
-                                 @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.localPropertyName, self.entityName);
+                                 @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.name, self.entity.name);
                 return nil;
             }
             
@@ -109,7 +108,7 @@
     }
 }
 
-#pragma mark - Accessors
+#pragma mark - Date
 
 - (void)setDateFormat:(NSString *)dateFormat
 {
