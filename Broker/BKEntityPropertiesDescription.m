@@ -48,6 +48,7 @@
 {    
     // Build initial description
     BKEntityPropertiesDescription *propertiesDescription = [BKEntityPropertiesDescription new];
+    
     propertiesDescription.entityDescription = entity;
     propertiesDescription.entityName = entity.name;
     
@@ -102,30 +103,23 @@
     if (networkProperties.count != localProperties.count) return;
     if (!networkProperties || !localProperties) return;
     
-    for (NSString *networkProperty in networkProperties) {
+    for (int i = 0; i < localProperties.count; i++) {
         
-        NSString *localProperty = [localProperties objectAtIndex:[networkProperties indexOfObject:networkProperty]];
+        NSString *localProperty   = [localProperties objectAtIndex:i];
+        NSString *networkProperty = [networkProperties objectAtIndex:i];
         
-        BKAttributeDescription *attrDescription = [self attributeDescriptionForProperty:localProperty];
-
-        if (!attrDescription) 
-            BrokerWarningLog(@"Couldn't find attribute description?");
-        
-        [self.networkToLocalPropertiesMap setValue:localProperty forKey:networkProperty];
-        
-        [self.localToNetworkPropertiesMap setValue:networkProperty forKey:localProperty];
-                
-        if (attrDescription) {
-            attrDescription.networkPropertyName = networkProperty;
+        if (localProperties && networkProperties) {
+            [self.networkToLocalPropertiesMap setValue:localProperty forKey:networkProperty];
+            [self.localToNetworkPropertiesMap setValue:networkProperty forKey:localProperty];
         }
     }
 }
 
 #pragma mark - Accessors
 
-- (BKPropertyDescription *)descriptionForProperty:(NSString *)property
+- (NSPropertyDescription *)descriptionForProperty:(NSString *)property
 {
-    BKPropertyDescription *desc = [self descriptionForLocalProperty:property];
+    NSPropertyDescription *desc = [self descriptionForLocalProperty:property];
     
     if (!desc) {
         desc = [self descriptionForNetworkProperty:property];
@@ -136,14 +130,14 @@
     return desc;
 }
 
-- (BKPropertyDescription *)descriptionForLocalProperty:(NSString *)property
+- (NSPropertyDescription *)descriptionForLocalProperty:(NSString *)property
 {
-    return (BKPropertyDescription *)[self.propertiesDescriptions objectForKey:property];
+    return (NSPropertyDescription *)[self.propertiesDescriptions objectForKey:property];
 }
 
-- (BKPropertyDescription *)descriptionForNetworkProperty:(NSString *)property
+- (NSPropertyDescription *)descriptionForNetworkProperty:(NSString *)property
 {    
-    BKPropertyDescription *desc = [self descriptionForLocalProperty:[self.networkToLocalPropertiesMap objectForKey:property]];
+    NSPropertyDescription *desc = [self descriptionForLocalProperty:[self.networkToLocalPropertiesMap objectForKey:property]];
     if (!desc) {
         BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", property, self.entityName);
         return nil;
@@ -152,7 +146,7 @@
     return desc;
 }
 
-- (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)property
+- (NSAttributeDescription *)attributeDescriptionForProperty:(NSString *)property
 {
     id description = [self descriptionForProperty:property];
     if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
@@ -162,7 +156,7 @@
     }
 }
 
-- (BKAttributeDescription *)attributeDescriptionForLocalProperty:(NSString *)property
+- (NSAttributeDescription *)attributeDescriptionForLocalProperty:(NSString *)property
 {
     id description = [self descriptionForLocalProperty:property];
     if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
@@ -172,7 +166,7 @@
     }
 }
 
-- (BKAttributeDescription *)attributeDescriptionForNetworkProperty:(NSString *)property
+- (NSAttributeDescription *)attributeDescriptionForNetworkProperty:(NSString *)property
 {
     id description = [self descriptionForNetworkProperty:property];
     if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
@@ -182,11 +176,11 @@
     }
 }
 
-- (BKRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)property
+- (NSRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)property
 {
     id description = [self.propertiesDescriptions objectForKey:property];
     
-    if (description && [description isKindOfClass:[BKRelationshipDescription class]]) {
+    if (description && [description isKindOfClass:[NSRelationshipDescription class]]) {
         return (BKRelationshipDescription *)description;
     } else {
         return nil;
@@ -197,7 +191,7 @@
 {
     id description = [self.propertiesDescriptions objectForKey:property];
     
-    if (description && [description isKindOfClass:[BKRelationshipDescription class]]) {
+    if (description && [description isKindOfClass:[NSRelationshipDescription class]]) {
         return YES;
     } else {
         return NO;
@@ -206,7 +200,7 @@
 
 - (NSString *)destinationEntityNameForRelationship:(NSString *)relationship
 {
-    BKRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship];
+    NSRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship];
     return desc.destinationEntity.name;
 }
 

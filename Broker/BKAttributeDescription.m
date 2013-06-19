@@ -25,6 +25,12 @@
 
 #import "BKAttributeDescription.h"
 
+@interface BKAttributeDescription ()
+
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+
+@end
+
 @implementation BKAttributeDescription
 
 - (id)init
@@ -38,20 +44,7 @@
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
 {
-    return [self descriptionWithAttributeDescription:description
-                     andMapToNetworkAttributeName:nil];
-}
-
-+ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
-                                   andMapToNetworkAttributeName:(NSString *)networkAttributeName
-{    
-    BKAttributeDescription *attributeDescription = [BKAttributeDescription new];
-    
-    attributeDescription
-    attributeDescription.networkPropertyName = networkAttributeName;
-    attributeDescription.attributeType = description.attributeType;
-    
-    return attributeDescription;
+    return (BKAttributeDescription *)[description copy];
 }
 
 - (id)objectForValue:(id)value
@@ -94,12 +87,15 @@
             return [self.dateFormatter dateFromString:value];
             break;
         case NSBinaryDataAttributeType:
+            NSAssert(YES, @"Not implemented yet");
             return nil;
             break;
         case NSTransformableAttributeType:
+            NSAssert(YES, @"Not implemented yet");
             return nil;
             break;
         case NSObjectIDAttributeType:
+            NSAssert(YES, @"Not implemented yet");
             return nil;
             break;
         default:

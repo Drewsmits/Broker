@@ -28,8 +28,7 @@
 
 @interface BKAttributeDescription : NSAttributeDescription
 
-@property (nonatomic, strong) NSDateFormatter *dateFormatter;
-@property (nonatomic, copy) NSString *networkPropertyName;
++ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description;
 
 /**
  * Returns the correct object type with the given value

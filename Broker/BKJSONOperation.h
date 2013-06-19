@@ -28,7 +28,6 @@
 @class Broker;
 @class BKEntityPropertiesDescription;
 
-typedef id (^BKJSONOperationPreFilterBlock)(NSManagedObjectContext *context, id jsonObject);
 typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
 typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
@@ -37,18 +36,10 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 /**
  The JSON data to be turned into a JSON object for processing
  */
-@property (nonatomic, strong) id jsonPayload;
-@property (nonatomic, weak) Broker *broker;
+@property (nonatomic, strong) NSDictionary *JSONObject;
 @property (nonatomic, strong) NSManagedObjectID *objectID;
 @property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
-
-/**
- The BKJSONOperationPreFilterBlock allows you to edit the JSON object before processing
- begins.  This may be useful to remove stale objects, for example, and not bother
- processing them.
- */
-@property (nonatomic, copy) BKJSONOperationPreFilterBlock preFilterBlock;
 
 /**
  This block is called when the context changes, and allows you to apply some changes
@@ -62,8 +53,5 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  all the local tweets you have.
  */
 @property (nonatomic, copy) BKJSONOperationEmptyJSONBlock emptyJSONBlock;
-
-
-- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject;
 
 @end

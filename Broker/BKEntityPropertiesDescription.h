@@ -29,12 +29,8 @@
 #import "BKRelationshipDescription.h"
 
 
-@interface BKEntityPropertiesDescription : NSObject
+@interface BKEntityPropertiesDescription : NSEntityDescription
 
-/**
-  The name of the entity, capitalized.
- */
-@property (nonatomic, copy) NSString *entityName;
 
 /**
   The name of the property used as the entity's primary key.  This needs to be
@@ -62,11 +58,6 @@
  Dictionary used for fast key finding
  */
 @property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
-
-/**
- 
- */
-@property (nonatomic, strong) NSEntityDescription *entityDescription;
 
 /**
   Creates a new BKEntityPropertiesDescription where the entityName is the name 

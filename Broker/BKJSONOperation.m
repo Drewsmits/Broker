@@ -31,24 +31,6 @@
 
 @interface BKJSONOperation ()
 
-- (void)processJSONObject:(id)jsonObject;
-
-- (void)processJSONCollection:(NSArray *)collection
-                    forObject:(NSManagedObject *)object
-        withEntityDescription:(BKEntityPropertiesDescription *)description
-              forRelationship:(NSString *)relationship;
-
-- (NSSet *)processJSONCollection:(NSArray *)collection 
- asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description;
-
-- (void)processJSONSubObject:(NSDictionary *)subDictionary 
-                   forObject:(NSManagedObject *)object 
-             withDescription:(BKEntityPropertiesDescription *)description;
-
-- (NSManagedObject *)targetObject;
-
-- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object;
-
 @end
 
 @implementation BKJSONOperation
@@ -59,10 +41,7 @@
 }
 
 - (void)work
-{        
-    id jsonObject = [self jsonObjectFromPayload:self.jsonPayload];
-    if (!jsonObject) [self finish];
-   
+{
     //
     // Register for change
     //
@@ -72,22 +51,9 @@
                                                object:self.backgroundContext];
     
     //
-    // If there is a pre-filter, apply it now
-    //
-    if (self.preFilterBlock) {
-        jsonObject = [self applyJSONPreFilterBlockToJSONObject:jsonObject];
-    }
-    
-    if (!jsonObject) {
-        BrokerWarningLog(@"Something went wrong. Filter block returned nothing.");
-        BrokerLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
-                                                  encoding:NSUTF8StringEncoding]);
-        [self finish];
-        return;
-    }
-    
     // Process
-    [self processJSONObject:jsonObject];
+    //
+    [self processJSONObject:self.JSONObject];
 }
 
 - (void)cleanup
@@ -95,57 +61,30 @@
     [self saveBackgroundContext];
 }
 
-#pragma mark - JSON Object From Payload
-
-- (id)jsonObjectFromPayload:(id)jsonPayload
-{
-    if (!jsonPayload) {
-        BrokerWarningLog(@"Attempted to convert nil payload to JSON object!");
-        return nil;
-    }
-    
-    //
-    // Convert JSON payload data to JSON object
-    //
-    NSError *error;
-    id jsonObject = [NSJSONSerialization JSONObjectWithData:jsonPayload
-                                                    options:NSJSONReadingMutableContainers
-                                                      error:&error];
-    
-    //
-    // Check for serialization errors
-    //
-    if (!jsonObject || error) {
-        BrokerWarningLog(@"Unable to create JSON object from JSON data. ERROR: %@", error);
-        BrokerLog(@"Object: %@", [[NSString alloc] initWithData:self.jsonPayload
-                                                       encoding:NSUTF8StringEncoding]);
-        return nil;
-    }
-
-    return jsonObject;
-}
-
 #pragma mark - Processing
                         
-- (void)processJSONObject:(id)jsonObject
+- (void)processJSONObject:(NSDictionary *)jsonObject
 {    
+    //
     // Execute empty JSON block if empty
+    //
     if (!jsonObject || [jsonObject count] == 0) {
         if (self.emptyJSONBlock) {
             self.emptyJSONBlock(self.backgroundContext);
         }
         return;
     }
+    
+    NSManagedObject *object = [self targetObject];
+    if (!object) {
+        BrokerWarningLog(@"Could not find object!");
+        return;
+    }
 
+    //
     // Flat JSON
+    //
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-        
-        NSManagedObject *object = [self targetObject];
-        if (!object) {
-            BrokerWarningLog(@"Could not find object!");
-            return;
-        }
-        
         // Grab the entity property description for the current working objects name,
         BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
         
@@ -158,17 +97,15 @@
                    withDescription:description];
     }
     
+    //
     // Collection JSON
+    //
     if ([jsonObject isKindOfClass:[NSArray class]]) {
         
+        //
         // Is it a relationship on a target object?
+        //
         if (self.relationshipName) {
-            
-            NSManagedObject *object = [self targetObject];
-            if (!object) {
-                BrokerWarningLog(@"Could not find object!");
-                return;
-            }
             // Grab the entity property description for the current working objects name,
             BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
             
@@ -180,11 +117,12 @@
             return;
         }
         
+        //
         // Is it a collection of entities?
+        //
         if (self.entityDescription) {
             [self processJSONCollection:jsonObject 
         asEntitiesWithEntityDescription:self.entityDescription];
-            
             return;
         }
         
@@ -311,16 +249,6 @@
                       forKey:property];        
         }
     }
-}
-
-- (id)applyJSONPreFilterBlockToJSONObject:(id)jsonObject
-{    
-    id newJSONObject = self.preFilterBlock(self.backgroundContext, jsonObject);
-    
-    NSAssert(newJSONObject, @"JSON Pre-filter blocks must not return nil! Did you forget to return a value with your block?");
-    if (!newJSONObject) return jsonObject;
-    
-    return newJSONObject;
 }
 
 #pragma mark - Accessors

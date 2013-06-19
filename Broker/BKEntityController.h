@@ -47,4 +47,10 @@
           forProperty:(NSString *)property
              onEntity:(NSString *)entity;
 
+- (void)processJSONObject:(NSDictionary *)json
+          usingQueueNamed:(NSString *)queueName
+   asArrayOfEntitiesNamed:(NSString *)entityName
+    contextDidChangeBlock:(void (^)())didChangeBlock
+          completionBlock:(void (^)())completionBlock;
+
 @end
