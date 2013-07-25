@@ -12,7 +12,6 @@
 		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
-		DB4C0E2C143D2F4F0090F5E3 /* Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E2B143D2F4F0090F5E3 /* Broker.m */; };
 		DB4C0E34143D2F4F0090F5E3 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E33143D2F4F0090F5E3 /* SenTestingKit.framework */; };
 		DB4C0E37143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
 		DB4C0E40143D2F4F0090F5E3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DB4C0E3E143D2F4F0090F5E3 /* InfoPlist.strings */; };
@@ -25,7 +24,6 @@
 		DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
 		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
-		DBA5F95C145610C500EBFF68 /* Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB4C0E2A143D2F4F0090F5E3 /* Broker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DBBC61D81761855C007D0B76 /* BKEntityController.h in Headers */ = {isa = PBXBuildFile; fileRef = DBBC61D61761855C007D0B76 /* BKEntityController.h */; };
 		DBBC61D91761855C007D0B76 /* BKEntityController.m in Sources */ = {isa = PBXBuildFile; fileRef = DBBC61D71761855C007D0B76 /* BKEntityController.m */; };
 		DBC8EBAD16FCD48900987EB2 /* BrokerHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = DBC8EBAC16FCD48900987EB2 /* BrokerHeaders.h */; };
@@ -33,8 +31,8 @@
 		DBFF95CD143D9060008511EA /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
 		DBFF95D3143E17D9008511EA /* BrokerTestsHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95D2143E17D9008511EA /* BrokerTestsHelpers.m */; };
 		DBFF95D5143E187D008511EA /* TestResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DBFF95D4143E187D008511EA /* TestResources.bundle */; };
-		DBFF95EB143E568C008511EA /* BKEntityPropertiesDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DBFF95E9143E568C008511EA /* BKEntityPropertiesDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DBFF95EC143E568C008511EA /* BKEntityPropertiesDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95EA143E568C008511EA /* BKEntityPropertiesDescription.m */; };
+		DBFF95EB143E568C008511EA /* BKEntityDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DBFF95E9143E568C008511EA /* BKEntityDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DBFF95EC143E568C008511EA /* BKEntityDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95EA143E568C008511EA /* BKEntityDescription.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,8 +110,8 @@
 		DBFF95D1143E17D9008511EA /* BrokerTestsHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrokerTestsHelpers.h; sourceTree = "<group>"; };
 		DBFF95D2143E17D9008511EA /* BrokerTestsHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrokerTestsHelpers.m; sourceTree = "<group>"; };
 		DBFF95D4143E187D008511EA /* TestResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TestResources.bundle; sourceTree = "<group>"; };
-		DBFF95E9143E568C008511EA /* BKEntityPropertiesDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKEntityPropertiesDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		DBFF95EA143E568C008511EA /* BKEntityPropertiesDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKEntityPropertiesDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		DBFF95E9143E568C008511EA /* BKEntityDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKEntityDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		DBFF95EA143E568C008511EA /* BKEntityDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKEntityDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,8 +197,8 @@
 				DBBC61D71761855C007D0B76 /* BKEntityController.m */,
 				DB4C0E2A143D2F4F0090F5E3 /* Broker.h */,
 				DB4C0E2B143D2F4F0090F5E3 /* Broker.m */,
-				DBFF95E9143E568C008511EA /* BKEntityPropertiesDescription.h */,
-				DBFF95EA143E568C008511EA /* BKEntityPropertiesDescription.m */,
+				DBFF95E9143E568C008511EA /* BKEntityDescription.h */,
+				DBFF95EA143E568C008511EA /* BKEntityDescription.m */,
 				DB4C0E54143D334C0090F5E3 /* BKAttributeDescription.h */,
 				DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */,
 				DB576E0B14572D0F006021CE /* BKJSONOperation.h */,
@@ -253,8 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB4C0E56143D334C0090F5E3 /* BKAttributeDescription.h in Headers */,
-				DBFF95EB143E568C008511EA /* BKEntityPropertiesDescription.h in Headers */,
-				DBA5F95C145610C500EBFF68 /* Broker.h in Headers */,
+				DBFF95EB143E568C008511EA /* BKEntityDescription.h in Headers */,
 				DB576E0D14572D0F006021CE /* BKJSONOperation.h in Headers */,
 				DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */,
 				DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */,
@@ -394,9 +391,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB4C0E2C143D2F4F0090F5E3 /* Broker.m in Sources */,
 				DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */,
-				DBFF95EC143E568C008511EA /* BKEntityPropertiesDescription.m in Sources */,
+				DBFF95EC143E568C008511EA /* BKEntityDescription.m in Sources */,
 				DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */,
 				DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */,
 				DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */,

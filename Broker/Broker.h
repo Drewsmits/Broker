@@ -27,9 +27,8 @@
 #import <CoreData/CoreData.h>
 #import <Conductor/Conductor.h>
 
-#import "BKEntityPropertiesDescription.h"
+#import "BKEntityDescription.h"
 #import "BKAttributeDescription.h"
-#import "BKRelationshipDescription.h"
 #import "BKJSONOperation.h"
 
 @interface Broker : CDQueueController
@@ -210,7 +209,7 @@ asCollectionOfEntitiesNamed:(NSString *)entityName
 - (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)attribute 
                                                onEntityName:(NSString *)entityName;
 
-- (BKRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)relationship 
+- (NSRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)relationship
                                                      onEntityName:(NSString *)entityName;
 
 - (BKEntityPropertiesDescription *)destinationEntityPropertiesDescriptionForRelationship:(NSString *)relationship

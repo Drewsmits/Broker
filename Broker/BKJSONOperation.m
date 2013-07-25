@@ -25,11 +25,14 @@
 
 #import "BKJSONOperation.h"
 
-#import "Broker.h"
+#import "BKEntityController.h"
+#import "BKEntityDescription.h"
 #import "NSManagedObject+Broker.h"
 #import "NSManagedObjectContext+Broker.h"
 
 @interface BKJSONOperation ()
+
+@property (nonatomic, assign) BKJSONOperationType type;
 
 @end
 
@@ -40,6 +43,44 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
++ (BKJSONOperation *)operationForJSONObject:(NSDictionary *)JSONObject
+                                       type:(BKJSONOperationType)type
+                                 controller:(BKEntityController *)controller
+                                    context:(NSManagedObjectContext *)context
+                            completionBlock:(void (^)())completionBlock
+{
+    BKJSONOperation *operation = [BKJSONOperation new];
+    
+    operation.type = type;
+    operation.JSONObject = JSONObject;
+    
+    //
+    // This is the type of object the collection objects will be turned into
+    //
+    BKEntityPropertiesDescription *description = [self entityPropertyDescriptionForEntityName:entityName];
+    
+    if (!description) {
+        BrokerWarningLog(@"No entity description found!  Did you remember to register it?");
+        return;
+    }
+    
+    operation.entityDescription = description;
+    
+    //
+    // Operation will build thread safe context from main context
+    //
+    operation.mainContext = context;
+    
+    //
+    // Block
+    //
+    operation.completionBlock = completionBlock;
+    
+    return operation;
+}
+
+#pragma mark - Conductor
+
 - (void)work
 {
     //
@@ -49,6 +90,30 @@
                                              selector:@selector(contextDidChange:) 
                                                  name:NSManagedObjectContextObjectsDidChangeNotification
                                                object:self.backgroundContext];
+    
+    //
+    // Execute empty JSON block if empty
+    //
+    if (!self.JSONObject || [self.JSONObject count] == 0) {
+        if (self.emptyJSONBlock) {
+            self.emptyJSONBlock(self.backgroundContext);
+        }
+        return;
+    }
+    
+    switch (self.type) {
+        case BKJSONOperationTypeObject:
+            [self processJSONObject:self.JSONObject];
+            break;
+        case BKJSONOperationTypeCollection:
+            [self processJSONCollection:self.JSONObject];
+            break;
+        case BKJSONOperationTypeRelationshipCollection:
+            
+            break;
+        default:
+            break;
+    }
     
     //
     // Process
@@ -62,24 +127,49 @@
 }
 
 #pragma mark - Processing
-                        
-- (void)processJSONObject:(NSDictionary *)jsonObject
-{    
+
+- (void)processJSONObject:(NSDictionary *)JSONObject
+{
     //
-    // Execute empty JSON block if empty
+    // If not flat JSON, bail
     //
-    if (!jsonObject || [jsonObject count] == 0) {
-        if (self.emptyJSONBlock) {
-            self.emptyJSONBlock(self.backgroundContext);
-        }
+    if (![JSONObject isKindOfClass:[NSDictionary class]]) {
         return;
     }
     
+    //
+    // Grab the target object
+    //
     NSManagedObject *object = [self targetObject];
-    if (!object) {
-        BrokerWarningLog(@"Could not find object!");
-        return;
-    }
+
+    //
+    // Grab the entity property description for the current working objects name,
+    //
+    BKEntityDescription *entityDescription = [self targetEntityDescriptionForObject:object];
+    
+    //
+    // Transform flat JSON to use local property names and native object types
+    //
+    NSDictionary *transformedDict = [BKEntityController transformJSONObject:JSONObject
+                                                      withEntityDescription:self.entityDescription];
+    
+    [self processJSONSubObject:transformedDict
+                     forObject:object
+               withDescription:self.description];
+}
+
+- (void)processJSONCollection:(NSDictionary *)JSONObject
+{
+    
+}
+                        
+- (void)processJSONObject:(NSDictionary *)jsonObject
+{        
+//    NSManagedObject *object = [self targetObject];
+//    if (!object) {
+//        BrokerWarningLog(@"Could not find object!");
+//        return;
+//    }
 
     //
     // Flat JSON
@@ -197,8 +287,12 @@
 
 - (void)processJSONSubObject:(NSDictionary *)subDictionary 
                    forObject:(NSManagedObject *)object 
-             withDescription:(BKEntityPropertiesDescription *)description
+             withDescription:(BKEntityDescription *)description
 {    
+    
+    
+    
+    
     for (NSString *property in subDictionary) {
         if ([description isPropertyRelationship:property]) {
             
@@ -258,7 +352,7 @@
     //
     // Grabs the object from the threaded context (thread safe)
     //
-    __block NSManagedObject *object = nil;
+    __block NSManagedObject *object;
     
     [self.backgroundContext performBlockAndWait:^ {
         object = [self.backgroundContext objectWithID:self.objectID];

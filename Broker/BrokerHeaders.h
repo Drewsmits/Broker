@@ -9,7 +9,7 @@
 #ifndef Broker_BrokerHeaders_h
 #define Broker_BrokerHeaders_h
 
-#import "Broker.h"
+//#import "Broker.h"
 #import "BKEntityPropertiesDescription.h"
 #import "BKAttributeDescription.h"
 #import "BKRelationshipDescription.h"

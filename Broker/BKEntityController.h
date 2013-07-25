@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class BKEntityDescription;
+
 @interface BKEntityController : NSObject
 
 /**
@@ -47,10 +49,13 @@
           forProperty:(NSString *)property
              onEntity:(NSString *)entity;
 
-- (void)processJSONObject:(NSDictionary *)json
++ (void)processJSONObject:(NSDictionary *)json
           usingQueueNamed:(NSString *)queueName
    asArrayOfEntitiesNamed:(NSString *)entityName
     contextDidChangeBlock:(void (^)())didChangeBlock
           completionBlock:(void (^)())completionBlock;
+
++ (NSDictionary *)transformJSONObject:(NSDictionary *)JSONObject
+                withEntityDescription:(BKEntityDescription *)entityDescription;
 
 @end

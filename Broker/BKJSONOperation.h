@@ -26,7 +26,15 @@
 #import "Conductor/CDCoreDataOperation.h"
 
 @class Broker;
-@class BKEntityPropertiesDescription;
+@class BKEntityController;
+@class BKEntityDescription;
+
+typedef enum {
+    BKJSONOperationTypeUnknown,
+    BKJSONOperationTypeObject,
+    BKJSONOperationTypeCollection,
+    BKJSONOperationTypeRelationshipCollection,
+} BKJSONOperationType;
 
 typedef void (^BKJSONOperationContextDidChangeBlock)(NSManagedObjectContext *context, NSNotification *notification);
 typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
@@ -38,7 +46,7 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  */
 @property (nonatomic, strong) NSDictionary *JSONObject;
 @property (nonatomic, strong) NSManagedObjectID *objectID;
-@property (nonatomic, strong) BKEntityPropertiesDescription *entityDescription;
+@property (nonatomic, strong) BKEntityDescription *entityDescription;
 @property (nonatomic, copy) NSString *relationshipName;
 
 /**
@@ -53,5 +61,11 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  all the local tweets you have.
  */
 @property (nonatomic, copy) BKJSONOperationEmptyJSONBlock emptyJSONBlock;
+
++ (BKJSONOperation *)operationForJSONObject:(NSDictionary *)JSONObject
+                                       type:(BKJSONOperationType)type
+                                 controller:(BKEntityController *)controller
+                                    context:(NSManagedObjectContext *)context
+                            completionBlock:(void (^)())completionBlock;
 
 @end

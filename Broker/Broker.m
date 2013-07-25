@@ -118,6 +118,8 @@
     NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:entityName 
                                                             inManagedObjectContext:self.mainContext];
     
+    
+    
     // Build description of entity properties
     BKEntityPropertiesDescription *desc = [BKEntityPropertiesDescription descriptionForEntity:object.entity 
                                                                          withPropertiesByName:object.entity.propertiesByName

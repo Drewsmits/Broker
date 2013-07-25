@@ -23,14 +23,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
-
 #import "BKAttributeDescription.h"
-#import "BKRelationshipDescription.h"
 
-
-@interface BKEntityPropertiesDescription : NSEntityDescription
-
+@interface BKEntityDescription : NSEntityDescription
 
 /**
   The name of the property used as the entity's primary key.  This needs to be
@@ -59,14 +54,16 @@
  */
 @property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
 
++ (BKEntityDescription *)descriptionForObject:(NSManagedObject *)object;
+
 /**
   Creates a new BKEntityPropertiesDescription where the entityName is the name 
   of the entity, the properties is the
  */
-+ (BKEntityPropertiesDescription *)descriptionForEntity:(NSEntityDescription *)entity 
-                                   withPropertiesByName:(NSDictionary *)properties
-                                andMapNetworkProperties:(NSArray *)networkProperties
-                                      toLocalProperties:(NSArray *)localProperties;
++ (BKEntityDescription *)descriptionForEntity:(NSEntityDescription *)entity
+                         withPropertiesByName:(NSDictionary *)properties
+                      andMapNetworkProperties:(NSArray *)networkProperties
+                            toLocalProperties:(NSArray *)localProperties;
 
 /**
  Map several network properties to a local properties for an entity that is already 
@@ -84,17 +81,17 @@
 /**
   Returns the entity property description given the property name
  */
-- (BKPropertyDescription *)descriptionForProperty:(NSString *)property;
+- (NSPropertyDescription *)descriptionForProperty:(NSString *)property;
 
 /**
   Returns the entity's property description for the local property name
  */
-- (BKPropertyDescription *)descriptionForLocalProperty:(NSString *)property;
+- (NSPropertyDescription *)descriptionForLocalProperty:(NSString *)property;
 
 /**
   Returns the entity's property description for the network property name
  */
-- (BKPropertyDescription *)descriptionForNetworkProperty:(NSString *)property;
+- (NSPropertyDescription *)descriptionForNetworkProperty:(NSString *)property;
 
 /**
  Returns the entity's attribute description for the property
@@ -117,7 +114,7 @@
   on the entity.  Returns nil if property is not in the model, or if property is
   not a relationship.
  */
-- (BKRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)property;
+- (NSRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)property;
 
 /**
   Returns true if the property is a relationship
@@ -128,5 +125,7 @@
   Returns the destination entity name for the relationship name
  */
 - (NSString *)destinationEntityNameForRelationship:(NSString *)relationship;
+
+- (NSDictionary *)transformJSONObject:(NSDictionary *)JSONObject;
 
 @end

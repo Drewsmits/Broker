@@ -7,11 +7,11 @@
 //
 
 #import "NSManagedObjectContext+Broker.h"
-#import "BKEntityPropertiesDescription.h"
+#import "BKEntityDescription.h"
 
 @implementation NSManagedObjectContext (Broker)
 
-- (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityPropertiesDescription *)description 
+- (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityDescription *)description 
                                         withPrimaryKeyValue:(id)value
                                                shouldCreate:(BOOL)create 
 {
@@ -19,7 +19,7 @@
     if (!description) return nil;
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:description.entityDescription];
+    [request setEntity:description];
     request.includesSubentities = NO;
     
     NSArray *fetchedObjects;
@@ -35,7 +35,7 @@
     }
     
     if (create && fetchedObjects.count == 0) {
-        NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.entityName 
+        NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.name
                                                                 inManagedObjectContext:self];
         return object;
     } else if (fetchedObjects.count >= 1) {
