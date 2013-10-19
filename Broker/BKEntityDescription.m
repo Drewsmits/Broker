@@ -87,10 +87,11 @@
 - (void)mapNetworkProperties:(NSArray *)networkProperties
            toLocalProperties:(NSArray *)localProperties
 {
-    NSAssert((networkProperties.count == localProperties.count), @"Mapping network properties to local properties expects arrays of the same size");
+    NSAssert((networkProperties.count == localProperties.count),
+             @"Mapping network properties to local properties expects arrays of the same size");
     
-    if (networkProperties.count != localProperties.count) return;
     if (!networkProperties || !localProperties) return;
+    if (networkProperties.count != localProperties.count) return;
     
     for (int i = 0; i < localProperties.count; i++) {
         
@@ -123,15 +124,16 @@
 
 - (NSPropertyDescription *)descriptionForLocalProperty:(NSString *)property
 {
-    return [self.propertiesDescriptions objectForKey:property];
+    return self.propertiesDescriptions[property];
 }
 
-- (NSPropertyDescription *)descriptionForNetworkProperty:(NSString *)property
+- (NSPropertyDescription *)descriptionForNetworkProperty:(NSString *)networkProperty
 {    
-    NSPropertyDescription *desc = [self descriptionForLocalProperty:[self.networkToLocalPropertiesMap objectForKey:property]];
+    NSString *localProperty     = self.networkToLocalPropertiesMap[networkProperty];
+    NSPropertyDescription *desc = [self descriptionForLocalProperty:localProperty];
 
     if (!desc) {
-        BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", property, self.name);
+        BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", networkProperty, self.name);
     }
     
     return desc;

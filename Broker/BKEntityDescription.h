@@ -60,10 +60,10 @@
   Creates a new BKEntityPropertiesDescription where the entityName is the name 
   of the entity, the properties is the
  */
-+ (BKEntityDescription *)descriptionForEntity:(NSEntityDescription *)entity
-                         withPropertiesByName:(NSDictionary *)properties
-                      andMapNetworkProperties:(NSArray *)networkProperties
-                            toLocalProperties:(NSArray *)localProperties;
+//+ (BKEntityDescription *)descriptionForEntity:(NSEntityDescription *)entity
+//                         withPropertiesByName:(NSDictionary *)properties
+//                      andMapNetworkProperties:(NSArray *)networkProperties
+//                            toLocalProperties:(NSArray *)localProperties;
 
 /**
  Map several network properties to a local properties for an entity that is already 
