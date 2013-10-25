@@ -11,15 +11,12 @@
 
 @implementation NSManagedObjectContext (Broker)
 
-- (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityDescription *)description 
-                                        withPrimaryKeyValue:(id)value
-                                               shouldCreate:(BOOL)create 
+- (NSManagedObject *)findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
+                                            primaryKeyValue:(id)value
+                                               shouldCreate:(BOOL)create
 {
-    NSAssert(description, @"Must have a description");
-    if (!description) return nil;
-    
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:description];
+    [request setEntity:description.internalEntityDescription];
     request.includesSubentities = NO;
     
     NSArray *fetchedObjects;
@@ -35,7 +32,7 @@
     }
     
     if (create && fetchedObjects.count == 0) {
-        NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.name
+        NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.internalEntityDescription.name
                                                                 inManagedObjectContext:self];
         return object;
     } else if (fetchedObjects.count >= 1) {
@@ -43,7 +40,7 @@
     }
     
     return nil;
-}
 
+}
 
 @end

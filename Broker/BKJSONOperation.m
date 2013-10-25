@@ -32,6 +32,15 @@
 
 @interface BKJSONOperation ()
 
+/*!
+ Some cool stuff BKEntityDescription
+ */
+@property (nonatomic, strong, readwrite) id json;
+
+@property (nonatomic, weak) BKEntityController *entityController;
+
+@property (nonatomic, strong) NSString *entityName;
+
 @property (nonatomic, assign) BKJSONOperationType type;
 
 @end
@@ -43,37 +52,19 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (BKJSONOperation *)operationForJSONObject:(NSDictionary *)JSONObject
-                                       type:(BKJSONOperationType)type
-                                 controller:(BKEntityController *)controller
-                                    context:(NSManagedObjectContext *)context
-                            completionBlock:(void (^)())completionBlock
++ (BKJSONOperation *)operationForJSON:(id)json
+                          description:(BKEntityDescription *)description
+                                 type:(BKJSONOperationType)type
+                           controller:(BKEntityController *)controller
+                              context:(NSManagedObjectContext *)context
+                      completionBlock:(void (^)())completionBlock
 {
     BKJSONOperation *operation = [BKJSONOperation new];
     
     operation.type = type;
-    operation.JSONObject = JSONObject;
-    
-    //
-    // This is the type of object the collection objects will be turned into
-    //
-    BKEntityPropertiesDescription *description = [self entityPropertyDescriptionForEntityName:entityName];
-    
-    if (!description) {
-        BrokerWarningLog(@"No entity description found!  Did you remember to register it?");
-        return;
-    }
-    
-    operation.entityDescription = description;
-    
-    //
-    // Operation will build thread safe context from main context
-    //
+    operation.json = json;
+    operation.entityController = controller;
     operation.mainContext = context;
-    
-    //
-    // Block
-    //
     operation.completionBlock = completionBlock;
     
     return operation;
@@ -84,41 +75,31 @@
 - (void)work
 {
     //
-    // Register for change
-    //
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contextDidChange:) 
-                                                 name:NSManagedObjectContextObjectsDidChangeNotification
-                                               object:self.backgroundContext];
-    
-    //
     // Execute empty JSON block if empty
     //
-    if (!self.JSONObject || [self.JSONObject count] == 0) {
-        if (self.emptyJSONBlock) {
-            self.emptyJSONBlock(self.backgroundContext);
-        }
+    if (!self.json || [self.json count] == 0) {
         return;
     }
     
     switch (self.type) {
         case BKJSONOperationTypeObject:
-            [self processJSONObject:self.JSONObject];
+            [self processJSONObject:self.json
+                      asEntityNamed:self.entityName];
             break;
         case BKJSONOperationTypeCollection:
-            [self processJSONCollection:self.JSONObject];
+            [self processJSONCollection:self.json
+                        asEntitiesNamed:self.entityName];
             break;
         case BKJSONOperationTypeRelationshipCollection:
-            
+//            [self processJSONCollection:self.JSONObject
+//                        forRelationship:<#(NSString *)#>
+//                               onObject:<#(NSManagedObject *)#>]
             break;
         default:
             break;
     }
     
-    //
-    // Process
-    //
-    [self processJSONObject:self.JSONObject];
+    
 }
 
 - (void)cleanup
@@ -128,249 +109,359 @@
 
 #pragma mark - Processing
 
-- (void)processJSONObject:(NSDictionary *)JSONObject
+- (NSManagedObject *)processJSONObject:(NSDictionary *)json
+                         asEntityNamed:(NSString *)entityName
 {
     //
-    // If not flat JSON, bail
+    // Get the entity description
     //
-    if (![JSONObject isKindOfClass:[NSDictionary class]]) {
-        return;
+    BKEntityDescription *entityDescription = [self.entityController entityDescriptionForEntityName:entityName];
+    
+    //
+    // Get the primary key
+    //
+    id primaryKey = [self primaryKeyForJSON:json];
+    if (!primaryKey) {
+        NSAssert(nil, @"doh!");
     }
     
     //
-    // Grab the target object
+    // Create a target object if it doesn't alreay exist
     //
-    NSManagedObject *object = [self targetObject];
-
-    //
-    // Grab the entity property description for the current working objects name,
-    //
-    BKEntityDescription *entityDescription = [self targetEntityDescriptionForObject:object];
+    NSManagedObject *managedObject = [self.backgroundContext findOrCreateObjectForEntityDescription:entityDescription
+                                                                                    primaryKeyValue:primaryKey
+                                                                                       shouldCreate:YES];
     
     //
-    // Transform flat JSON to use local property names and native object types
+    // For each property in the JSON, if it is a relationship, process the relationship.
+    // Otherwise it's just a flat attribute, so set the value.
     //
-    NSDictionary *transformedDict = [BKEntityController transformJSONObject:JSONObject
-                                                      withEntityDescription:self.entityDescription];
-    
-    [self processJSONSubObject:transformedDict
-                     forObject:object
-               withDescription:self.description];
-}
-
-- (void)processJSONCollection:(NSDictionary *)JSONObject
-{
-    
-}
-                        
-- (void)processJSONObject:(NSDictionary *)jsonObject
-{        
-//    NSManagedObject *object = [self targetObject];
-//    if (!object) {
-//        BrokerWarningLog(@"Could not find object!");
-//        return;
-//    }
-
-    //
-    // Flat JSON
-    //
-    if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-        // Grab the entity property description for the current working objects name,
-        BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
-        
-        // Transform flat JSON to use local property names and native object types
-        NSDictionary *transformedDict = [self.broker transformJSONDictionary:(NSDictionary *)jsonObject 
-                                            usingEntityPropertiesDescription:description];
-        
-        [self processJSONSubObject:transformedDict
-                         forObject:object
-                   withDescription:description];
-    }
-    
-    //
-    // Collection JSON
-    //
-    if ([jsonObject isKindOfClass:[NSArray class]]) {
-        
-        //
-        // Is it a relationship on a target object?
-        //
-        if (self.relationshipName) {
-            // Grab the entity property description for the current working objects name,
-            BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
-            
-            [self processJSONCollection:jsonObject 
-                              forObject:object 
-                  withEntityDescription:description 
-                        forRelationship:self.relationshipName];
-            
-            return;
-        }
-        
-        //
-        // Is it a collection of entities?
-        //
-        if (self.entityDescription) {
-            [self processJSONCollection:jsonObject 
-        asEntitiesWithEntityDescription:self.entityDescription];
-            return;
-        }
-        
-        BrokerWarningLog(@"Neither relationship name or entity description specified!");
-    }
-    
-}
-
-- (void)processJSONCollection:(NSArray *)collection
-                    forObject:(NSManagedObject *)object
-        withEntityDescription:(BKEntityPropertiesDescription *)description
-              forRelationship:(NSString *)relationship
-{    
-    NSString *destinationEntityName;
-    if (relationship) {
-        destinationEntityName = [description destinationEntityNameForRelationship:relationship];
-    } else {
-        destinationEntityName = description.entityName;
-    }
-    
-    BKEntityPropertiesDescription *destinationEntityDesc = [self.broker entityPropertyDescriptionForEntityName:destinationEntityName];
-    
-    // Check for registration
-    NSAssert(destinationEntityDesc, @"Entity for relationship \"%@\" is not registered with Broker instance!", relationship);
-    if (!destinationEntityDesc) return;
-    
-    // Fetch the context relationship objects
-    NSMutableSet *relationshipObjects = [object mutableSetValueForKey:relationship];
-    
-    // Create relationship objects to add
-    NSSet *objectsToAdd = [self processJSONCollection:collection 
-                    asEntitiesWithEntityDescription:destinationEntityDesc];
-    
-    [relationshipObjects unionSet:objectsToAdd];
-}
-
-- (NSSet *)processJSONCollection:(NSArray *)collection 
- asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description
-{    
-    NSMutableSet *collectionObjects = [NSMutableSet setWithCapacity:collection.count];
-    
-    for (id dictionary in collection) {
-        
-        NSAssert([dictionary isKindOfClass:[NSDictionary class]], @"Collection object must be a dictionary");
-        if (![dictionary isKindOfClass:[NSDictionary class]]) continue;
-        
-        // Transform
-        NSDictionary *transformedDict = [self.broker transformJSONDictionary:(NSDictionary *)dictionary 
-                                            usingEntityPropertiesDescription:description];
-        
-        // Get the primary key value
-        id value = [transformedDict objectForKey:description.primaryKey];
-        
-        NSManagedObject *collectionObject = [self.backgroundContext findOrCreateObjectForEntityDescribedBy:description 
-                                                                                       withPrimaryKeyValue:value
-                                                                                              shouldCreate:YES];
-        
-        if (!collectionObject) {
-            BrokerWarningLog(@"Got nil back for collection object!");
-            continue;
-        }
-        
-        [self processJSONSubObject:transformedDict
-                         forObject:collectionObject
-                   withDescription:description];
-        
-        [collectionObjects addObject:collectionObject];
-    }
-
-    return collectionObjects;
-}
-
-- (void)processJSONSubObject:(NSDictionary *)subDictionary 
-                   forObject:(NSManagedObject *)object 
-             withDescription:(BKEntityDescription *)description
-{    
-    
-    
-    
-    
-    for (NSString *property in subDictionary) {
-        if ([description isPropertyRelationship:property]) {
-            
-            id value = [subDictionary valueForKey:property];            
-            
-            BKEntityPropertiesDescription *destinationEntityDesc = [self.broker destinationEntityPropertiesDescriptionForRelationship:property
-                                                                                                                        onEntityNamed:object.entity.name];
-            
-            if (!destinationEntityDesc) {
-                BrokerWarningLog(@"Destination entity for relationship \"%@\" on entity \"%@\" not registered with Broker!  Skipping...", property, [object.objectID.entity name]);
-                continue;
-            }
-            
-            //
-            // Flat
-            //
-            if ([value isKindOfClass:[NSDictionary class]]) {
-                
-                NSDictionary *transformedDict = [self.broker transformJSONDictionary:value 
-                                                    usingEntityPropertiesDescription:destinationEntityDesc];
-                
-                // Get the primary key value
-                id primaryKeyValue = [transformedDict objectForKey:destinationEntityDesc.primaryKey];
-                
-                NSManagedObject *relationshipObject = [self.backgroundContext findOrCreateObjectForEntityDescribedBy:destinationEntityDesc 
-                                                                                                 withPrimaryKeyValue:primaryKeyValue
-                                                                                                        shouldCreate:YES];                
-                [self processJSONSubObject:transformedDict
-                                 forObject:relationshipObject
-                           withDescription:destinationEntityDesc];
-                
-                // Set the destination object
-                [object setValue:relationshipObject forKey:property];
-            }
-            
-            //
+    for (NSString *property in json) {
+        id object = [self objectForProperty:property fromJSON:json];
+        if ([entityDescription isPropertyRelationship:property]) {
             // Collection
-            //
-            if ([value isKindOfClass:[NSArray class]]) {
-                [self processJSONCollection:value
-                                  forObject:object
-                      withEntityDescription:description
-                            forRelationship:property];
+            if ([object isKindOfClass:[NSArray class]]) {
+                [self processJSONCollection:object
+                            forRelationship:property
+                                   onObject:managedObject];
             }
-            
+            // Flat
+            if ([object isKindOfClass:[NSDictionary class]]) {
+                NSManagedObject *destinationObject = [self processJSONObject:object
+                                                               asEntityNamed:entityName];
+                [managedObject setValue:destinationObject
+                                 forKey:property];
+            }
         } else {
-            [object setValue:[subDictionary valueForKey:property]
-                      forKey:property];        
+            [managedObject setValue:object
+                             forKey:property];
         }
     }
+    
+    return managedObject;
 }
 
-#pragma mark - Accessors
+- (void)processJSONCollection:(NSArray *)json
+              forRelationship:(NSString *)relationshipName
+                     onObject:(NSManagedObject *)object
+{
+    //
+    // Grab the relationship description
+    //
+    NSRelationshipDescription *relationshipDescription = [self.entityDescription relationshipDescriptionForProperty:relationshipName];
+    if (!relationshipDescription) return;
+    
+    //
+    // Fetch the context relationship objects
+    //
+    NSMutableSet *existingRelationshipObjects = [object mutableSetValueForKey:relationshipDescription.name];
+    
+    //
+    // Create relationship objects to add
+    //
+    NSArray *objectsToAdd = [self processJSONCollection:json
+                                        asEntitiesNamed:relationshipDescription.destinationEntity.name];
+    
+    //
+    // Merge existing and new
+    //
+    [existingRelationshipObjects unionSet:[NSSet setWithArray:objectsToAdd]];
+}
 
-- (NSManagedObject *)targetObject
-{    
-    //
-    // Grabs the object from the threaded context (thread safe)
-    //
-    __block NSManagedObject *object;
-    
-    [self.backgroundContext performBlockAndWait:^ {
-        object = [self.backgroundContext objectWithID:self.objectID];
-    }];
-        
-    NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
-    if ([object hasBeenDeleted]) return nil;
-    
+- (NSArray *)processJSONCollection:(NSArray *)json
+              asEntitiesNamed:(NSString *)entityName
+{
+    NSMutableArray *managedObjects = [NSMutableArray arrayWithCapacity:json.count];
+    for (NSDictionary *object in json) {
+        NSManagedObject *managedObject = [self processJSONObject:object
+                                                   asEntityNamed:entityName];
+        [managedObjects addObject:managedObject];
+    }
+    return managedObjects;
+}
+
+#pragma mark - WHERE TO PUT
+
+- (id)primaryKeyForJSON:(NSDictionary *)JSON
+{
+    return [self objectForProperty:self.entityDescription.primaryKey
+                          fromJSON:JSON];
+}
+
+- (id)objectForProperty:(NSString *)property
+               fromJSON:(NSDictionary *)JSON
+{
+    id value = JSON[property];
+    id object = [self.entityDescription objectFromValue:value
+                                            forProperty:property];
     return object;
 }
 
-- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object
-{
-    BKEntityPropertiesDescription *description = [self.broker entityPropertyDescriptionForEntityName:object.entity.name];
-    NSAssert(description, @"Entity named \"%@\" is not registered with Broker instance!", object.entity.name);
-    return description;
-}
-                        
+#pragma mark - Old
+
+//- (void)processJSONObject:(NSDictionary *)JSONObject
+//{
+//    //
+//    // If not flat JSON, bail
+//    //
+//    if (![JSONObject isKindOfClass:[NSDictionary class]]) {
+//        return;
+//    }
+//    
+//    //
+//    // Grab the target object
+//    //
+//    NSManagedObject *object = [self targetObject];
+//
+//    //
+//    // Grab the entity property description for the current working objects name,
+//    //
+//    BKEntityDescription *entityDescription = [self targetEntityDescriptionForObject:object];
+//    
+//    //
+//    // Transform flat JSON to use local property names and native object types
+//    //
+//    NSDictionary *transformedDict = [BKEntityController transformJSONObject:JSONObject
+//                                                      withEntityDescription:self.entityDescription];
+//    
+//    [self processJSONSubObject:transformedDict
+//                     forObject:object
+//               withDescription:self.description];
+//}
+
+//- (void)processJSONCollection:(NSDictionary *)JSONObject
+//{
+//    
+//}
+
+//- (void)processJSONObject:(NSDictionary *)jsonObject
+//{        
+////    NSManagedObject *object = [self targetObject];
+////    if (!object) {
+////        BrokerWarningLog(@"Could not find object!");
+////        return;
+////    }
+//
+//    //
+//    // Flat JSON
+//    //
+//    if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+//        // Grab the entity property description for the current working objects name,
+//        BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
+//        
+//        // Transform flat JSON to use local property names and native object types
+//        NSDictionary *transformedDict = [self.broker transformJSONDictionary:(NSDictionary *)jsonObject 
+//                                            usingEntityPropertiesDescription:description];
+//        
+//        [self processJSONSubObject:transformedDict
+//                         forObject:object
+//                   withDescription:description];
+//    }
+//    
+//    //
+//    // Collection JSON
+//    //
+//    if ([jsonObject isKindOfClass:[NSArray class]]) {
+//        
+//        //
+//        // Is it a relationship on a target object?
+//        //
+//        if (self.relationshipName) {
+//            // Grab the entity property description for the current working objects name,
+//            BKEntityPropertiesDescription *description = [self targetEntityDescriptionForObject:object];
+//            
+//            [self processJSONCollection:jsonObject 
+//                              forObject:object 
+//                  withEntityDescription:description 
+//                        forRelationship:self.relationshipName];
+//            
+//            return;
+//        }
+//        
+//        //
+//        // Is it a collection of entities?
+//        //
+//        if (self.entityDescription) {
+//            [self processJSONCollection:jsonObject 
+//        asEntitiesWithEntityDescription:self.entityDescription];
+//            return;
+//        }
+//        
+//        BrokerWarningLog(@"Neither relationship name or entity description specified!");
+//    }
+//    
+//}
+
+//- (void)processJSONCollection:(NSArray *)collection
+//                    forObject:(NSManagedObject *)object
+//        withEntityDescription:(BKEntityPropertiesDescription *)description
+//              forRelationship:(NSString *)relationship
+//{    
+//    NSString *destinationEntityName;
+//    if (relationship) {
+//        destinationEntityName = [description destinationEntityNameForRelationship:relationship];
+//    } else {
+//        destinationEntityName = description.entityName;
+//    }
+//    
+//    BKEntityPropertiesDescription *destinationEntityDesc = [self.broker entityPropertyDescriptionForEntityName:destinationEntityName];
+//    
+//    // Check for registration
+//    NSAssert(destinationEntityDesc, @"Entity for relationship \"%@\" is not registered with Broker instance!", relationship);
+//    if (!destinationEntityDesc) return;
+//    
+//    // Fetch the context relationship objects
+//    NSMutableSet *relationshipObjects = [object mutableSetValueForKey:relationship];
+//    
+//    // Create relationship objects to add
+//    NSSet *objectsToAdd = [self processJSONCollection:collection 
+//                    asEntitiesWithEntityDescription:destinationEntityDesc];
+//    
+//    [relationshipObjects unionSet:objectsToAdd];
+//}
+
+//- (NSSet *)processJSONCollection:(NSArray *)collection 
+// asEntitiesWithEntityDescription:(BKEntityPropertiesDescription *)description
+//{    
+//    NSMutableSet *collectionObjects = [NSMutableSet setWithCapacity:collection.count];
+//    
+//    for (id dictionary in collection) {
+//        
+//        NSAssert([dictionary isKindOfClass:[NSDictionary class]], @"Collection object must be a dictionary");
+//        if (![dictionary isKindOfClass:[NSDictionary class]]) continue;
+//        
+//        // Transform
+//        NSDictionary *transformedDict = [self.broker transformJSONDictionary:(NSDictionary *)dictionary 
+//                                            usingEntityPropertiesDescription:description];
+//        
+//        // Get the primary key value
+//        id value = [transformedDict objectForKey:description.primaryKey];
+//        
+//        NSManagedObject *collectionObject = [self.backgroundContext findOrCreateObjectForEntityDescribedBy:description 
+//                                                                                       withPrimaryKeyValue:value
+//                                                                                              shouldCreate:YES];
+//        
+//        if (!collectionObject) {
+//            BrokerWarningLog(@"Got nil back for collection object!");
+//            continue;
+//        }
+//        
+//        [self processJSONSubObject:transformedDict
+//                         forObject:collectionObject
+//                   withDescription:description];
+//        
+//        [collectionObjects addObject:collectionObject];
+//    }
+//
+//    return collectionObjects;
+//}
+
+//- (void)processJSONSubObject:(NSDictionary *)subDictionary 
+//                   forObject:(NSManagedObject *)object 
+//             withDescription:(BKEntityDescription *)description
+//{    
+//    
+//    
+//    
+//    
+//    for (NSString *property in subDictionary) {
+//        if ([description isPropertyRelationship:property]) {
+//            
+//            id value = [subDictionary valueForKey:property];            
+//            
+//            BKEntityPropertiesDescription *destinationEntityDesc = [self.broker destinationEntityPropertiesDescriptionForRelationship:property
+//                                                                                                                        onEntityNamed:object.entity.name];
+//            
+//            if (!destinationEntityDesc) {
+//                BrokerWarningLog(@"Destination entity for relationship \"%@\" on entity \"%@\" not registered with Broker!  Skipping...", property, [object.objectID.entity name]);
+//                continue;
+//            }
+//            
+//            //
+//            // Flat
+//            //
+//            if ([value isKindOfClass:[NSDictionary class]]) {
+//                
+//                NSDictionary *transformedDict = [self.broker transformJSONDictionary:value 
+//                                                    usingEntityPropertiesDescription:destinationEntityDesc];
+//                
+//                // Get the primary key value
+//                id primaryKeyValue = [transformedDict objectForKey:destinationEntityDesc.primaryKey];
+//                
+//                NSManagedObject *relationshipObject = [self.backgroundContext findOrCreateObjectForEntityDescribedBy:destinationEntityDesc 
+//                                                                                                 withPrimaryKeyValue:primaryKeyValue
+//                                                                                                        shouldCreate:YES];                
+//                [self processJSONSubObject:transformedDict
+//                                 forObject:relationshipObject
+//                           withDescription:destinationEntityDesc];
+//                
+//                // Set the destination object
+//                [object setValue:relationshipObject forKey:property];
+//            }
+//            
+//            //
+//            // Collection
+//            //
+//            if ([value isKindOfClass:[NSArray class]]) {
+//                [self processJSONCollection:value
+//                                  forObject:object
+//                      withEntityDescription:description
+//                            forRelationship:property];
+//            }
+//            
+//        } else {
+//            [object setValue:[subDictionary valueForKey:property]
+//                      forKey:property];        
+//        }
+//    }
+//}
+
+#pragma mark - Accessors
+
+//- (NSManagedObject *)targetObject
+//{    
+//    //
+//    // Grabs the object from the threaded context (thread safe)
+//    //
+//    __block NSManagedObject *object;
+//    
+//    [self.backgroundContext performBlockAndWait:^ {
+//        object = [self.backgroundContext objectWithID:self.objectID];
+//    }];
+//        
+//    NSAssert(object, @"Object not found in store!  Did you remember to save the managed object context to get the URI?");
+//    if ([object hasBeenDeleted]) return nil;
+//    
+//    return object;
+//}
+
+//- (BKEntityPropertiesDescription *)targetEntityDescriptionForObject:(NSManagedObject *)object
+//{
+//    BKEntityPropertiesDescription *description = [self.broker entityPropertyDescriptionForEntityName:object.entity.name];
+//    NSAssert(description, @"Entity named \"%@\" is not registered with Broker instance!", object.entity.name);
+//    return description;
+//}
+
 #pragma mark - Core Data
 
 - (void)contextDidChange:(NSNotification *)notification 

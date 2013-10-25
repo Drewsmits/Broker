@@ -26,6 +26,32 @@
 #import "BKEntityDescription.h"
 #import "BKAttributeDescription.h"
 
+@interface BKEntityDescription ()
+
+@property (nonatomic, strong, readwrite) NSEntityDescription *internalEntityDescription;
+
+/**
+ The root key path used to when returned JSON is a nested resource
+ */
+@property (nonatomic, strong) NSString *rootKeyPath;
+
+/**
+ 
+ */
+@property (nonatomic, strong) NSMutableDictionary *propertiesDescriptions;
+
+/**
+ Dictionary used for fast key finding
+ */
+@property (nonatomic, strong, readwrite) NSMutableDictionary *networkToLocalPropertiesMap;
+
+/**
+ Dictionary used for fast key finding
+ */
+@property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
+
+@end
+
 @implementation BKEntityDescription
 
 - (id)init
@@ -38,15 +64,16 @@
     return self;
 }
 
-+ (BKEntityDescription *)descriptionForObject:(NSManagedObject *)object
++ (instancetype)descriptionForObject:(NSManagedObject *)object
 {
-    BKEntityDescription *description = (BKEntityDescription *)[object.entity copy];
+    BKEntityDescription *description = [BKEntityDescription new];
+    description.internalEntityDescription = [object.entity copy];
     
     //
     // Iterate through all properties and add to properties description.
     //
     NSMutableDictionary *tempPropertiesDescriptions = [[NSMutableDictionary alloc] init];
-    NSDictionary *propertiesByName = description.propertiesByName;
+    NSDictionary *propertiesByName = description.internalEntityDescription.propertiesByName;
     
     for (NSString *propertyName in propertiesByName) {
         
@@ -61,7 +88,7 @@
         if ([description isKindOfClass:[NSAttributeDescription class]]) {
             BKAttributeDescription *attrDescription = [BKAttributeDescription descriptionWithAttributeDescription:description];
             [tempPropertiesDescriptions setObject:attrDescription
-                                           forKey:propertiesByName];
+                                           forKey:propertyName];
         }
         
         //
@@ -116,7 +143,7 @@
     }
     
     if (!desc) {
-        BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.", property, self.name);
+        BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.", property, self.internalEntityDescription.name);
     }
 
     return desc;
@@ -133,7 +160,7 @@
     NSPropertyDescription *desc = [self descriptionForLocalProperty:localProperty];
 
     if (!desc) {
-        BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", networkProperty, self.name);
+        BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", networkProperty, self.internalEntityDescription.name);
     }
     
     return desc;
@@ -183,18 +210,40 @@
 - (BOOL)isPropertyRelationship:(NSString *)property
 {
     id description = [self.propertiesDescriptions objectForKey:property];
+    return (description && [description isKindOfClass:[NSRelationshipDescription class]]);
+}
+
+//- (NSString *)destinationEntityNameForRelationship:(NSString *)relationship
+//{
+//    NSRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship];
+//    return desc.destinationEntity.name;
+//}
+
+#pragma mark - Transform
+
+- (id)objectFromValue:(id)value
+          forProperty:(NSString *)property
+{
+    // Get the property description
+    NSPropertyDescription *propertyDescription = [self descriptionForProperty:property];
     
-    if (description && [description isKindOfClass:[NSRelationshipDescription class]]) {
-        return YES;
+    // Test to see if networkProperty is relationship or attribute
+    if ([self isPropertyRelationship:property]) {
+        // Pass the value through for later processing
+        return value;
     } else {
-        return NO;
+        // transform it using the attribute desc
+        id valueAsObject = [(BKAttributeDescription *)propertyDescription objectForValue:value];
+        return valueAsObject;
     }
 }
 
-- (NSString *)destinationEntityNameForRelationship:(NSString *)relationship
+- (id)primaryKeyForJSON:(NSDictionary *)JSON
 {
-    NSRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship];
-    return desc.destinationEntity.name;
+    id value = JSON[self.primaryKey];
+    id object = [self objectFromValue:value
+                          forProperty:self.primaryKey];
+    return object;
 }
 
 @end

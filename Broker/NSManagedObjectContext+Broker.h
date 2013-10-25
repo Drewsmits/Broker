@@ -8,12 +8,12 @@
 
 #import <CoreData/CoreData.h>
 
-@class BKEntityPropertiesDescription;
+@class BKEntityDescription;
 
 @interface NSManagedObjectContext (Broker)
 
-- (NSManagedObject *)findOrCreateObjectForEntityDescribedBy:(BKEntityPropertiesDescription *)description 
-                                        withPrimaryKeyValue:(id)value
+- (NSManagedObject *)findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
+                                            primaryKeyValue:(id)value
                                                shouldCreate:(BOOL)create;
 
 @end

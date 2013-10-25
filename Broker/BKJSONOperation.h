@@ -25,7 +25,6 @@
 
 #import "Conductor/CDCoreDataOperation.h"
 
-@class Broker;
 @class BKEntityController;
 @class BKEntityDescription;
 
@@ -41,13 +40,11 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
 @interface BKJSONOperation : CDCoreDataOperation
 
-/**
- The JSON data to be turned into a JSON object for processing
- */
-@property (nonatomic, strong) NSDictionary *JSONObject;
-@property (nonatomic, strong) NSManagedObjectID *objectID;
-@property (nonatomic, strong) BKEntityDescription *entityDescription;
-@property (nonatomic, copy) NSString *relationshipName;
+@property (nonatomic, strong, readonly) id json;
+
+@property (nonatomic, strong, readonly) BKEntityDescription *entityDescription;
+
+#pragma mark - OLD
 
 /**
  This block is called when the context changes, and allows you to apply some changes
@@ -62,10 +59,11 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
  */
 @property (nonatomic, copy) BKJSONOperationEmptyJSONBlock emptyJSONBlock;
 
-+ (BKJSONOperation *)operationForJSONObject:(NSDictionary *)JSONObject
-                                       type:(BKJSONOperationType)type
-                                 controller:(BKEntityController *)controller
-                                    context:(NSManagedObjectContext *)context
-                            completionBlock:(void (^)())completionBlock;
++ (BKJSONOperation *)operationForJSON:(id)json
+                          description:(BKEntityDescription *)description
+                                 type:(BKJSONOperationType)type
+                           controller:(BKEntityController *)controller
+                              context:(NSManagedObjectContext *)context
+                      completionBlock:(void (^)())completionBlock;
 
 @end

@@ -27,6 +27,8 @@
 
 @interface BKAttributeDescription ()
 
+@property (nonatomic, strong, readwrite) NSAttributeDescription *internalAttributeDescription;
+
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @end
@@ -42,14 +44,16 @@
     return self;
 }
 
-+ (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description
++ (instancetype)descriptionWithAttributeDescription:(NSAttributeDescription *)description
 {
-    return (BKAttributeDescription *)[description copy];
+    BKAttributeDescription *bkDescription = [self new];
+    bkDescription.internalAttributeDescription = description;
+    return bkDescription;
 }
 
 - (id)objectForValue:(id)value
 {    
-    NSAttributeType type = [self attributeType];
+    NSAttributeType type = [self.internalAttributeDescription attributeType];
     
     switch (type) {
         case NSUndefinedAttributeType:
@@ -80,7 +84,9 @@
         case NSDateAttributeType:
             if (!self.dateFormatter.dateFormat) {
                 BrokerWarningLog(@"NSDate attribute named \"%@\" on entity \"%@\" requires "
-                                 @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]", self.name, self.entity.name);
+                                 @"date format to be set.  Use [Broker setDateFormat:forProperty:onEntity:]",
+                                 self.internalAttributeDescription.name,
+                                 self.internalAttributeDescription.entity.name);
                 return nil;
             }
             

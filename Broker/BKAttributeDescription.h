@@ -26,7 +26,9 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@interface BKAttributeDescription : NSAttributeDescription
+@interface BKAttributeDescription : NSObject
+
+@property (nonatomic, strong, readonly) NSAttributeDescription *internalAttributeDescription;
 
 + (BKAttributeDescription *)descriptionWithAttributeDescription:(NSAttributeDescription *)description;
 

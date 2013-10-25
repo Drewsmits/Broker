@@ -30,22 +30,18 @@
 
 + (NSManagedObjectID *)createNewEmployee:(NSManagedObjectContext *)context;
 + (NSManagedObjectID *)createNewFilledOutEmployee:(NSManagedObjectContext *)context;
-+ (NSManagedObjectID *)createNewDepartment:(NSManagedObjectContext *)context;
++ (NSManagedObject *)createNewDepartment:(NSManagedObjectContext *)context;
 + (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 
 + (void)writeFakeJSON;
 
 NSString *PathForTestResource(NSString *resouce);
-NSURL *URLForTestResource(NSString *resouce);
 
-NSURL *DataModelURL(void);
-NSURL *DataStoreURL(void);
+NSURL *URLForTestResource(NSString *resouce);
 
 NSString *UTF8StringFromFile(NSString *fileName);
 
 NSData *DataFromFile(NSString *fileName);
-
-void DeleteDataStore(void);
 
 
 @end

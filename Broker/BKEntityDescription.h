@@ -25,45 +25,42 @@
 
 #import "BKAttributeDescription.h"
 
-@interface BKEntityDescription : NSEntityDescription
+@interface BKEntityDescription : NSObject
+
+@property (nonatomic, strong, readonly) NSEntityDescription *internalEntityDescription;
 
 /**
-  The name of the property used as the entity's primary key.  This needs to be
-  a guaranteed unique property, like "employeeID," which can be used to 
-  positively identify a specific entity in the store.
+ The name of the property used as the entity's primary key.  This needs to be
+ a guaranteed unique property, like "employeeID," which can be used to
+ positively identify a specific entity in the store.
  */
-@property (nonatomic, copy) NSString *primaryKey;
+@property (nonatomic, strong) NSString *primaryKey;
 
-/**
-  The root key path used to when returned JSON is a nested resource
- */
-@property (nonatomic, copy) NSString *rootKeyPath;
-
-/**
- 
- */
-@property (nonatomic, strong) NSMutableDictionary *propertiesDescriptions;
-
-/**
- Dictionary used for fast key finding
- */
-@property (nonatomic, strong) NSMutableDictionary *networkToLocalPropertiesMap;
+//
+///**
+//  The root key path used to when returned JSON is a nested resource
+// */
+//@property (nonatomic, copy) NSString *rootKeyPath;
+//
+///**
+// 
+// */
+//@property (nonatomic, strong) NSMutableDictionary *propertiesDescriptions;
 
 /**
  Dictionary used for fast key finding
  */
-@property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
-
-+ (BKEntityDescription *)descriptionForObject:(NSManagedObject *)object;
+@property (nonatomic, strong, readonly) NSMutableDictionary *networkToLocalPropertiesMap;
+//
+///**
+// Dictionary used for fast key finding
+// */
+//@property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
 
 /**
-  Creates a new BKEntityPropertiesDescription where the entityName is the name 
-  of the entity, the properties is the
+ Creates a new BKEntityPropertiesDescription
  */
-//+ (BKEntityDescription *)descriptionForEntity:(NSEntityDescription *)entity
-//                         withPropertiesByName:(NSDictionary *)properties
-//                      andMapNetworkProperties:(NSArray *)networkProperties
-//                            toLocalProperties:(NSArray *)localProperties;
++ (instancetype)descriptionForObject:(NSManagedObject *)object;
 
 /**
  Map several network properties to a local properties for an entity that is already 
@@ -121,11 +118,14 @@
  */
 - (BOOL)isPropertyRelationship:(NSString *)property;
 
-/**
-  Returns the destination entity name for the relationship name
- */
-- (NSString *)destinationEntityNameForRelationship:(NSString *)relationship;
+///**
+//  Returns the destination entity name for the relationship name
+// */
+//- (NSString *)destinationEntityNameForRelationship:(NSString *)relationship;
 
-- (NSDictionary *)transformJSONObject:(NSDictionary *)JSONObject;
+- (id)objectFromValue:(id)value
+          forProperty:(NSString *)property;
+
+- (id)primaryKeyForJSON:(NSDictionary *)JSON;
 
 @end

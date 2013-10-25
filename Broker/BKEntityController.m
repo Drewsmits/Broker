@@ -8,8 +8,35 @@
 
 #import "BKEntityController.h"
 #import "BKEntityDescription.h"
+#import "BKJSONOperation.h"
+
+// Catagories
+#import "NSManagedObjectContext+Broker.h"
+
+#define BROKER_INTERNAL_QUEUE @"com.broker.queue"
+
+@interface BKEntityController ()
+
+@property (nonatomic, strong, readwrite) NSMutableDictionary *entityDescriptions;
+
+- (BKEntityDescription *)entityDescriptionForEntityName:(NSString *)entityName;
+
+@end
 
 @implementation BKEntityController
+
++ (instancetype)entityController
+{
+    BKEntityController *controller = [self new];
+    
+    controller.entityDescriptions = [NSMutableDictionary dictionary];
+    
+    CDOperationQueue *queue = [CDOperationQueue queueWithName:BROKER_INTERNAL_QUEUE];
+    [queue setMaxConcurrentOperationCount:1];
+    [controller addQueue:queue];
+
+    return controller;
+}
 
 - (void)registerEntityNamed:(NSString *)entityName
              withPrimaryKey:(NSString *)primaryKey
@@ -17,7 +44,7 @@
           toLocalProperties:(NSArray *)localProperties
                   inContext:(NSManagedObjectContext *)context
 {
-    [context performBlock:^{
+    [context performBlockAndWait:^{
         //
         // Create new temp object
         //
@@ -54,13 +81,55 @@
 }
 
 - (void)processJSONObject:(NSDictionary *)json
-          usingQueueNamed:(NSString *)queueName
-   asArrayOfEntitiesNamed:(NSString *)entityName
-    contextDidChangeBlock:(void (^)())didChangeBlock
+            asEntityNamed:(NSString *)entityName
+                inContext:(NSManagedObjectContext *)context
           completionBlock:(void (^)())completionBlock
+{
+    BKEntityDescription *entityDescription = [self entityDescriptionForEntityName:entityName];
+    
+    BKJSONOperation *operation = [BKJSONOperation operationForJSON:json
+                                                       description:entityDescription
+                                                              type:BKJSONOperationTypeObject
+                                                        controller:self
+                                                           context:context
+                                                   completionBlock:completionBlock];
+    
+    [self addOperation:operation
+          toQueueNamed:BROKER_INTERNAL_QUEUE];
+}
+
+- (void)processJSONCollection:(NSArray *)json
+              asEntitiesNamed:(NSString *)entityName
+              completionBlock:(void (^)())completionBlock
+{
+//    BKEntityDescription *entityDescription = [self entityDescriptionForEntityName:entityName];
+
+}
+
+- (void)processJSONObject:(NSDictionary *)json
+                 asObject:(NSManagedObject *)object
+{
+//    BKEntityDescription *entityDescription = [self entityDescriptionForEntityName:object.entity.name];
+}
+
+- (void)processJSONCollection:(NSArray *)json
+              forRelationship:(NSString *)relationshipName
+                     onObject:(NSManagedObject *)object
 {
     
 }
+
+#pragma mark -
+
+- (BKEntityDescription *)entityDescriptionForEntityName:(NSString *)entityName
+{
+    BKEntityDescription *entityDescription = [self.entityDescriptions objectForKey:entityName];
+    NSAssert(entityDescription,
+             @"Could not find entityDescription for entity named \"%@\". Did you register it with this controller?", entityName);
+    return entityDescription;
+}
+
+#pragma mark - Pow
 
 + (NSDictionary *)transformJSONObject:(NSDictionary *)JSONObject
                 withEntityDescription:(BKEntityDescription *)entityDescription

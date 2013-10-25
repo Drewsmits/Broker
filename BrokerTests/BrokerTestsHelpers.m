@@ -46,11 +46,11 @@
     return employee.objectID;
 }
 
-+ (NSManagedObjectID *)createNewDepartment:(NSManagedObjectContext *)context {
++ (NSManagedObject *)createNewDepartment:(NSManagedObjectContext *)context {
     NSManagedObject *dept = [NSEntityDescription insertNewObjectForEntityForName:@"Department" 
                                                               inManagedObjectContext:context];
     [context save:nil];
-    return dept.objectID;
+    return dept;
 }
 
 + (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
@@ -100,24 +100,6 @@ NSURL *URLForTestResource(NSString *resouce) {
     return [NSURL URLWithString:PathForTestResource(resouce)];
 }
 
-NSURL *DataModelURL(void) {
-    
-    NSBundle *testBundle = [NSBundle bundleForClass:[BrokerTestsHelpers class]];
-    
-    NSString *path = [testBundle pathForResource:@"BrokerTestModel" 
-                                          ofType:@"momd"];
-    return [NSURL URLWithString:path];
-}
-
-NSURL *DataStoreURL(void) {
-    
-    NSBundle *testBundle = [NSBundle bundleForClass:[BrokerTestsHelpers class]];
-    
-    NSURL *storeURL = [[testBundle resourceURL] URLByAppendingPathComponent:@"BrokerTests.sqlite"];
-
-    return storeURL;
-}
-
 NSString *UTF8StringFromFile(NSString *fileName) {
     NSString *path = PathForTestResource(fileName);
     
@@ -138,16 +120,5 @@ NSData *DataFromFile(NSString *fileName) {
     
     return data;
 }
-
-void DeleteDataStore(void) {
-    
-    NSURL *url = DataStoreURL();
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (url) {
-        [fileManager removeItemAtURL:url error:NULL];
-    }
-}
-
 
 @end

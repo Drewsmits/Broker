@@ -23,16 +23,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <CoreData/CoreData.h>
 #import "Broker.h"
 
-@interface BrokerTests : SenTestCase {
-    NSPersistentStoreCoordinator *coord;
-    NSManagedObjectContext *context;
-    NSManagedObjectModel *model;
-    NSPersistentStore *store;
-    Broker *broker;
-}
+@interface BrokerTests : XCTestCase
+
+@property (nonatomic, strong) NSPersistentStoreCoordinator *coord;
+@property (nonatomic, strong) NSManagedObjectContext *context;
+@property (nonatomic, strong) NSPersistentStore *store;
+
+@property (nonatomic, strong) BKEntityController *entityController;
 
 @end
