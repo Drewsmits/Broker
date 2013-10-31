@@ -17,5 +17,6 @@
 #define kEmployees @"employees"
 
 #define kEmployee @"Employee"
+#define kEmployeePrimaryKey @"employeeID"
 
 #endif

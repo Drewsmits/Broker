@@ -8,7 +8,7 @@
 
 #import "BKTestCase.h"
 
-#import <Broker/Broker.h>
+#import <Broker/BrokerHeaders.h>
 
 #import "BrokerTestsHelpers.h"
 
@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong) BKJSONController *jsonController;
 
-@property (nonatomic, strong) BKEntityController *entityController;
+@property (nonatomic, strong) BKEntityMap *entityMap;
 
 @end
 
@@ -26,23 +26,28 @@
 {
     [super setUp];
     
-    BKEntityController *controller = [BKEntityController entityController];
-    self.entityController = controller;
+    self.entityMap = [BKEntityMap entityMap];
 
-    [self.entityController registerEntityNamed:kDepartment
-                                withPrimaryKey:kDepartmentPrimaryKey
-                       andMapNetworkProperties:nil
-                             toLocalProperties:nil
-                                     inContext:self.testStore.managedObjectContext];
+    [self.entityMap registerEntityNamed:kDepartment
+                         withPrimaryKey:kDepartmentPrimaryKey
+                andMapNetworkProperties:nil
+                      toLocalProperties:nil
+                              inContext:self.testStore.managedObjectContext];
+    
+    [self.entityMap registerEntityNamed:kEmployee
+                         withPrimaryKey:kEmployeePrimaryKey
+                andMapNetworkProperties:nil
+                      toLocalProperties:nil
+                              inContext:self.testStore.managedObjectContext];
     
     BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:self.testStore.managedObjectContext
-                                                                  entityController:controller];
+                                                                         entityMap:self.entityMap];
     self.jsonController = jsonController;
 }
 
 - (void)tearDown
 {
-    self.entityController = nil;
+    self.entityMap = nil;
     self.jsonController = nil;
     [super tearDown];
 }
@@ -62,6 +67,39 @@
     
     XCTAssertEqual(allDepartments.count, 1U, @"Should have one department");
     
+    NSManagedObject *department = [allDepartments firstObject];
+    
+    XCTAssertEqualObjects([department valueForKey:kDepartmentPrimaryKey],
+                          @(1234), @"Department should have the correct primary key");
+    
+    XCTAssertEqualObjects([department valueForKey:kName],
+                          @"Engineering", @"Department should have the correct primary key");
+}
+
+- (void)testNextedJSON
+{
+    NSData *jsonData = DataFromFile(@"department_nested.json");
+    id json = [NSJSONSerialization JSONObjectWithData:jsonData
+                                              options:NSJSONReadingMutableContainers
+                                                error:nil];
+    [self.jsonController processJSONObject:json
+                             asEntityNamed:kDepartment];
+    
+    NSArray *allDepartments = [BrokerTestsHelpers findAllEntitiesNamed:kDepartment
+                                                             inContext:self.testStore.managedObjectContext];
+    
+    XCTAssertEqual(allDepartments.count, 1U, @"Should have one department");
+    
+    NSManagedObject *department = [allDepartments firstObject];
+    
+    XCTAssertEqualObjects([department valueForKey:kDepartmentPrimaryKey],
+                          @(1234), @"Department should have the correct primary key");
+    
+    XCTAssertEqualObjects([department valueForKey:kName],
+                          @"Engineering", @"Department should have the correct primary key");
+    
+    NSArray *employees = [department valueForKey:@"employees"];
+    XCTAssertEqual(employees.count, 6U, @"Department should have the right amount of employees");
 }
 
 @end

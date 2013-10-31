@@ -8,18 +8,25 @@
 
 #import <Foundation/Foundation.h>
 
-@class BKEntityController;
+@class BKEntityMap;
 
 @interface BKJSONController : NSObject
 
 @property (nonatomic, strong) NSManagedObjectContext *context;
 
-@property (nonatomic, strong) BKEntityController *entityController;
+@property (nonatomic, strong) BKEntityMap *entityMap;
 
 + (instancetype)JSONControllerWithContext:(NSManagedObjectContext *)context
-                         entityController:(BKEntityController *)entityController;
+                                entityMap:(BKEntityMap *)entityMap;
 
 - (NSManagedObject *)processJSONObject:(NSDictionary *)json
                          asEntityNamed:(NSString *)entityName;
+
+- (NSArray *)processJSONCollection:(NSArray *)json
+                   asEntitiesNamed:(NSString *)entityName;
+
+- (void)processJSON:(id)json
+    forRelationship:(NSString *)relationshipName
+           onObject:(NSManagedObject *)object;
 
 @end

@@ -26,6 +26,17 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+#define WAIT_ON_BOOL(boolToTest, timeoutInSeconds) \
+    NSDate *timeoutDate = [NSDate dateWithTimeIntervalSinceNow:timeoutInSeconds];\
+    while ((boolToTest) == NO) {\
+        if ([timeoutDate timeIntervalSinceNow] <= 0) {\
+        XCTFail(@"WAIT_ON_BOOL timed out after %i seconds", timeoutInSeconds);\
+        break;\
+    }\
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.1];\
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil];\
+}\
+
 @interface BrokerTestsHelpers : NSObject
 
 + (NSManagedObjectID *)createNewEmployee:(NSManagedObjectContext *)context;

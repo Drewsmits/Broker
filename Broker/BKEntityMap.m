@@ -6,16 +6,14 @@
 //  Copyright (c) 2013 Andrew B. Smith. All rights reserved.
 //
 
-#import "BKEntityController.h"
+#import "BKEntityMap.h"
 #import "BKEntityDescription.h"
 #import "BKJSONOperation.h"
 
 // Catagories
 #import "NSManagedObjectContext+Broker.h"
 
-#define BROKER_INTERNAL_QUEUE @"com.broker.queue"
-
-@interface BKEntityController ()
+@interface BKEntityMap ()
 
 @property (nonatomic, strong, readwrite) NSMutableDictionary *entityDescriptions;
 
@@ -23,19 +21,15 @@
 
 @end
 
-@implementation BKEntityController
+@implementation BKEntityMap
 
-+ (instancetype)entityController
++ (instancetype)entityMap
 {
-    BKEntityController *controller = [self new];
+    BKEntityMap *map = [self new];
     
-    controller.entityDescriptions = [NSMutableDictionary dictionary];
-    
-    CDOperationQueue *queue = [CDOperationQueue queueWithName:BROKER_INTERNAL_QUEUE];
-    [queue setMaxConcurrentOperationCount:1];
-    [controller addQueue:queue];
+    map.entityDescriptions = [NSMutableDictionary dictionary];
 
-    return controller;
+    return map;
 }
 
 - (void)registerEntityNamed:(NSString *)entityName
@@ -78,45 +72,6 @@
         //
         [context deleteObject:object];
     }];
-}
-
-- (void)processJSONObject:(NSDictionary *)json
-            asEntityNamed:(NSString *)entityName
-                inContext:(NSManagedObjectContext *)context
-          completionBlock:(void (^)())completionBlock
-{
-    BKEntityDescription *entityDescription = [self entityDescriptionForEntityName:entityName];
-    
-    BKJSONOperation *operation = [BKJSONOperation operationForJSON:json
-                                                       description:entityDescription
-                                                              type:BKJSONOperationTypeObject
-                                                        controller:self
-                                                           context:context
-                                                   completionBlock:completionBlock];
-    
-    [self addOperation:operation
-          toQueueNamed:BROKER_INTERNAL_QUEUE];
-}
-
-- (void)processJSONCollection:(NSArray *)json
-              asEntitiesNamed:(NSString *)entityName
-              completionBlock:(void (^)())completionBlock
-{
-//    BKEntityDescription *entityDescription = [self entityDescriptionForEntityName:entityName];
-
-}
-
-- (void)processJSONObject:(NSDictionary *)json
-                 asObject:(NSManagedObject *)object
-{
-//    BKEntityDescription *entityDescription = [self entityDescriptionForEntityName:object.entity.name];
-}
-
-- (void)processJSONCollection:(NSArray *)json
-              forRelationship:(NSString *)relationshipName
-                     onObject:(NSManagedObject *)object
-{
-    
 }
 
 #pragma mark -

@@ -11,14 +11,14 @@
 
 @class BKEntityDescription;
 
-@interface BKEntityController : CDQueueController
+@interface BKEntityMap : NSObject
 
 /**
  The dictionary containing all BKEntityPropertiesDescriptions for registered objects.
  */
 @property (nonatomic, strong, readonly) NSMutableDictionary *entityDescriptions;
 
-+ (instancetype)entityController;
++ (instancetype)entityMap;
 
 /**
  Register object. Map local attribute names to the remote resource. A common excpetion for "MyObject" 
@@ -51,33 +51,6 @@
 - (void)setDateFormat:(NSString *)dateFormat
           forProperty:(NSString *)property
              onEntity:(NSString *)entity;
-
-//- (void)processJSONObject:(NSDictionary *)json
-//          usingQueueNamed:(NSString *)queueName
-//   asArrayOfEntitiesNamed:(NSString *)entityName
-//    contextDidChangeBlock:(void (^)())didChangeBlock
-//          completionBlock:(void (^)())completionBlock;
-
-- (void)processJSONObject:(NSDictionary *)json
-            asEntityNamed:(NSString *)entityName
-                inContext:(NSManagedObjectContext *)context
-          completionBlock:(void (^)())completionBlock;
-
-- (void)processJSONCollection:(NSArray *)json
-              asEntitiesNamed:(NSString *)entityName
-                    inContext:(NSManagedObjectContext *)context
-              completionBlock:(void (^)())completionBlock;
-
-- (void)processJSONObject:(NSDictionary *)json
-                 asObject:(NSManagedObject *)object
-                inContext:(NSManagedObjectContext *)context
-          completionBlock:(void (^)())completionBlock;
-
-- (void)processJSONCollection:(NSArray *)json
-              forRelationship:(NSString *)relationshipName
-                     onObject:(NSManagedObject *)object
-                    inContext:(NSManagedObjectContext *)context
-              completionBlock:(void (^)())completionBlock;
 
 - (BKEntityDescription *)entityDescriptionForEntityName:(NSString *)entityName;
 

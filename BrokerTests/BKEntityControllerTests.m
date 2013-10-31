@@ -6,13 +6,12 @@
 //  Copyright (c) 2013 Andrew B. Smith. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
-#import <Broker/Broker.h>
+#import <Broker/BrokerHeaders.h>
 #import "BKTestCase.h"
 
 @interface BKEntityControllerTests : BKTestCase
 
-@property (nonatomic, strong) BKEntityController *entityController;
+@property (nonatomic, strong) BKEntityMap *entityController;
 
 @end
 
@@ -21,7 +20,7 @@
 - (void)setUp
 {
     [super setUp];
-    BKEntityController *controller = [BKEntityController entityController];
+    BKEntityMap *controller = [BKEntityMap entityMap];
     self.entityController = controller;
 }
 

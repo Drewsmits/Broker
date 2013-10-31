@@ -24,8 +24,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <CoreData/CoreData.h>
-#import "Broker.h"
+#import "BKTestCase.h"
 
 @interface BrokerTests : XCTestCase
 
@@ -33,6 +32,6 @@
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @property (nonatomic, strong) NSPersistentStore *store;
 
-@property (nonatomic, strong) BKEntityController *entityController;
+@property (nonatomic, strong) BKEntityMap *entityController;
 
 @end

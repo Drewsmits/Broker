@@ -25,26 +25,6 @@
 
 #import "BrokerTests.h"
 
-#import "Broker.h"
-
-#import "BrokerTestsHelpers.h"
-
-#import "NSManagedObjectContext+Broker.h"
-
-// Department
-static NSString *kDepartment = @"Department";
-static NSString *kEmployeesRelationship = @"employees";
-
-// Employee
-static NSString *kEmployee = @"Employee";
-static NSString *kEmployeeFirstname = @"firstname";
-static NSString *kEmployeeStartDateFormat = @"yyyy/MM/dd HH:mm:ss zzzz";
-
-// Dog
-static NSString *kDog = @"Dog";
-
-static NSString *kBrokerTestQueue = @"BrokerTestQueue";
-
 
 @implementation BrokerTests
 

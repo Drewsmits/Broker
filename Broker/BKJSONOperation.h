@@ -25,7 +25,8 @@
 
 #import "Conductor/CDCoreDataOperation.h"
 
-@class BKEntityController;
+@class BKEntityMap;
+@class BKJSONController;
 @class BKEntityDescription;
 
 typedef enum {
@@ -40,29 +41,23 @@ typedef void (^BKJSONOperationEmptyJSONBlock)(NSManagedObjectContext *context);
 
 @interface BKJSONOperation : CDCoreDataOperation
 
-@property (nonatomic, strong, readonly) id json;
-
-@property (nonatomic, strong, readonly) BKEntityDescription *entityDescription;
-
-#pragma mark - OLD
-
 /**
  This block is called when the context changes, and allows you to apply some changes
  mid stream.
  */
 @property (nonatomic, copy) BKJSONOperationContextDidChangeBlock didChangeBlock;
 
-/**
- This block is executed when the JSON payload turns out to be empty.  As an example,
- you might get a list of tweets.  If that list is empty, you may want to delete
- all the local tweets you have.
- */
-@property (nonatomic, copy) BKJSONOperationEmptyJSONBlock emptyJSONBlock;
++ (BKJSONOperation *)operationForJSON:(id)json
+                           entityName:(NSString *)entityName
+                            entityMap:(BKEntityMap *)entityMap
+                                 type:(BKJSONOperationType)type
+                              context:(NSManagedObjectContext *)context
+                      completionBlock:(void (^)())completionBlock;
 
 + (BKJSONOperation *)operationForJSON:(id)json
-                          description:(BKEntityDescription *)description
+                           entityName:(NSString *)entityName
+                            entityMap:(BKEntityMap *)entityMap
                                  type:(BKJSONOperationType)type
-                           controller:(BKEntityController *)controller
                               context:(NSManagedObjectContext *)context
                       completionBlock:(void (^)())completionBlock;
 

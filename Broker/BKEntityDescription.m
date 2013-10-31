@@ -66,14 +66,14 @@
 
 + (instancetype)descriptionForObject:(NSManagedObject *)object
 {
-    BKEntityDescription *description = [BKEntityDescription new];
-    description.internalEntityDescription = [object.entity copy];
+    BKEntityDescription *entityDescription = [BKEntityDescription new];
+    entityDescription.internalEntityDescription = object.entity;
     
     //
     // Iterate through all properties and add to properties description.
     //
     NSMutableDictionary *tempPropertiesDescriptions = [[NSMutableDictionary alloc] init];
-    NSDictionary *propertiesByName = description.internalEntityDescription.propertiesByName;
+    NSDictionary *propertiesByName = entityDescription.internalEntityDescription.propertiesByName;
     
     for (NSString *propertyName in propertiesByName) {
         
@@ -95,7 +95,7 @@
         // Relationship
         //
         if ([description isKindOfClass:[NSRelationshipDescription class]]) {
-            NSRelationshipDescription *relationshipDescription = (NSRelationshipDescription *)[description copy];
+            NSRelationshipDescription *relationshipDescription = description;
             [tempPropertiesDescriptions setObject:relationshipDescription
                                            forKey:propertyName];
         }
@@ -104,9 +104,9 @@
     //
     // Set property descriptions
     //
-    description.propertiesDescriptions = tempPropertiesDescriptions;
+    entityDescription.propertiesDescriptions = tempPropertiesDescriptions;
         
-    return description;
+    return entityDescription;
 }
 
 #pragma mark - Modifiers

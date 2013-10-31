@@ -15,7 +15,7 @@
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) NSManagedObjectModel *managedObjectModel;
 
-@property (nonatomic, strong) BKEntityController *entityController;
+@property (nonatomic, strong) BKEntityMap *entityController;
 
 - (void)reset:(NSError *)error;
 

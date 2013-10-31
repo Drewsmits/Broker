@@ -8,6 +8,8 @@
 
 #import "BKTestCase.h"
 
+#import <Broker/BrokerHeaders.h>
+
 #import "BrokerTestsHelpers.h"
 
 @interface BKEntityDescriptionTests : BKTestCase
