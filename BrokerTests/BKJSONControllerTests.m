@@ -76,12 +76,10 @@
                           @"Engineering", @"Department should have the correct primary key");
 }
 
-- (void)testNextedJSON
+- (void)testNestedJSON
 {
-    NSData *jsonData = DataFromFile(@"department_nested.json");
-    id json = [NSJSONSerialization JSONObjectWithData:jsonData
-                                              options:NSJSONReadingMutableContainers
-                                                error:nil];
+    id json = JsonFromFile(@"department_nested.json");
+
     [self.jsonController processJSONObject:json
                              asEntityNamed:kDepartment];
     
@@ -98,8 +96,25 @@
     XCTAssertEqualObjects([department valueForKey:kName],
                           @"Engineering", @"Department should have the correct primary key");
     
-    NSArray *employees = [department valueForKey:@"employees"];
+    NSArray *employees = [department valueForKey:kEmployees];
     XCTAssertEqual(employees.count, 6U, @"Department should have the right amount of employees");
 }
+
+- (void)testNestedDepartmentEmployeesJSON
+{
+    id json = JsonFromFile(@"department_employees_100.json");
+
+    // Build Deparment
+    NSManagedObject *department = [BrokerTestsHelpers createNewDepartment:self.testStore.managedObjectContext];
+
+    [self.jsonController processJSON:json
+                     forRelationship:kEmployees
+                            onObject:department];
+
+    NSSet *employees = (NSSet *)[department valueForKey:kEmployees];
+
+    XCTAssertEqual(employees.count, 100U, @"Should have the right amount of employee objects");
+}
+
 
 @end

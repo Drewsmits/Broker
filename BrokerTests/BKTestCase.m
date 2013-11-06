@@ -8,6 +8,8 @@
 
 #import "BKTestCase.h"
 
+extern void __gcov_flush(void);
+
 @implementation BKTestCase
 
 - (void)setUp
@@ -22,6 +24,8 @@
     [self.testStore reset:error];
     XCTAssertNil(error, @"Error!");
     [super tearDown];
+    
+    __gcov_flush();
 }
 
 @end

@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <Conductor/Conductor.h>
 
 @class BKEntityDescription;
 

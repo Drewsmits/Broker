@@ -54,5 +54,6 @@ NSString *UTF8StringFromFile(NSString *fileName);
 
 NSData *DataFromFile(NSString *fileName);
 
+id JsonFromFile(NSString *fileName);
 
 @end

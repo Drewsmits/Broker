@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		886DB1D01818472700A5AA4E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 886DB1CF1818472700A5AA4E /* XCTest.framework */; };
-		886DB1D21818474500A5AA4E /* BKJSONOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB1D11818474500A5AA4E /* BKJSONOperationTests.m */; };
 		886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */; };
 		886DB2241819F18300A5AA4E /* BKTestStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2231819F18300A5AA4E /* BKTestStore.m */; };
 		886DB2261819F53600A5AA4E /* BKTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2251819F53600A5AA4E /* BKTestCase.m */; };
@@ -20,8 +19,10 @@
 		886DB243181ADD3900A5AA4E /* Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB241181ADD3900A5AA4E /* Broker.m */; };
 		886DB249181B3CBB00A5AA4E /* BrokerNewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB248181B3CBB00A5AA4E /* BrokerNewTests.m */; };
 		886DB24D181B3E0700A5AA4E /* BrokerHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		886DB27A1821E84E00A5AA4E /* Employee.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2791821E84E00A5AA4E /* Employee.m */; };
+		886DB2F51824311B00A5AA4E /* NSManagedObjectBrokerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */; };
+		886DB2F718246CA600A5AA4E /* BKAttributeDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */; };
 		DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB0DE49115B8F68D007F382F /* UIKit.framework */; };
-		DB24BB32145767A200BDAD0A /* libConductor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB394878145737D900BFF50E /* libConductor.a */; };
 		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
@@ -31,8 +32,6 @@
 		DB4C0E56143D334C0090F5E3 /* BKAttributeDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DB4C0E54143D334C0090F5E3 /* BKAttributeDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */; };
 		DB4C0E59143D34E50090F5E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
-		DB576E0D14572D0F006021CE /* BKJSONOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = DB576E0B14572D0F006021CE /* BKJSONOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DB576E0C14572D0F006021CE /* BKJSONOperation.m */; };
 		DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
 		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
@@ -47,27 +46,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DB394877145737D900BFF50E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DB83D19A1451F1B200D94890;
-			remoteInfo = Conductor;
-		};
-		DB394879145737D900BFF50E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DB83D1AA1451F1B200D94890;
-			remoteInfo = ConductorTests;
-		};
-		DB39487B145737E400BFF50E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = DB83D1991451F1B200D94890;
-			remoteInfo = Conductor;
-		};
 		DB4C0E38143D2F4F0090F5E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DB4C0E17143D2E770090F5E3 /* Project object */;
@@ -75,25 +53,10 @@
 			remoteGlobalIDString = DB4C0E21143D2F4F0090F5E3;
 			remoteInfo = Broker;
 		};
-		DB6B69B014573DF800CCAE96 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = DB83D1991451F1B200D94890;
-			remoteInfo = Conductor;
-		};
-		DBC8EBB016FCD48A00987EB2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DBD17290167948B80019FF3D;
-			remoteInfo = ConductorApp;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		886DB1CF1818472700A5AA4E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		886DB1D11818474500A5AA4E /* BKJSONOperationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKJSONOperationTests.m; sourceTree = "<group>"; };
 		886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEntityControllerTests.m; sourceTree = "<group>"; };
 		886DB2221819F18300A5AA4E /* BKTestStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTestStore.h; sourceTree = "<group>"; };
 		886DB2231819F18300A5AA4E /* BKTestStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTestStore.m; sourceTree = "<group>"; };
@@ -108,8 +71,11 @@
 		886DB241181ADD3900A5AA4E /* Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Broker.m; sourceTree = "<group>"; };
 		886DB248181B3CBB00A5AA4E /* BrokerNewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrokerNewTests.m; sourceTree = "<group>"; };
 		886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrokerHeaders.h; sourceTree = "<group>"; };
+		886DB2781821E84E00A5AA4E /* Employee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Employee.h; sourceTree = "<group>"; };
+		886DB2791821E84E00A5AA4E /* Employee.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Employee.m; sourceTree = "<group>"; };
+		886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSManagedObjectBrokerTests.m; sourceTree = "<group>"; };
+		886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAttributeDescriptionTests.m; sourceTree = "<group>"; };
 		DB0DE49115B8F68D007F382F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		DB39486F145737D900BFF50E /* Conductor.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Conductor.xcodeproj; path = ../Conductor/Conductor.xcodeproj; sourceTree = "<group>"; };
 		DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+Broker.h"; sourceTree = "<group>"; };
 		DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+Broker.m"; sourceTree = "<group>"; };
 		DB4C0E22143D2F4F0090F5E3 /* libBroker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBroker.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,8 +89,6 @@
 		DB4C0E54143D334C0090F5E3 /* BKAttributeDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKAttributeDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKAttributeDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DB4C0E58143D34E50090F5E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		DB576E0B14572D0F006021CE /* BKJSONOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKJSONOperation.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		DB576E0C14572D0F006021CE /* BKJSONOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKJSONOperation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+Broker.h"; sourceTree = "<group>"; };
 		DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+Broker.m"; sourceTree = "<group>"; };
 		DBBC61D61761855C007D0B76 /* BKEntityMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKEntityMap.h; sourceTree = "<group>"; };
@@ -144,7 +108,6 @@
 			files = (
 				DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */,
 				DB4C0E59143D34E50090F5E3 /* CoreData.framework in Frameworks */,
-				DB24BB32145767A200BDAD0A /* libConductor.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,22 +126,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DB39486D145737C100BFF50E /* Vendors */ = {
+		886DB2771821E7F200A5AA4E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				DB39486F145737D900BFF50E /* Conductor.xcodeproj */,
+				886DB2221819F18300A5AA4E /* BKTestStore.h */,
+				886DB2231819F18300A5AA4E /* BKTestStore.m */,
+				DBFF95D1143E17D9008511EA /* BrokerTestsHelpers.h */,
+				DBFF95D2143E17D9008511EA /* BrokerTestsHelpers.m */,
+				886DB2781821E84E00A5AA4E /* Employee.h */,
+				886DB2791821E84E00A5AA4E /* Employee.m */,
 			);
-			name = Vendors;
-			sourceTree = "<group>";
-		};
-		DB394870145737D900BFF50E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				DB394878145737D900BFF50E /* libConductor.a */,
-				DB39487A145737D900BFF50E /* ConductorTests.octest */,
-				DBC8EBB116FCD48A00987EB2 /* ConductorApp.app */,
-			);
-			name = Products;
+			name = Helpers;
 			sourceTree = "<group>";
 		};
 		DB4C0E15143D2E770090F5E3 = {
@@ -188,7 +146,6 @@
 				DB4C0E3B143D2F4F0090F5E3 /* BrokerTests */,
 				DB4C0E24143D2F4F0090F5E3 /* Frameworks */,
 				DB4C0E23143D2F4F0090F5E3 /* Products */,
-				DB39486D145737C100BFF50E /* Vendors */,
 			);
 			sourceTree = "<group>";
 		};
@@ -223,16 +180,14 @@
 				DBBC61D71761855C007D0B76 /* BKEntityMap.m */,
 				886DB2291819F8B600A5AA4E /* BKJSONController.h */,
 				886DB22A1819F8B600A5AA4E /* BKJSONController.m */,
-				DB576E0B14572D0F006021CE /* BKJSONOperation.h */,
-				DB576E0C14572D0F006021CE /* BKJSONOperation.m */,
 				886DB240181ADD3900A5AA4E /* Broker.h */,
 				886DB241181ADD3900A5AA4E /* Broker.m */,
+				886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */,
 				DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */,
 				DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */,
 				DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */,
 				DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */,
 				DB4C0E28143D2F4F0090F5E3 /* Supporting Files */,
-				886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */,
 			);
 			path = Broker;
 			sourceTree = "<group>";
@@ -248,21 +203,19 @@
 		DB4C0E3B143D2F4F0090F5E3 /* BrokerTests */ = {
 			isa = PBXGroup;
 			children = (
+				886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */,
 				886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */,
 				886DB22F181A016D00A5AA4E /* BKEntityDescriptionTests.m */,
 				886DB22D1819FCD800A5AA4E /* BKJSONControllerTests.m */,
-				886DB1D11818474500A5AA4E /* BKJSONOperationTests.m */,
 				886DB2271819F55F00A5AA4E /* BKTestCase.h */,
 				886DB2251819F53600A5AA4E /* BKTestCase.m */,
 				886DB2281819F72800A5AA4E /* BKTestConstants.h */,
-				886DB2221819F18300A5AA4E /* BKTestStore.h */,
-				886DB2231819F18300A5AA4E /* BKTestStore.m */,
 				886DB248181B3CBB00A5AA4E /* BrokerNewTests.m */,
 				DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */,
 				DB4C0E41143D2F4F0090F5E3 /* BrokerTests.h */,
 				DB4C0E42143D2F4F0090F5E3 /* BrokerTests.m */,
-				DBFF95D1143E17D9008511EA /* BrokerTestsHelpers.h */,
-				DBFF95D2143E17D9008511EA /* BrokerTestsHelpers.m */,
+				886DB2771821E7F200A5AA4E /* Helpers */,
+				886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */,
 				DB4C0E3C143D2F4F0090F5E3 /* Supporting Files */,
 				DBFF95D4143E187D008511EA /* TestResources.bundle */,
 			);
@@ -287,7 +240,6 @@
 			files = (
 				DB4C0E56143D334C0090F5E3 /* BKAttributeDescription.h in Headers */,
 				DBFF95EB143E568C008511EA /* BKEntityDescription.h in Headers */,
-				DB576E0D14572D0F006021CE /* BKJSONOperation.h in Headers */,
 				886DB242181ADD3900A5AA4E /* Broker.h in Headers */,
 				886DB22B1819F8B600A5AA4E /* BKJSONController.h in Headers */,
 				DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */,
@@ -311,7 +263,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				DB39487C145737E400BFF50E /* PBXTargetDependency */,
 			);
 			name = Broker;
 			productName = Broker;
@@ -330,7 +281,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				DB6B69B114573DF800CCAE96 /* PBXTargetDependency */,
 				DB4C0E39143D2F4F0090F5E3 /* PBXTargetDependency */,
 			);
 			name = BrokerTests;
@@ -357,12 +307,6 @@
 			mainGroup = DB4C0E15143D2E770090F5E3;
 			productRefGroup = DB4C0E23143D2F4F0090F5E3 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = DB394870145737D900BFF50E /* Products */;
-					ProjectRef = DB39486F145737D900BFF50E /* Conductor.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				DB4C0E21143D2F4F0090F5E3 /* Broker */,
@@ -370,30 +314,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		DB394878145737D900BFF50E /* libConductor.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libConductor.a;
-			remoteRef = DB394877145737D900BFF50E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DB39487A145737D900BFF50E /* ConductorTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ConductorTests.octest;
-			remoteRef = DB394879145737D900BFF50E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DBC8EBB116FCD48A00987EB2 /* ConductorApp.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = ConductorApp.app;
-			remoteRef = DBC8EBB016FCD48A00987EB2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		DB4C0E2F143D2F4F0090F5E3 /* Resources */ = {
@@ -431,7 +351,6 @@
 				886DB243181ADD3900A5AA4E /* Broker.m in Sources */,
 				DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */,
 				DBFF95EC143E568C008511EA /* BKEntityDescription.m in Sources */,
-				DB576E0E14572D0F006021CE /* BKJSONOperation.m in Sources */,
 				DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */,
 				886DB22C1819F8B600A5AA4E /* BKJSONController.m in Sources */,
 				DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */,
@@ -445,10 +364,12 @@
 			files = (
 				886DB22E1819FCD800A5AA4E /* BKJSONControllerTests.m in Sources */,
 				886DB249181B3CBB00A5AA4E /* BrokerNewTests.m in Sources */,
+				886DB2F51824311B00A5AA4E /* NSManagedObjectBrokerTests.m in Sources */,
 				886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */,
+				886DB2F718246CA600A5AA4E /* BKAttributeDescriptionTests.m in Sources */,
 				886DB230181A016D00A5AA4E /* BKEntityDescriptionTests.m in Sources */,
 				886DB2261819F53600A5AA4E /* BKTestCase.m in Sources */,
-				886DB1D21818474500A5AA4E /* BKJSONOperationTests.m in Sources */,
+				886DB27A1821E84E00A5AA4E /* Employee.m in Sources */,
 				886DB2241819F18300A5AA4E /* BKTestStore.m in Sources */,
 				DB4C0E43143D2F4F0090F5E3 /* BrokerTests.m in Sources */,
 				DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */,
@@ -459,20 +380,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DB39487C145737E400BFF50E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Conductor;
-			targetProxy = DB39487B145737E400BFF50E /* PBXContainerItemProxy */;
-		};
 		DB4C0E39143D2F4F0090F5E3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DB4C0E21143D2F4F0090F5E3 /* Broker */;
 			targetProxy = DB4C0E38143D2F4F0090F5E3 /* PBXContainerItemProxy */;
-		};
-		DB6B69B114573DF800CCAE96 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Conductor;
-			targetProxy = DB6B69B014573DF800CCAE96 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -488,9 +399,89 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		886DB2B71823120600A5AA4E /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
+				GENERATE_PROFILING_CODE = YES;
+				HEADER_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = iphoneos;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Coverage;
+		};
+		886DB2B81823120600A5AA4E /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Broker.dst;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Broker/Broker-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_LDFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = include/Broker/Private;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = include/Broker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "$(OBJROOT)/UninstalledProducts/include";
+			};
+			name = Coverage;
+		};
+		886DB2B91823120600A5AA4E /* Coverage */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Broker/Broker-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "BrokerTests/BrokerTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/include/Conductor $(BUILT_PRODUCTS_DIR)/**";
+			};
+			name = Coverage;
+		};
 		DB4C0E1C143D2E770090F5E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
 				HEADER_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = YES;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
@@ -502,6 +493,7 @@
 		DB4C0E1D143D2E770090F5E3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
 				HEADER_SEARCH_PATHS = "";
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				SDKROOT = iphoneos;
@@ -636,6 +628,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB4C0E1C143D2E770090F5E3 /* Debug */,
+				886DB2B71823120600A5AA4E /* Coverage */,
 				DB4C0E1D143D2E770090F5E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -645,6 +638,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB4C0E45143D2F4F0090F5E3 /* Debug */,
+				886DB2B81823120600A5AA4E /* Coverage */,
 				DB4C0E46143D2F4F0090F5E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -654,6 +648,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB4C0E48143D2F4F0090F5E3 /* Debug */,
+				886DB2B91823120600A5AA4E /* Coverage */,
 				DB4C0E49143D2F4F0090F5E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

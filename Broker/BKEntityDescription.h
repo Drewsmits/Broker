@@ -36,17 +36,6 @@
  */
 @property (nonatomic, strong) NSString *primaryKey;
 
-//
-///**
-//  The root key path used to when returned JSON is a nested resource
-// */
-//@property (nonatomic, copy) NSString *rootKeyPath;
-//
-///**
-// 
-// */
-//@property (nonatomic, strong) NSMutableDictionary *propertiesDescriptions;
-
 /**
  Dictionary used for fast key finding
  */

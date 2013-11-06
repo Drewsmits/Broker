@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <Conductor/Conductor.h>
 
 @class BKEntityMap;
 
-@interface Broker : CDQueueController
+@interface Broker : NSObject
 
 @property (nonatomic, strong, readonly) BKEntityMap *entityMap;
 
@@ -25,10 +24,12 @@
 - (void)processJSON:(id)json
     forRelationship:(NSString *)relationshipName
            onObject:(NSManagedObject *)object
-          inContext:(NSManagedObjectContext *)context;
+          inContext:(NSManagedObjectContext *)context
+    completionBlock:(void (^)())completionBlock;
 
 - (void)processJSONCollection:(NSArray *)json
               asEntitiesNamed:(NSString *)entityName
-                    inContext:(NSManagedObjectContext *)context;
+                    inContext:(NSManagedObjectContext *)context
+              completionBlock:(void (^)())completionBlock;
 
 @end

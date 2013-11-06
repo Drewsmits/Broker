@@ -121,4 +121,12 @@ NSData *DataFromFile(NSString *fileName) {
     return data;
 }
 
+id JsonFromFile(NSString *fileName) {
+    NSData *data = DataFromFile(fileName);
+    id json = [NSJSONSerialization JSONObjectWithData:data
+                                              options:NSJSONReadingMutableContainers
+                                                error:nil];
+    return json;
+}
+
 @end

@@ -31,12 +31,7 @@
 @property (nonatomic, strong, readwrite) NSEntityDescription *internalEntityDescription;
 
 /**
- The root key path used to when returned JSON is a nested resource
- */
-@property (nonatomic, strong) NSString *rootKeyPath;
-
-/**
- 
+ Keys are property names, values are BKAttributeDescription
  */
 @property (nonatomic, strong) NSMutableDictionary *propertiesDescriptions;
 
@@ -240,6 +235,7 @@
 
 - (id)primaryKeyForJSON:(NSDictionary *)JSON
 {
+    if (!self.primaryKey) return nil;
     id value = JSON[self.primaryKey];
     id object = [self objectFromValue:value
                           forProperty:self.primaryKey];

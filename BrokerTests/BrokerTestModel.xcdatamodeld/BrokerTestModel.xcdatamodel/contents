@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="872" systemVersion="11D50b" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3396" systemVersion="12F45" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="ContactInfo" syncable="YES">
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="phone" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -15,7 +15,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="department" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Department" inverseName="dogs" inverseEntity="Department" syncable="YES"/>
     </entity>
-    <entity name="Employee" syncable="YES">
+    <entity name="Employee" representedClassName="Employee" syncable="YES">
         <attribute name="employeeID" optional="YES" attributeType="Integer 64" defaultValueString="0.0" syncable="YES"/>
         <attribute name="firstname" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastname" optional="YES" attributeType="String" syncable="YES"/>
@@ -24,9 +24,9 @@
         <relationship name="department" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Department" inverseName="employees" inverseEntity="Department" syncable="YES"/>
     </entity>
     <elements>
-        <element name="ContactInfo" positionX="2997" positionY="-243" width="128" height="90"/>
-        <element name="Department" positionX="2527" positionY="-213" width="128" height="105"/>
-        <element name="Employee" positionX="2797" positionY="-249" width="128" height="135"/>
-        <element name="Dog" positionX="160" positionY="192" width="128" height="75"/>
+        <element name="ContactInfo" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Department" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Dog" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Employee" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>
