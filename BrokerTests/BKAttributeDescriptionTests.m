@@ -47,10 +47,42 @@
     
     BKAttributeDescription *bkDescription = [BKAttributeDescription descriptionWithAttributeDescription:description];
     
+    NSInteger integer = pow(2, 15) - 1;
+    
     // One less than an overflow
-    id object = [bkDescription objectForValue:@(pow(2, 15) - 1)];
+    id object = [bkDescription objectForValue:@(integer)];
 
-    XCTAssertEqualObjects(object, @(pow(2, 15) - 1), @"Object for value with int 16 attribute type should be correct");
+    XCTAssertEqualObjects(object, @(integer), @"Object for value with int 16 attribute type should be correct");
+}
+
+- (void)testInteger32AttributeType
+{
+    NSAttributeDescription *description = [NSAttributeDescription new];
+    description.attributeType = NSInteger32AttributeType;
+    
+    BKAttributeDescription *bkDescription = [BKAttributeDescription descriptionWithAttributeDescription:description];
+    
+    NSInteger integer = pow(2, 31) - 1;
+    
+    // One less than an overflow
+    id object = [bkDescription objectForValue:@(integer)];
+    
+    XCTAssertEqualObjects(object, @(integer), @"Object for value with int 32 attribute type should be correct");
+}
+
+- (void)testInteger64AttributeType
+{
+    NSAttributeDescription *description = [NSAttributeDescription new];
+    description.attributeType = NSInteger64AttributeType;
+    
+    BKAttributeDescription *bkDescription = [BKAttributeDescription descriptionWithAttributeDescription:description];
+    
+    NSInteger integer = pow(2, 63) - 1;
+    
+    // One less than an overflow
+    id object = [bkDescription objectForValue:@(integer)];
+    
+    XCTAssertEqualObjects(object, @(integer), @"Object for value with int 64 attribute type should be correct");
 }
 
 @end
