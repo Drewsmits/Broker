@@ -1,5 +1,7 @@
 # Broker
 
+**Broker is currently undergoing some changes. Look for a release for the next stable version**
+
 Broker maps remote resources to local Core Data resources via JSON responses. Using a few simple design standards, you can automatically map JSON attributes to NSManagedObject attributes with one line of code.
 
 All this fun stuff is done with a few rules.
