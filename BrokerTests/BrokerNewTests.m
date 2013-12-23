@@ -11,6 +11,7 @@
 #import <Broker/BrokerHeaders.h>
 
 #import "BrokerTestsHelpers.h"
+#import "TestCounter.h"
 #import "Employee.h"
 
 @interface BrokerNewTests : BKTestCase
@@ -59,14 +60,14 @@
                                               options:NSJSONReadingMutableContainers
                                                 error:nil];
     
-    __block BOOL completed = NO;
+    __block TestCounter *counter = [TestCounter new];
     [self.broker processJSONObject:json
                      asEntityNamed:kDepartment inContext:self.testStore.managedObjectContext
                    completionBlock:^{
-                       completed = YES;
+                       [counter subtract];
                    }];
     
-    WAIT_ON_BOOL(completed, 1);
+    [counter waitUntil:0 timeout:5];
     
     NSArray *allDepartments = [BrokerTestsHelpers findAllEntitiesNamed:kDepartment
                                                              inContext:self.testStore.managedObjectContext];
@@ -89,15 +90,15 @@
                                               options:NSJSONReadingMutableContainers
                                                 error:nil];
     
-    __block BOOL completed = NO;
+    __block TestCounter *counter = [TestCounter new];
     [self.broker processJSONObject:json
                      asEntityNamed:kDepartment
                          inContext:self.testStore.managedObjectContext
                    completionBlock:^{
-                       completed = YES;
+                       [counter subtract];
                    }];
 
-    WAIT_ON_BOOL(completed, 1);
+    [counter waitUntil:0 timeout:5];
     
     NSArray *allDepartments = [BrokerTestsHelpers findAllEntitiesNamed:kDepartment
                                                              inContext:self.testStore.managedObjectContext];
@@ -124,15 +125,15 @@
                                               options:NSJSONReadingMutableContainers
                                                 error:nil];
     
-    __block BOOL completed = NO;
+    __block TestCounter *counter = [TestCounter new];
     [self.broker processJSONCollection:json
                        asEntitiesNamed:kEmployee
                              inContext:self.testStore.managedObjectContext
                        completionBlock:^{
-                           completed = YES;
+                           [counter subtract];
                        }];
     
-    WAIT_ON_BOOL(completed, 1);
+    [counter waitUntil:0 timeout:5];
 
     NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
                                                            inContext:self.testStore.managedObjectContext];
@@ -148,39 +149,30 @@
                                               options:NSJSONReadingMutableContainers
                                                 error:nil];
     
-    __block BOOL completed = NO;
+    __block TestCounter *counter = [TestCounter new];
     [self.broker processJSONCollection:json
                        asEntitiesNamed:kEmployee
                              inContext:self.testStore.managedObjectContext
                        completionBlock:^{
-                           completed = YES;
+                           [counter subtract];
                        }];
     
-    NSDate *timeoutDate1 = [NSDate dateWithTimeIntervalSinceNow:1];
-    while ((completed) == NO) {
-        if ([timeoutDate1 timeIntervalSinceNow] <= 0) {
-            XCTFail(@"WAIT_ON_BOOL timed out after %i seconds", 1);
-            break;
-        }
-        NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:0.1];
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil];
-    }
-    
+    [counter waitUntil:0 timeout:5];
     
     NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
                                                            inContext:self.testStore.managedObjectContext];
     
     XCTAssertEqual(allEmployees.count, 200U, @"Should have the right number of employees");
 
-    completed = NO;
+    [counter add];
     [self.broker processJSONCollection:json
                        asEntitiesNamed:kEmployee
                              inContext:self.testStore.managedObjectContext
                        completionBlock:^{
-                           completed = YES;
+                           [counter subtract];
                        }];
     
-    WAIT_ON_BOOL(completed, 1);
+    [counter waitUntil:0 timeout:5];
     
     allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
                                                   inContext:self.testStore.managedObjectContext];

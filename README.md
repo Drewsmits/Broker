@@ -1,44 +1,118 @@
-## What Broker Is
-Broker is the middleman between JSON payloads and your Core Data model.
+# Broker
 
-## What Broker Isn't
-Broker does not include a network solution; you must provide that layer yourself.  Sending and recieving data over the network is only weakly related to how you want to process it..  Big frameworks that try to solve multiple tangential problems should be avoided, as they are more complex and difficult to replace if and when something better comes along.
+Broker maps remote resources to local Core Data resources via JSON responses. Using a few simple design standards, you can automatically map JSON attributes to NSManagedObject attributes with one line of code.
 
-Broker doesn't work well with badly formed JSON.  By design, it is an extremely oppinionated and powerful bit of software, but with limited flexibility.  If you have control over the API you are interacting with, hopefully Broker will help you design a more usable and properly RESTful service.  If you don't have control and need to deal with nasty JSON, check out [RestKit](http://restkit.org/).
+All this fun stuff is done with a few rules.
 
-## The Problem
-JSON is a great way to send and receive information when communicating with RESTful APIs.  With a Core Data backed iOS app, the trick is processing that JSON into objects described by your data model.  Existing solutions require you to basically duplicate your data model in code, creating explicit maps from network attributes to local attributes.  Not only that, but most also include the network layer as well, making it difficult to replace with better tech later on.
+1. Name your local object attributes the same as remote attributes. For example, if your remote Employee has a "firstName" attribute, don't name your local NSManagedObject Employee attribute "first_name". You can map a remote to a local attribute, but it's extra code.
+2. Use a unique identifier. Each object you want to persist should have a unique attribute to easily identify it. For example, Employee might have an employeeId. Without this, there isn't a way to safely gaurantee one single persisted object.
 
-## How Broker Solves The Problem
-*  When you register a Core Data entity with Broker, it builds a description of all entity properties based on your managed object using [ `NSEntityDescription`](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/CoreDataFramework/Classes/NSEntityDescription_Class/NSEntityDescription.html), [`NSAttributeDescription`](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/CoreDataFramework/Classes/NSAttributeDescription_Class/reference.html#//apple_ref/occ/cl/NSAttributeDescription), and [`NSRelationshipDescription`](http://developer.apple.com/library/mac/#documentation/Cocoa/Reference/CoreDataFramework/Classes/NSRelationshipDescription_Class/NSRelationshipDescription.html#//apple_ref/occ/cl/NSRelationshipDescription).
-*  Property descriptions can include maps from network property names to local property names. For example, if your network Employee object has a property named `id`, you can map it to `employeeID`.
-*  Broker uses [JSONKit](https://github.com/johnezang/JSONKit) alongside property descriptions to serialize and deserialize JSON.  Supah fast.
+## Broker and JSON API Design
 
-## How To Use Broker
-Once you have your data model built, the first step is to setup Broker with your models managed object context.
+Broker is built to handle specific styles of JSON responses. Certain types of responses are not handled in order to keep the project simple.
 
-	[Broker setupWithContext:myContext];
- 
-Next is to register entities that you want to send/receive via JSON.
+### List of things
 
-	[Broker registerEntityNamed:@"Employee"];
+Broker **can** process a list of similar things. In this case our JSON is a list of Employees.
 
-You may need to map a property name:
+	[
+	    {
+	        "name": "Andrew",
+	        "department": "Engineering",
+	        "employeeId": 1
+	    },
+	    {
+	        "name": "Sarah",
+	        "department": "Engineering",
+	        "employeeId": 2
+	    },
+	    {
+	        "name": "Steve",
+	        "department": "Marketing",
+	        "employeeId": 3
+	    }
+	]
+	
+Broker **cannot** process a mixed list of things, like Employee's and Departments.
 
-	[Broker registerEntityNamed:@"Employee" andMapNetworkProperty:@"id" toLocalProperty:@"employeeID"];
+	[
+	    {
+	        "name": "Andrew",
+	        "department": "Engineering",
+	        "employeeId": 1
+	    },
+	    {
+	        "name": "Engineering",
+	        "departmentId": 2
+	    },
+	]
 
-Or map multiple property names:
+Instead, you should return similar objects it as nested lists.
 
-	[Broker registerEntityNamed:@"Employee" andMapNetworkProperties:[NSArray arrayWithObjects:@"id", @"first_name", nil] toLocalProperties:[NSArray arrayWithObjects:@"employeeID", @"firstname", nil]];
+	[
+	    {
+	        "employees": [
+	            {
+	                "name": "Andrew",
+	                "department": "Engineering",
+	                "employeeId": 1
+	            }
+	        ]
+	    },
+	    {
+	        "departments": [
+	            {
+	                "name": "Engineering",
+	                "departmentId": 2
+	            }
+	        ]
+	    }
+	]
 
-As far as setup, that's really it.  From here you can take JSON payloads and point them to specific objects saved in your store using object URIs.
+### A Single Thing
 
-	[Broker parseJSONPayload:jsonPayload targetEntity:employeeURI];
+Broker **can** process a single thing. For example, a single Employee.
 
-This kicks off a couple async queues to both parse the JSON and set property values on the target entity.
+	{
+	    "name": "Andrew",
+	    "department": "Engineering",
+	    "employeeId": 1
+	}
+	
+### A Nested Thing on a Thing
 
-Notes
--------------------------
+Broker **can** process a nested thing. For example, an Employee with a department.
 
-This is beta software.  Stay tuned for updates and a official versioned release.
+	{
+	    "name": "Andrew",
+	    "employeeId": 1,
+	    "department": {
+	        "name": "Engineering",
+	        "departmentId": 1
+	    }
+	}
+	
+### A Nested List of Things on a Thing
 
+Broker **can** process a nested list of things on a thing. For example, a Department with a list of Employees.
+
+	{
+	    "name": "Engineering",
+	    "departmentId": 1,
+	    "employees": [
+	        {
+	            "name": "Andrew",
+	            "departmentId": 1
+	        },
+	        {
+	            "name": "Sarah",
+	            "employeeId": 2
+	        }
+	    ]
+	}
+
+### Unique Objects
+
+Broker uses a "primaryKey" convention to enforce object uniqueness. NSManagedObjects must have a primary key to be registered with Broker. For example, an Employee could have a unique `employeeId` attribute. Once we have a primary key, we can use a simple find or create pattern to guarantee uniqueness. 
+
+**DISCLAIMER**: If you are working with JSON where you might have more than a few thousand entities at once, the find-or-create pattern in it's current form will be slow. I'm working on a faster pattern.

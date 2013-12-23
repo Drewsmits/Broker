@@ -54,10 +54,7 @@
 
 - (void)testFlatJSON
 {
-    NSData *jsonData = DataFromFile(@"department_flat.json");
-    id json = [NSJSONSerialization JSONObjectWithData:jsonData
-                                              options:NSJSONReadingMutableContainers
-                                                error:nil];
+    id json = JsonFromFile(@"department_flat.json");
 
     [self.jsonController processJSONObject:json
                              asEntityNamed:kDepartment];

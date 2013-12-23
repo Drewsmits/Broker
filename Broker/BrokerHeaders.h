@@ -9,6 +9,7 @@
 #ifndef Broker_BrokerHeaders_h
 #define Broker_BrokerHeaders_h
 
+#import "Broker.h"
 #import "BKJSONController.h"
 #import "BKAttributeDescription.h"
 #import "BKEntityDescription.h"

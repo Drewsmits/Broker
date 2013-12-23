@@ -1,0 +1,439 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		880EFF4F182C254A0061D36C /* EmployeeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 880EFF4E182C254A0061D36C /* EmployeeTableViewController.m */; };
+		880EFF53182C25B70061D36C /* BKTestAppStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 880EFF52182C25B70061D36C /* BKTestAppStore.m */; };
+		880EFF5C182C2CA40061D36C /* TestResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 880EFF5B182C2CA40061D36C /* TestResources.bundle */; };
+		880EFF5F182C2CE70061D36C /* BrokerTestsHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 880EFF5E182C2CE70061D36C /* BrokerTestsHelpers.m */; };
+		880EFF66182C2FBA0061D36C /* BrokerTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 880EFF64182C2FBA0061D36C /* BrokerTestModel.xcdatamodeld */; };
+		880EFF68182C47F00061D36C /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 880EFF67182C47F00061D36C /* libBroker.a */; };
+		883C896B182C2488006EE126 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 883C896A182C2488006EE126 /* Foundation.framework */; };
+		883C896D182C2488006EE126 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 883C896C182C2488006EE126 /* CoreGraphics.framework */; };
+		883C896F182C2488006EE126 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 883C896E182C2488006EE126 /* UIKit.framework */; };
+		883C8975182C2488006EE126 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 883C8973182C2488006EE126 /* InfoPlist.strings */; };
+		883C8977182C2488006EE126 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 883C8976182C2488006EE126 /* main.m */; };
+		883C897B182C2488006EE126 /* BKTestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 883C897A182C2488006EE126 /* BKTestAppDelegate.m */; };
+		883C897E182C2488006EE126 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 883C897C182C2488006EE126 /* Main.storyboard */; };
+		883C8983182C2488006EE126 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 883C8982182C2488006EE126 /* Images.xcassets */; };
+		883C89A2182C24BA006EE126 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 883C89A1182C24BA006EE126 /* CoreData.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8840C58E182C52BB0025A26E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8840C589182C52BA0025A26E /* Broker.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DB4C0E22143D2F4F0090F5E3;
+			remoteInfo = Broker;
+		};
+		8840C590182C52BB0025A26E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8840C589182C52BA0025A26E /* Broker.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DB4C0E32143D2F4F0090F5E3;
+			remoteInfo = BrokerTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		880EFF4D182C254A0061D36C /* EmployeeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmployeeTableViewController.h; sourceTree = "<group>"; };
+		880EFF4E182C254A0061D36C /* EmployeeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmployeeTableViewController.m; sourceTree = "<group>"; };
+		880EFF51182C25B70061D36C /* BKTestAppStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTestAppStore.h; sourceTree = "<group>"; };
+		880EFF52182C25B70061D36C /* BKTestAppStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTestAppStore.m; sourceTree = "<group>"; };
+		880EFF59182C28900061D36C /* libBroker.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBroker.a; path = "../build/Debug-iphoneos/libBroker.a"; sourceTree = "<group>"; };
+		880EFF5B182C2CA40061D36C /* TestResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = TestResources.bundle; path = ../../BrokerTests/TestResources.bundle; sourceTree = "<group>"; };
+		880EFF5D182C2CE70061D36C /* BrokerTestsHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BrokerTestsHelpers.h; path = ../../BrokerTests/BrokerTestsHelpers.h; sourceTree = "<group>"; };
+		880EFF5E182C2CE70061D36C /* BrokerTestsHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BrokerTestsHelpers.m; path = ../../BrokerTests/BrokerTestsHelpers.m; sourceTree = "<group>"; };
+		880EFF65182C2FBA0061D36C /* BrokerTestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BrokerTestModel.xcdatamodel; sourceTree = "<group>"; };
+		880EFF67182C47F00061D36C /* libBroker.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBroker.a; path = "../build/Release-iphoneos/libBroker.a"; sourceTree = "<group>"; };
+		883C8967182C2488006EE126 /* BrokerTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrokerTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		883C896A182C2488006EE126 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		883C896C182C2488006EE126 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		883C896E182C2488006EE126 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		883C8972182C2488006EE126 /* BrokerTestApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BrokerTestApp-Info.plist"; sourceTree = "<group>"; };
+		883C8974182C2488006EE126 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		883C8976182C2488006EE126 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		883C8978182C2488006EE126 /* BrokerTestApp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BrokerTestApp-Prefix.pch"; sourceTree = "<group>"; };
+		883C8979182C2488006EE126 /* BKTestAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKTestAppDelegate.h; sourceTree = "<group>"; };
+		883C897A182C2488006EE126 /* BKTestAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKTestAppDelegate.m; sourceTree = "<group>"; };
+		883C897D182C2488006EE126 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		883C8982182C2488006EE126 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		883C8989182C2488006EE126 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		883C899F182C24B6006EE126 /* libBroker.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBroker.a; path = "../build/Debug-iphoneos/libBroker.a"; sourceTree = "<group>"; };
+		883C89A1182C24BA006EE126 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		8840C589182C52BA0025A26E /* Broker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Broker.xcodeproj; path = ../Broker.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		883C8964182C2488006EE126 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				880EFF68182C47F00061D36C /* libBroker.a in Frameworks */,
+				883C896D182C2488006EE126 /* CoreGraphics.framework in Frameworks */,
+				883C896F182C2488006EE126 /* UIKit.framework in Frameworks */,
+				883C896B182C2488006EE126 /* Foundation.framework in Frameworks */,
+				883C89A2182C24BA006EE126 /* CoreData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		880EFF50182C254E0061D36C /* Employee */ = {
+			isa = PBXGroup;
+			children = (
+				880EFF4D182C254A0061D36C /* EmployeeTableViewController.h */,
+				880EFF4E182C254A0061D36C /* EmployeeTableViewController.m */,
+			);
+			name = Employee;
+			sourceTree = "<group>";
+		};
+		880EFF57182C26150061D36C /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				880EFF64182C2FBA0061D36C /* BrokerTestModel.xcdatamodeld */,
+				880EFF51182C25B70061D36C /* BKTestAppStore.h */,
+				880EFF52182C25B70061D36C /* BKTestAppStore.m */,
+			);
+			name = "Core Data";
+			sourceTree = "<group>";
+		};
+		883C895E182C2488006EE126 = {
+			isa = PBXGroup;
+			children = (
+				8840C589182C52BA0025A26E /* Broker.xcodeproj */,
+				883C8970182C2488006EE126 /* BrokerTestApp */,
+				883C8969182C2488006EE126 /* Frameworks */,
+				883C8968182C2488006EE126 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		883C8968182C2488006EE126 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				883C8967182C2488006EE126 /* BrokerTestApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		883C8969182C2488006EE126 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				880EFF67182C47F00061D36C /* libBroker.a */,
+				880EFF59182C28900061D36C /* libBroker.a */,
+				883C89A1182C24BA006EE126 /* CoreData.framework */,
+				883C899F182C24B6006EE126 /* libBroker.a */,
+				883C896A182C2488006EE126 /* Foundation.framework */,
+				883C896C182C2488006EE126 /* CoreGraphics.framework */,
+				883C896E182C2488006EE126 /* UIKit.framework */,
+				883C8989182C2488006EE126 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		883C8970182C2488006EE126 /* BrokerTestApp */ = {
+			isa = PBXGroup;
+			children = (
+				880EFF5D182C2CE70061D36C /* BrokerTestsHelpers.h */,
+				880EFF5E182C2CE70061D36C /* BrokerTestsHelpers.m */,
+				883C8979182C2488006EE126 /* BKTestAppDelegate.h */,
+				883C897A182C2488006EE126 /* BKTestAppDelegate.m */,
+				880EFF57182C26150061D36C /* Core Data */,
+				880EFF50182C254E0061D36C /* Employee */,
+				883C8982182C2488006EE126 /* Images.xcassets */,
+				883C897C182C2488006EE126 /* Main.storyboard */,
+				883C8971182C2488006EE126 /* Supporting Files */,
+				880EFF5B182C2CA40061D36C /* TestResources.bundle */,
+			);
+			path = BrokerTestApp;
+			sourceTree = "<group>";
+		};
+		883C8971182C2488006EE126 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				883C8972182C2488006EE126 /* BrokerTestApp-Info.plist */,
+				883C8973182C2488006EE126 /* InfoPlist.strings */,
+				883C8976182C2488006EE126 /* main.m */,
+				883C8978182C2488006EE126 /* BrokerTestApp-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8840C58A182C52BA0025A26E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8840C58F182C52BB0025A26E /* libBroker.a */,
+				8840C591182C52BB0025A26E /* BrokerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		883C8966182C2488006EE126 /* BrokerTestApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 883C8999182C2488006EE126 /* Build configuration list for PBXNativeTarget "BrokerTestApp" */;
+			buildPhases = (
+				883C8963182C2488006EE126 /* Sources */,
+				883C8964182C2488006EE126 /* Frameworks */,
+				883C8965182C2488006EE126 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BrokerTestApp;
+			productName = BrokerTestApp;
+			productReference = 883C8967182C2488006EE126 /* BrokerTestApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		883C895F182C2488006EE126 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Andrew B. Smith";
+			};
+			buildConfigurationList = 883C8962182C2488006EE126 /* Build configuration list for PBXProject "BrokerTestApp" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 883C895E182C2488006EE126;
+			productRefGroup = 883C8968182C2488006EE126 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8840C58A182C52BA0025A26E /* Products */;
+					ProjectRef = 8840C589182C52BA0025A26E /* Broker.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				883C8966182C2488006EE126 /* BrokerTestApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		8840C58F182C52BB0025A26E /* libBroker.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBroker.a;
+			remoteRef = 8840C58E182C52BB0025A26E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8840C591182C52BB0025A26E /* BrokerTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = BrokerTests.xctest;
+			remoteRef = 8840C590182C52BB0025A26E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		883C8965182C2488006EE126 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				883C8983182C2488006EE126 /* Images.xcassets in Resources */,
+				883C8975182C2488006EE126 /* InfoPlist.strings in Resources */,
+				883C897E182C2488006EE126 /* Main.storyboard in Resources */,
+				880EFF5C182C2CA40061D36C /* TestResources.bundle in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		883C8963182C2488006EE126 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				883C897B182C2488006EE126 /* BKTestAppDelegate.m in Sources */,
+				883C8977182C2488006EE126 /* main.m in Sources */,
+				880EFF66182C2FBA0061D36C /* BrokerTestModel.xcdatamodeld in Sources */,
+				880EFF53182C25B70061D36C /* BKTestAppStore.m in Sources */,
+				880EFF4F182C254A0061D36C /* EmployeeTableViewController.m in Sources */,
+				880EFF5F182C2CE70061D36C /* BrokerTestsHelpers.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		883C8973182C2488006EE126 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				883C8974182C2488006EE126 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		883C897C182C2488006EE126 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				883C897D182C2488006EE126 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		883C8997182C2488006EE126 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		883C8998182C2488006EE126 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		883C899A182C2488006EE126 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "BrokerTestApp/BrokerTestApp-Prefix.pch";
+				INFOPLIST_FILE = "BrokerTestApp/BrokerTestApp-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		883C899B182C2488006EE126 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "BrokerTestApp/BrokerTestApp-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = "BrokerTestApp/BrokerTestApp-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		883C8962182C2488006EE126 /* Build configuration list for PBXProject "BrokerTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				883C8997182C2488006EE126 /* Debug */,
+				883C8998182C2488006EE126 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		883C8999182C2488006EE126 /* Build configuration list for PBXNativeTarget "BrokerTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				883C899A182C2488006EE126 /* Debug */,
+				883C899B182C2488006EE126 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		880EFF64182C2FBA0061D36C /* BrokerTestModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				880EFF65182C2FBA0061D36C /* BrokerTestModel.xcdatamodel */,
+			);
+			currentVersion = 880EFF65182C2FBA0061D36C /* BrokerTestModel.xcdatamodel */;
+			path = BrokerTestModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 883C895F182C2488006EE126 /* Project object */;
+}

@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8840C597182C61380025A26E /* TestCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8840C596182C61380025A26E /* TestCounter.m */; };
 		886DB1D01818472700A5AA4E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 886DB1CF1818472700A5AA4E /* XCTest.framework */; };
 		886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */; };
 		886DB2241819F18300A5AA4E /* BKTestStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2231819F18300A5AA4E /* BKTestStore.m */; };
 		886DB2261819F53600A5AA4E /* BKTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2251819F53600A5AA4E /* BKTestCase.m */; };
-		886DB22B1819F8B600A5AA4E /* BKJSONController.h in Headers */ = {isa = PBXBuildFile; fileRef = 886DB2291819F8B600A5AA4E /* BKJSONController.h */; };
+		886DB22B1819F8B600A5AA4E /* BKJSONController.h in Headers */ = {isa = PBXBuildFile; fileRef = 886DB2291819F8B600A5AA4E /* BKJSONController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		886DB22C1819F8B600A5AA4E /* BKJSONController.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB22A1819F8B600A5AA4E /* BKJSONController.m */; };
 		886DB22E1819FCD800A5AA4E /* BKJSONControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB22D1819FCD800A5AA4E /* BKJSONControllerTests.m */; };
 		886DB230181A016D00A5AA4E /* BKEntityDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB22F181A016D00A5AA4E /* BKEntityDescriptionTests.m */; };
@@ -23,7 +24,7 @@
 		886DB2F51824311B00A5AA4E /* NSManagedObjectBrokerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */; };
 		886DB2F718246CA600A5AA4E /* BKAttributeDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */; };
 		DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB0DE49115B8F68D007F382F /* UIKit.framework */; };
-		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		DB39B5C815BF68C50046FD96 /* NSManagedObjectContext+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
 		DB4C0E37143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
@@ -32,10 +33,10 @@
 		DB4C0E56143D334C0090F5E3 /* BKAttributeDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = DB4C0E54143D334C0090F5E3 /* BKAttributeDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */; };
 		DB4C0E59143D34E50090F5E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
-		DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		DB5997E7159916B100AB65C9 /* NSManagedObject+Broker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
 		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
-		DBBC61D81761855C007D0B76 /* BKEntityMap.h in Headers */ = {isa = PBXBuildFile; fileRef = DBBC61D61761855C007D0B76 /* BKEntityMap.h */; };
+		DBBC61D81761855C007D0B76 /* BKEntityMap.h in Headers */ = {isa = PBXBuildFile; fileRef = DBBC61D61761855C007D0B76 /* BKEntityMap.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DBBC61D91761855C007D0B76 /* BKEntityMap.m in Sources */ = {isa = PBXBuildFile; fileRef = DBBC61D71761855C007D0B76 /* BKEntityMap.m */; };
 		DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */; };
 		DBFF95CD143D9060008511EA /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
@@ -56,6 +57,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8840C595182C61380025A26E /* TestCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestCounter.h; sourceTree = "<group>"; };
+		8840C596182C61380025A26E /* TestCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestCounter.m; sourceTree = "<group>"; };
 		886DB1CF1818472700A5AA4E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEntityControllerTests.m; sourceTree = "<group>"; };
 		886DB2221819F18300A5AA4E /* BKTestStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTestStore.h; sourceTree = "<group>"; };
@@ -135,6 +138,8 @@
 				DBFF95D2143E17D9008511EA /* BrokerTestsHelpers.m */,
 				886DB2781821E84E00A5AA4E /* Employee.h */,
 				886DB2791821E84E00A5AA4E /* Employee.m */,
+				8840C595182C61380025A26E /* TestCounter.h */,
+				8840C596182C61380025A26E /* TestCounter.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -374,6 +379,7 @@
 				DB4C0E43143D2F4F0090F5E3 /* BrokerTests.m in Sources */,
 				DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */,
 				DBFF95D3143E17D9008511EA /* BrokerTestsHelpers.m in Sources */,
+				8840C597182C61380025A26E /* TestCounter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,9 +442,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = include/Broker/Private;
+				PRIVATE_HEADERS_FOLDER_PATH = "include/${PRODUCT_NAME}/Private";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = include/Broker;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(OBJROOT)/UninstalledProducts/include";
@@ -524,9 +529,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = include/Broker/Private;
+				PRIVATE_HEADERS_FOLDER_PATH = "include/${PRODUCT_NAME}/Private";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = include/Broker;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(OBJROOT)/UninstalledProducts/include";
@@ -550,9 +554,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = include/Broker/Private;
+				PRIVATE_HEADERS_FOLDER_PATH = "include/${PRODUCT_NAME}/Private";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = include/Broker;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(OBJROOT)/UninstalledProducts/include";

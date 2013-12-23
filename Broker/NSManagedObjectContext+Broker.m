@@ -22,7 +22,7 @@
     NSArray *fetchedObjects;
     
     if (description.primaryKey) {
-        [request setPredicate:[NSPredicate predicateWithFormat:@"SELF.%@ == %@", description.primaryKey, value]];
+        [request setPredicate:[NSPredicate predicateWithFormat:@"self.%@ = %@", description.primaryKey, value]];
         
         NSError *error;
         fetchedObjects = [self executeFetchRequest:request error:&error];
