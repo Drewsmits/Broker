@@ -8,7 +8,7 @@
 
 #import "BKTestCase.h"
 
-extern void __gcov_flush(void);
+//extern void __gcov_flush(void);
 
 @implementation BKTestCase
 
@@ -25,7 +25,7 @@ extern void __gcov_flush(void);
     XCTAssertNil(error, @"Error!");
     [super tearDown];
     
-    __gcov_flush();
+//    __gcov_flush();
 }
 
 @end

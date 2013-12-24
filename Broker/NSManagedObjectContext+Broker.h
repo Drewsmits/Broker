@@ -13,7 +13,6 @@
 @interface NSManagedObjectContext (Broker)
 
 - (NSManagedObject *)findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
-                                            primaryKeyValue:(id)value
-                                               shouldCreate:(BOOL)create;
+                                            primaryKeyValue:(id)value;
 
 @end

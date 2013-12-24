@@ -13,7 +13,6 @@
 
 - (NSManagedObject *)findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
                                             primaryKeyValue:(id)value
-                                               shouldCreate:(BOOL)create
 {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:description.internalEntityDescription];
@@ -31,7 +30,7 @@
         }
     }
     
-    if (create && fetchedObjects.count == 0) {
+    if (fetchedObjects.count == 0) {
         NSManagedObject *object = [NSEntityDescription insertNewObjectForEntityForName:description.internalEntityDescription.name
                                                                 inManagedObjectContext:self];
         return object;

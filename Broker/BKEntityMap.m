@@ -86,7 +86,8 @@
 {
     BKEntityDescription *entityDescription = [self.entityDescriptions objectForKey:entityName];
     NSAssert(entityDescription,
-             @"Could not find entityDescription for entity named \"%@\". Did you register it with this controller?", entityName);
+             @"Could not find entityDescription for entity named \"%@\". Did you\
+             register it with this controller?", entityName);
     return entityDescription;
 }
 

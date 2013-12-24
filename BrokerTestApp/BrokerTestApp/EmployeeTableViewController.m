@@ -37,7 +37,7 @@
     [super viewDidLoad];
     
     //
-    // Ya know, broker
+    // Broker borker broker
     //
     self.broker = [Broker broker];
     
@@ -78,7 +78,7 @@
     
     NSManagedObjectContext *mainContext = [[[BKTestAppDelegate sharedInstance] store] managedObjectContext];
     
-    id json = JsonFromFile(@"department_employees_10000.json");
+    id json = JsonFromFile(@"department_employees_1000.json");
 
     [self.broker processJSONCollection:json
                        asEntitiesNamed:@"Employee"
@@ -92,7 +92,7 @@
                            }];
                            
                            dispatch_async(dispatch_get_main_queue(), ^{
-                               self.createButton.enabled = YES; 
+                               self.createButton.enabled = YES;
                            });
                        }];
 }
@@ -160,62 +160,9 @@
     return cell;
 }
 
-#pragma mark - NSFetchedResultsControllerDelegate
-
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
-{
-    [self.tableView beginUpdates];
-    
-    // Update sections
-    for (NSInteger i = self.tableView.numberOfSections; i < controller.sections.count; i++) {
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:i]
-                      withRowAnimation:UITableViewRowAnimationFade];
-    }
-}
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath
-{
-    switch(type) {
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        case NSFetchedResultsChangeUpdate:
-            [self configureCell:[self.tableView cellForRowAtIndexPath:indexPath]
-                    atIndexPath:indexPath];
-            break;
-        case NSFetchedResultsChangeMove:
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-    }
-}
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type
-{
-    switch(type) {
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                          withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                          withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        case NSFetchedResultsChangeMove:
-            break;
-        case NSFetchedResultsChangeUpdate:
-            break;
-        default:
-            break;
-    }
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.tableView endUpdates];
+    [self.tableView reloadData];
 }
 
 @end

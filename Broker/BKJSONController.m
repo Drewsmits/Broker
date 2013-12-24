@@ -17,6 +17,14 @@
 // Cats
 #import "NSManagedObjectContext+Broker.h"
 
+@interface BKJSONController ()
+
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *context;
+
+@property (nonatomic, strong, readwrite) BKEntityMap *entityMap;
+
+@end
+
 @implementation BKJSONController
 
 + (instancetype)JSONControllerWithContext:(NSManagedObjectContext *)context
@@ -43,13 +51,17 @@
     // be created.
     //
     id primaryKey = [entityDescription primaryKeyForJSON:json];
+    if (!primaryKey) {
+        NSAssert(nil, @"No primary key found in JSON for entity \"%@\"! You must\
+                        register the entity with a primary key. An example primary\
+                        key for an Employee object might be \"employeeId\"", entityName);
+    }
     
     //
-    // Create a target object if it doesn't alreay exist
+    // Find target object, or create a new one if it doesn't exist
     //
     NSManagedObject *managedObject = [self.context findOrCreateObjectForEntityDescription:entityDescription
-                                                                          primaryKeyValue:primaryKey
-                                                                             shouldCreate:YES];
+                                                                          primaryKeyValue:primaryKey];
     
     //
     // For each property in the JSON, if it is a relationship, process the relationship.
@@ -57,17 +69,22 @@
     //
     for (NSString *property in json) {
         //
-        // Get the "true" object value, not the JSON value.
+        // Get the NSObject value
         //
         id value = json[property];
         id object = [entityDescription objectFromValue:value forProperty:property];
         
         if ([entityDescription isPropertyRelationship:property]) {
+            //
+            // Process as a relationship on parent object.
+            //
             [self processJSON:object
               forRelationship:property
                      onObject:managedObject];
         } else {
-            // Flat attribute
+            //
+            // Flat attribute. Simply set the value.
+            //
             [managedObject setValue:object
                              forKey:property];
         }
@@ -78,6 +95,9 @@
 - (NSArray *)processJSONCollection:(NSArray *)json
                    asEntitiesNamed:(NSString *)entityName
 {
+    //
+    // An array of entities. Find or create each.
+    //
     NSMutableArray *managedObjects = [NSMutableArray arrayWithCapacity:json.count];
     for (NSDictionary *object in json) {
         NSManagedObject *managedObject = [self processJSONObject:object
@@ -103,20 +123,21 @@
     if (!relationshipDescription) return;
     
     //
-    // Sanity check. Cant be a toMany without an array.
+    // Sanity check. Can't be a toMany without an array.
     //
     NSAssert(!(relationshipDescription.isToMany && ![json isKindOfClass:[NSArray class]]),
-             @"A relationship cannot be a toMany without being an array! Something\
-             might have gone wrong during object registration.");
+             @"Looks like your JSON is malformed. The registerd relationship is\
+             expecting an array for the attribute named \"%@\"", relationshipName);
     
     if (relationshipDescription.isToMany) {
         //
-        // Fetch the objects relationship objects
+        // Fetch the objects relationship objects. We add the found or created
+        // objects to this mutable set.
         //
         NSMutableSet *existingRelationshipObjects = [object mutableSetValueForKey:relationshipDescription.name];
         
         //
-        // Create relationship objects to add
+        // Find or create relationship objects to add
         //
         NSArray *objectsToAdd = [self processJSONCollection:json
                                             asEntitiesNamed:relationshipDescription.destinationEntity.name];
@@ -126,9 +147,13 @@
         //
         [existingRelationshipObjects unionSet:[NSSet setWithArray:objectsToAdd]];
     } else {
+        //
+        // Single object. Find or create, then set value.
+        //
         NSManagedObject *destinationObject = [self processJSONObject:json
                                                        asEntityNamed:relationshipDescription.entity.name];
-        [object setValue:destinationObject forKey:relationshipName];
+        [object setValue:destinationObject
+                  forKey:relationshipName];
     }
 }
 

@@ -31,7 +31,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
     BKTestAppStore *store = [BKTestAppStore new];
-    self.store = store;
+    self.store = store;    
     return YES;
 }
 							

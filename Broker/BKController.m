@@ -32,6 +32,9 @@
 {
     BKController *controller = [self new];
     
+    //
+    // Entity Map
+    //
     BKEntityMap *entityMap = [BKEntityMap entityMap];
     controller.entityMap = entityMap;
     
@@ -52,22 +55,12 @@
                 inContext:(NSManagedObjectContext *)context
           completionBlock:(void (^)())completionBlock
 {
-    __weak typeof(self) weakBroker = self;
-    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-        __strong typeof(self) strongBroker = weakBroker;
-        
-        // Background context
-        NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        childContext.parentContext = context;
-        
-        BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:childContext
-                                                                             entityMap:strongBroker.entityMap];
-        
-        [jsonController processJSONObject:json
-                            asEntityNamed:entityName];
-        
-        [childContext save:nil];
-    }];
+    NSOperation *operation = [self operationForContext:context
+                                         withJSONBlock:^(NSManagedObjectContext *backgroundContext,
+                                                         BKJSONController *jsonController) {
+                                             [jsonController processJSONObject:json
+                                                                 asEntityNamed:entityName];
+                                         }];
     
     // Finish
     operation.completionBlock = completionBlock;
@@ -84,29 +77,15 @@
 {
     NSManagedObjectID *objectId = object.objectID;
     
-    __weak typeof(self) weakBroker = self;
-    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-        __strong typeof(self) strongBroker = weakBroker;
-        
-        // Background context
-        NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        childContext.parentContext = context;
-        
-        // Fetch object from background child context
-        NSManagedObject *backgroundObject = [childContext objectWithID:objectId];
-        
-        // Grab a new JSON controller
-        BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:childContext
-                                                                             entityMap:strongBroker.entityMap];
-        
-        // Process
-        [jsonController processJSON:json
-                    forRelationship:relationshipName
-                           onObject:backgroundObject];
-        
-        // Save
-        [childContext save:nil];
-    }];
+    // Operation
+    NSOperation *operation = [self operationForContext:context
+                                         withJSONBlock:^(NSManagedObjectContext *backgroundContext,
+                                                         BKJSONController *jsonController) {
+                                             NSManagedObject *backgroundObject = [backgroundContext objectWithID:objectId];
+                                             [jsonController processJSON:json
+                                                         forRelationship:relationshipName
+                                                                onObject:backgroundObject];
+                                         }];
     
     // Finish
     operation.completionBlock = completionBlock;
@@ -120,31 +99,48 @@
                     inContext:(NSManagedObjectContext *)context
               completionBlock:(void (^)())completionBlock
 {
-    __weak typeof(self) weakBroker = self;
-    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-        __strong typeof(self) strongBroker = weakBroker;
-        
-        // Background context
-        NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        childContext.parentContext = context;
-        
-        // Grab a new JSON controller
-        BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:childContext
-                                                                             entityMap:strongBroker.entityMap];
-        
-        // Process
-        [jsonController processJSONCollection:json
-                              asEntitiesNamed:entityName];
-        
-        // Save
-        [childContext save:nil];
-    }];
+    // Operation
+    NSOperation *operation = [self operationForContext:context
+                                         withJSONBlock:^(NSManagedObjectContext *backgroundContext,
+                                                         BKJSONController *jsonController) {
+                                             [jsonController processJSONCollection:json
+                                                                   asEntitiesNamed:entityName];
+                                         }];
     
     // Finish
     operation.completionBlock = completionBlock;
     
     // Queue it up
     [self.queue addOperation:operation];
+}
+
+#pragma mark -
+
+- (NSOperation *)operationForContext:(NSManagedObjectContext *)context
+                       withJSONBlock:(void (^)(NSManagedObjectContext *childContext,
+                                               BKJSONController *jsonController))block
+{
+    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
+        // Background context
+        NSManagedObjectContext *backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        backgroundContext.parentContext = context;
+        
+        // Grab a new JSON controller
+        BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:backgroundContext
+                                                                             entityMap:self.entityMap];
+        
+        // Perform work
+        if (block) block(backgroundContext, jsonController);
+        
+        // Save background context. Does not automatically save parent context.
+        NSError *error;
+        [backgroundContext save:&error];
+        if (error) {
+            BrokerLog(@"%@", error.localizedDescription);
+        }
+    }];
+
+    return operation;
 }
 
 @end
