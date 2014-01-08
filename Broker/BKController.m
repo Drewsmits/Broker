@@ -1,22 +1,21 @@
 //
-//  Broker.m
+//  BKController.m
 //  Broker
 //
-//  Created by Andrew Smith on 10/25/13.
-//  Copyright (c) 2013 Andrew B. Smith. All rights reserved.
+//  Created by Andrew Smith on 1/8/14.
+//  Copyright (c) 2014 Andrew B. Smith. All rights reserved.
 //
 
-#import "Broker.h"
+#import "BKController.h"
 
 #import "BKEntityMap.h"
 #import "BKJSONController.h"
-
 #import "BKEntityDescription.h"
 #import "BKAttributeDescription.h"
 
 #define BROKER_INTERNAL_QUEUE @"com.broker.queue"
 
-@interface Broker ()
+@interface BKController ()
 
 @property (nonatomic, strong, readwrite) BKEntityMap *entityMap;
 
@@ -27,23 +26,23 @@
 
 @end
 
-@implementation Broker
+@implementation BKController
 
-+ (instancetype)broker
++ (instancetype)controller
 {
-    Broker *broker = [self new];
+    BKController *controller = [self new];
     
     BKEntityMap *entityMap = [BKEntityMap entityMap];
-    broker.entityMap = entityMap;
+    controller.entityMap = entityMap;
     
     //
     // Serial queue
     //
     NSOperationQueue *queue = [NSOperationQueue new];
     queue.maxConcurrentOperationCount = 1;
-    broker.queue = queue;
+    controller.queue = queue;
     
-    return broker;
+    return controller;
 }
 
 #pragma mark BKJSONController
@@ -60,10 +59,10 @@
         // Background context
         NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         childContext.parentContext = context;
-       
+        
         BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:childContext
                                                                              entityMap:strongBroker.entityMap];
-       
+        
         [jsonController processJSONObject:json
                             asEntityNamed:entityName];
         
@@ -147,7 +146,5 @@
     // Queue it up
     [self.queue addOperation:operation];
 }
-
-#pragma mark - 
 
 @end

@@ -15,8 +15,7 @@
 		886DB22C1819F8B600A5AA4E /* BKJSONController.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB22A1819F8B600A5AA4E /* BKJSONController.m */; };
 		886DB22E1819FCD800A5AA4E /* BKJSONControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB22D1819FCD800A5AA4E /* BKJSONControllerTests.m */; };
 		886DB230181A016D00A5AA4E /* BKEntityDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB22F181A016D00A5AA4E /* BKEntityDescriptionTests.m */; };
-		886DB243181ADD3900A5AA4E /* Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB241181ADD3900A5AA4E /* Broker.m */; };
-		886DB249181B3CBB00A5AA4E /* BrokerNewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB248181B3CBB00A5AA4E /* BrokerNewTests.m */; };
+		886DB249181B3CBB00A5AA4E /* BKControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB248181B3CBB00A5AA4E /* BKControllerTests.m */; };
 		886DB27A1821E84E00A5AA4E /* Employee.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2791821E84E00A5AA4E /* Employee.m */; };
 		886DB2F51824311B00A5AA4E /* NSManagedObjectBrokerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */; };
 		886DB2F718246CA600A5AA4E /* BKAttributeDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */; };
@@ -24,10 +23,10 @@
 		8887A552187DF09900B999F3 /* BKEntityDescription.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBFF95E9143E568C008511EA /* BKEntityDescription.h */; };
 		8887A553187DF09900B999F3 /* BKEntityMap.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBBC61D61761855C007D0B76 /* BKEntityMap.h */; };
 		8887A554187DF09900B999F3 /* BKJSONController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 886DB2291819F8B600A5AA4E /* BKJSONController.h */; };
-		8887A555187DF09900B999F3 /* Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 886DB240181ADD3900A5AA4E /* Broker.h */; };
-		8887A556187DF09900B999F3 /* BrokerHeaders.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */; };
+		8887A556187DF09900B999F3 /* Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 886DB24C181B3E0700A5AA4E /* Broker.h */; };
 		8887A557187DF09900B999F3 /* NSManagedObject+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */; };
 		8887A558187DF09900B999F3 /* NSManagedObjectContext+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; };
+		8887A58E187E072100B999F3 /* BKController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8887A58D187E072100B999F3 /* BKController.m */; };
 		DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB0DE49115B8F68D007F382F /* UIKit.framework */; };
 		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
@@ -67,8 +66,7 @@
 				8887A552187DF09900B999F3 /* BKEntityDescription.h in CopyFiles */,
 				8887A553187DF09900B999F3 /* BKEntityMap.h in CopyFiles */,
 				8887A554187DF09900B999F3 /* BKJSONController.h in CopyFiles */,
-				8887A555187DF09900B999F3 /* Broker.h in CopyFiles */,
-				8887A556187DF09900B999F3 /* BrokerHeaders.h in CopyFiles */,
+				8887A556187DF09900B999F3 /* Broker.h in CopyFiles */,
 				8887A557187DF09900B999F3 /* NSManagedObject+Broker.h in CopyFiles */,
 				8887A558187DF09900B999F3 /* NSManagedObjectContext+Broker.h in CopyFiles */,
 			);
@@ -90,14 +88,14 @@
 		886DB22A1819F8B600A5AA4E /* BKJSONController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKJSONController.m; sourceTree = "<group>"; };
 		886DB22D1819FCD800A5AA4E /* BKJSONControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKJSONControllerTests.m; sourceTree = "<group>"; };
 		886DB22F181A016D00A5AA4E /* BKEntityDescriptionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEntityDescriptionTests.m; sourceTree = "<group>"; };
-		886DB240181ADD3900A5AA4E /* Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Broker.h; sourceTree = "<group>"; };
-		886DB241181ADD3900A5AA4E /* Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Broker.m; sourceTree = "<group>"; };
-		886DB248181B3CBB00A5AA4E /* BrokerNewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrokerNewTests.m; sourceTree = "<group>"; };
-		886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrokerHeaders.h; sourceTree = "<group>"; };
+		886DB248181B3CBB00A5AA4E /* BKControllerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKControllerTests.m; sourceTree = "<group>"; };
+		886DB24C181B3E0700A5AA4E /* Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Broker.h; sourceTree = "<group>"; };
 		886DB2781821E84E00A5AA4E /* Employee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Employee.h; sourceTree = "<group>"; };
 		886DB2791821E84E00A5AA4E /* Employee.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Employee.m; sourceTree = "<group>"; };
 		886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSManagedObjectBrokerTests.m; sourceTree = "<group>"; };
 		886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAttributeDescriptionTests.m; sourceTree = "<group>"; };
+		8887A58C187E072100B999F3 /* BKController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKController.h; sourceTree = "<group>"; };
+		8887A58D187E072100B999F3 /* BKController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKController.m; sourceTree = "<group>"; };
 		DB0DE49115B8F68D007F382F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+Broker.h"; sourceTree = "<group>"; };
 		DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+Broker.m"; sourceTree = "<group>"; };
@@ -199,15 +197,15 @@
 			children = (
 				DB4C0E54143D334C0090F5E3 /* BKAttributeDescription.h */,
 				DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */,
+				8887A58C187E072100B999F3 /* BKController.h */,
+				8887A58D187E072100B999F3 /* BKController.m */,
 				DBFF95E9143E568C008511EA /* BKEntityDescription.h */,
 				DBFF95EA143E568C008511EA /* BKEntityDescription.m */,
 				DBBC61D61761855C007D0B76 /* BKEntityMap.h */,
 				DBBC61D71761855C007D0B76 /* BKEntityMap.m */,
 				886DB2291819F8B600A5AA4E /* BKJSONController.h */,
 				886DB22A1819F8B600A5AA4E /* BKJSONController.m */,
-				886DB240181ADD3900A5AA4E /* Broker.h */,
-				886DB241181ADD3900A5AA4E /* Broker.m */,
-				886DB24C181B3E0700A5AA4E /* BrokerHeaders.h */,
+				886DB24C181B3E0700A5AA4E /* Broker.h */,
 				DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */,
 				DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */,
 				DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */,
@@ -229,13 +227,13 @@
 			isa = PBXGroup;
 			children = (
 				886DB2F618246CA600A5AA4E /* BKAttributeDescriptionTests.m */,
+				886DB248181B3CBB00A5AA4E /* BKControllerTests.m */,
 				886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */,
 				886DB22F181A016D00A5AA4E /* BKEntityDescriptionTests.m */,
 				886DB22D1819FCD800A5AA4E /* BKJSONControllerTests.m */,
 				886DB2271819F55F00A5AA4E /* BKTestCase.h */,
 				886DB2251819F53600A5AA4E /* BKTestCase.m */,
 				886DB2281819F72800A5AA4E /* BKTestConstants.h */,
-				886DB248181B3CBB00A5AA4E /* BrokerNewTests.m */,
 				DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */,
 				DB4C0E41143D2F4F0090F5E3 /* BrokerTests.h */,
 				DB4C0E42143D2F4F0090F5E3 /* BrokerTests.m */,
@@ -355,8 +353,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				886DB243181ADD3900A5AA4E /* Broker.m in Sources */,
 				DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */,
+				8887A58E187E072100B999F3 /* BKController.m in Sources */,
 				DBFF95EC143E568C008511EA /* BKEntityDescription.m in Sources */,
 				DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */,
 				886DB22C1819F8B600A5AA4E /* BKJSONController.m in Sources */,
@@ -370,7 +368,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				886DB22E1819FCD800A5AA4E /* BKJSONControllerTests.m in Sources */,
-				886DB249181B3CBB00A5AA4E /* BrokerNewTests.m in Sources */,
+				886DB249181B3CBB00A5AA4E /* BKControllerTests.m in Sources */,
 				886DB2F51824311B00A5AA4E /* NSManagedObjectBrokerTests.m in Sources */,
 				886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */,
 				886DB2F718246CA600A5AA4E /* BKAttributeDescriptionTests.m in Sources */,

@@ -39,12 +39,10 @@
     BKEntityDescription *entityDescription = [self.entityMap entityDescriptionForEntityName:entityName];
     
     //
-    // Get the primary key
+    // Get the primary key. If there is no primary key, then duplicate objects may
+    // be created.
     //
     id primaryKey = [entityDescription primaryKeyForJSON:json];
-    if (!primaryKey) {
-        NSAssert(nil, @"doh!");
-    }
     
     //
     // Create a target object if it doesn't alreay exist
@@ -108,7 +106,8 @@
     // Sanity check. Cant be a toMany without an array.
     //
     NSAssert(!(relationshipDescription.isToMany && ![json isKindOfClass:[NSArray class]]),
-             @"Too many bork!");
+             @"A relationship cannot be a toMany without being an array! Something\
+             might have gone wrong during object registration.");
     
     if (relationshipDescription.isToMany) {
         //

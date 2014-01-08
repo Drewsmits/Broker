@@ -8,43 +8,43 @@
 
 #import "BKTestCase.h"
 
-#import <Broker/BrokerHeaders.h>
+#import <Broker/Broker.h>
 
 #import "BrokerTestsHelpers.h"
 #import "TestCounter.h"
 #import "Employee.h"
 
-@interface BrokerNewTests : BKTestCase
+@interface BKControllerTests : BKTestCase
 
-@property (nonatomic, strong) Broker *broker;
+@property (nonatomic, strong) BKController *controller;
 
 @end
 
-@implementation BrokerNewTests
+@implementation BKControllerTests
 
 - (void)setUp
 {
     [super setUp];
     
-    self.broker = [Broker broker];
+    self.controller = [BKController controller];
     
     // Department
-    [self.broker.entityMap registerEntityNamed:kDepartment
-                                withPrimaryKey:kDepartmentPrimaryKey
-                       andMapNetworkProperties:nil
-                             toLocalProperties:nil
-                                     inContext:self.testStore.managedObjectContext];
+    [self.controller.entityMap registerEntityNamed:kDepartment
+                                    withPrimaryKey:kDepartmentPrimaryKey
+                           andMapNetworkProperties:nil
+                                 toLocalProperties:nil
+                                         inContext:self.testStore.managedObjectContext];
     
     // Employee
-//    [self.broker.entityMap registerEntityNamed:kEmployee
-//                                withPrimaryKey:kEmployeePrimaryKey
-//                       andMapNetworkProperties:nil
-//                             toLocalProperties:nil
-//                                     inContext:self.testStore.managedObjectContext];
+    //    [self.controller.entityMap registerEntityNamed:kEmployee
+    //                                withPrimaryKey:kEmployeePrimaryKey
+    //                       andMapNetworkProperties:nil
+    //                             toLocalProperties:nil
+    //                                     inContext:self.testStore.managedObjectContext];
     
     // Employee
-    [Employee registerWithBroker:self.broker
-                       inContext:self.testStore.managedObjectContext];
+    [Employee bkr_registerWithBroker:self.controller
+                           inContext:self.testStore.managedObjectContext];
 }
 
 - (void)tearDown
@@ -61,11 +61,11 @@
                                                 error:nil];
     
     __block TestCounter *counter = [TestCounter new];
-    [self.broker processJSONObject:json
-                     asEntityNamed:kDepartment inContext:self.testStore.managedObjectContext
-                   completionBlock:^{
-                       [counter subtract];
-                   }];
+    [self.controller processJSONObject:json
+                         asEntityNamed:kDepartment inContext:self.testStore.managedObjectContext
+                       completionBlock:^{
+                           [counter subtract];
+                       }];
     
     [counter waitUntil:0 timeout:5];
     
@@ -91,13 +91,13 @@
                                                 error:nil];
     
     __block TestCounter *counter = [TestCounter new];
-    [self.broker processJSONObject:json
-                     asEntityNamed:kDepartment
-                         inContext:self.testStore.managedObjectContext
-                   completionBlock:^{
-                       [counter subtract];
-                   }];
-
+    [self.controller processJSONObject:json
+                         asEntityNamed:kDepartment
+                             inContext:self.testStore.managedObjectContext
+                       completionBlock:^{
+                           [counter subtract];
+                       }];
+    
     [counter waitUntil:0 timeout:5];
     
     NSArray *allDepartments = [BrokerTestsHelpers findAllEntitiesNamed:kDepartment
@@ -119,22 +119,18 @@
 
 - (void)test200EmployeesJSON
 {
-    NSData *jsonData = DataFromFile(@"department_employees_200.json");
-    
-    id json = [NSJSONSerialization JSONObjectWithData:jsonData
-                                              options:NSJSONReadingMutableContainers
-                                                error:nil];
+    id json = JsonFromFile(@"department_employees_200.json");
     
     __block TestCounter *counter = [TestCounter new];
-    [self.broker processJSONCollection:json
-                       asEntitiesNamed:kEmployee
-                             inContext:self.testStore.managedObjectContext
-                       completionBlock:^{
-                           [counter subtract];
-                       }];
+    [self.controller processJSONCollection:json
+                           asEntitiesNamed:kEmployee
+                                 inContext:self.testStore.managedObjectContext
+                           completionBlock:^{
+                               [counter subtract];
+                           }];
     
     [counter waitUntil:0 timeout:5];
-
+    
     NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
                                                            inContext:self.testStore.managedObjectContext];
     
@@ -150,12 +146,12 @@
                                                 error:nil];
     
     __block TestCounter *counter = [TestCounter new];
-    [self.broker processJSONCollection:json
-                       asEntitiesNamed:kEmployee
-                             inContext:self.testStore.managedObjectContext
-                       completionBlock:^{
-                           [counter subtract];
-                       }];
+    [self.controller processJSONCollection:json
+                           asEntitiesNamed:kEmployee
+                                 inContext:self.testStore.managedObjectContext
+                           completionBlock:^{
+                               [counter subtract];
+                           }];
     
     [counter waitUntil:0 timeout:5];
     
@@ -163,14 +159,14 @@
                                                            inContext:self.testStore.managedObjectContext];
     
     XCTAssertEqual(allEmployees.count, 200U, @"Should have the right number of employees");
-
+    
     [counter add];
-    [self.broker processJSONCollection:json
-                       asEntitiesNamed:kEmployee
-                             inContext:self.testStore.managedObjectContext
-                       completionBlock:^{
-                           [counter subtract];
-                       }];
+    [self.controller processJSONCollection:json
+                           asEntitiesNamed:kEmployee
+                                 inContext:self.testStore.managedObjectContext
+                           completionBlock:^{
+                               [counter subtract];
+                           }];
     
     [counter waitUntil:0 timeout:5];
     

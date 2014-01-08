@@ -1,35 +1,20 @@
 //
-//  Broker.h
+//  BrokerHeaders.h
 //  Broker
 //
 //  Created by Andrew Smith on 10/25/13.
 //  Copyright (c) 2013 Andrew B. Smith. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#ifndef Broker_BrokerHeaders_h
+#define Broker_BrokerHeaders_h
 
-@class BKEntityMap;
+#import "BKController.h"
+#import "BKJSONController.h"
+#import "BKAttributeDescription.h"
+#import "BKEntityDescription.h"
+#import "BKEntityMap.h"
+#import "NSManagedObject+Broker.h"
+#import "NSManagedObjectContext+Broker.h"
 
-@interface Broker : NSObject
-
-@property (nonatomic, strong, readonly) BKEntityMap *entityMap;
-
-+ (instancetype)broker;
-
-- (void)processJSONObject:(NSDictionary *)json
-            asEntityNamed:(NSString *)entityName
-                inContext:(NSManagedObjectContext *)context
-          completionBlock:(void (^)())completionBlock;
-
-- (void)processJSON:(id)json
-    forRelationship:(NSString *)relationshipName
-           onObject:(NSManagedObject *)object
-          inContext:(NSManagedObjectContext *)context
-    completionBlock:(void (^)())completionBlock;
-
-- (void)processJSONCollection:(NSArray *)json
-              asEntitiesNamed:(NSString *)entityName
-                    inContext:(NSManagedObjectContext *)context
-              completionBlock:(void (^)())completionBlock;
-
-@end
+#endif

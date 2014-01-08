@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Andrew B. Smith. All rights reserved.
 //
 
-#import <Broker/BrokerHeaders.h>
+#import <Broker/Broker.h>
 #import "BKTestCase.h"
 
 @interface BKEntityControllerTests : BKTestCase

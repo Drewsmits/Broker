@@ -8,7 +8,7 @@
 
 #import <CoreData/CoreData.h>
 
-@class Broker;
+@class BKController;
 
 @interface NSManagedObject (Broker)
 
@@ -22,12 +22,12 @@
  @param broker The Broker instance to register the entity with
  @param context The main thread NSManagedObjectContext;
  */
-+ (void)registerWithBroker:(Broker *)broker
-                 inContext:(NSManagedObjectContext *)context;
++ (void)bkr_registerWithBroker:(BKController *)controller
+                     inContext:(NSManagedObjectContext *)context;
 
 /**
  The absolute truth as to whether the object has been deleted in its context.
  */
-- (BOOL)hasBeenDeleted;
+- (BOOL)bkr_hasBeenDeleted;
 
 @end

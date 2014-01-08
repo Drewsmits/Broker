@@ -33,15 +33,15 @@
     NSManagedObject *employee = [NSEntityDescription insertNewObjectForEntityForName:@"Employee"
                                                               inManagedObjectContext:self.testStore.managedObjectContext];
     
-    XCTAssertFalse([employee hasBeenDeleted], @"Object should not be deleted");
+    XCTAssertFalse([employee bkr_hasBeenDeleted], @"Object should not be deleted");
     
     [self.testStore.managedObjectContext save:nil];
     
-    XCTAssertFalse([employee hasBeenDeleted], @"Object should not be deleted");
+    XCTAssertFalse([employee bkr_hasBeenDeleted], @"Object should not be deleted");
     
     [self.testStore.managedObjectContext deleteObject:employee];
     
-    XCTAssertTrue([employee hasBeenDeleted], @"Object should be deleted");
+    XCTAssertTrue([employee bkr_hasBeenDeleted], @"Object should be deleted");
 }
 
 @end

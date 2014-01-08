@@ -120,3 +120,11 @@ Broker **can** process a nested list of things on a thing. For example, a Depart
 Broker uses a "primaryKey" convention to enforce object uniqueness. NSManagedObjects must have a primary key to be registered with Broker. For example, an Employee could have a unique `employeeId` attribute. Once we have a primary key, we can use a simple find or create pattern to guarantee uniqueness. 
 
 **DISCLAIMER**: If you are working with JSON where you might have more than a few thousand entities at once, the find-or-create pattern in it's current form will be slow. I'm working on a faster pattern.
+
+## Getting Started
+
+Here is a quick guide to getting up and running.
+
+### Register NSManagedObjects with Broker
+
+

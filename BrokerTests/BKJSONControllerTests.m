@@ -8,7 +8,7 @@
 
 #import "BKTestCase.h"
 
-#import <Broker/BrokerHeaders.h>
+#import <Broker/Broker.h>
 
 #import "BrokerTestsHelpers.h"
 
@@ -27,18 +27,6 @@
     [super setUp];
     
     self.entityMap = [BKEntityMap entityMap];
-
-    [self.entityMap registerEntityNamed:kDepartment
-                         withPrimaryKey:kDepartmentPrimaryKey
-                andMapNetworkProperties:nil
-                      toLocalProperties:nil
-                              inContext:self.testStore.managedObjectContext];
-    
-    [self.entityMap registerEntityNamed:kEmployee
-                         withPrimaryKey:kEmployeePrimaryKey
-                andMapNetworkProperties:nil
-                      toLocalProperties:nil
-                              inContext:self.testStore.managedObjectContext];
     
     BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:self.testStore.managedObjectContext
                                                                          entityMap:self.entityMap];
@@ -52,8 +40,27 @@
     [super tearDown];
 }
 
+- (void)registerEntities
+{
+    [self.entityMap registerEntityNamed:kDepartment
+                         withPrimaryKey:kDepartmentPrimaryKey
+                andMapNetworkProperties:nil
+                      toLocalProperties:nil
+                              inContext:self.testStore.managedObjectContext];
+    
+    [self.entityMap registerEntityNamed:kEmployee
+                         withPrimaryKey:kEmployeePrimaryKey
+                andMapNetworkProperties:nil
+                      toLocalProperties:nil
+                              inContext:self.testStore.managedObjectContext];
+}
+
+#pragma mark - Tests
+
 - (void)testFlatJSON
 {
+    [self registerEntities];
+    
     id json = JsonFromFile(@"department_flat.json");
 
     [self.jsonController processJSONObject:json
@@ -73,8 +80,41 @@
                           @"Engineering", @"Department should have the correct primary key");
 }
 
+- (void)testNoPrimaryKey
+{
+    //
+    // Without a primary key, we should end up with duplicat objects. Test this
+    // by processing the same JSON twice.
+    //
+    [self.entityMap registerEntityNamed:kEmployee
+                         withPrimaryKey:nil
+                andMapNetworkProperties:nil
+                      toLocalProperties:nil
+                              inContext:self.testStore.managedObjectContext];
+    
+    id json = JsonFromFile(@"department_employees.json");
+    
+    [self.jsonController processJSONCollection:json
+                               asEntitiesNamed:kEmployee];
+
+    NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
+                                                           inContext:self.testStore.managedObjectContext];
+    
+    XCTAssertEqual(allEmployees.count, 6U, @"Should have the right number of employees");
+    
+    [self.jsonController processJSONCollection:json
+                               asEntitiesNamed:kEmployee];
+    
+    allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
+                                                  inContext:self.testStore.managedObjectContext];
+    
+    XCTAssertEqual(allEmployees.count, 12U, @"Should have the right number of employees");
+}
+
 - (void)testNestedJSON
 {
+    [self registerEntities];
+    
     id json = JsonFromFile(@"department_nested.json");
 
     [self.jsonController processJSONObject:json
@@ -99,6 +139,8 @@
 
 - (void)testNestedDepartmentEmployeesJSON
 {
+    [self registerEntities];
+    
     id json = JsonFromFile(@"department_employees_100.json");
 
     // Build Deparment

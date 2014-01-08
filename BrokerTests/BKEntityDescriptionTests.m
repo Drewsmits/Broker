@@ -8,7 +8,7 @@
 
 #import "BKTestCase.h"
 
-#import <Broker/BrokerHeaders.h>
+#import <Broker/Broker.h>
 
 #import "BrokerTestsHelpers.h"
 

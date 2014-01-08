@@ -8,25 +8,25 @@
 
 #import "NSManagedObject+Broker.h"
 
-#import "Broker.h"
+#import "BKController.h"
 #import "BKEntityMap.h"
 
 @implementation NSManagedObject (Broker)
 
-+ (void)registerWithBroker:(Broker *)broker
-                 inContext:(NSManagedObjectContext *)context
++ (void)bkr_registerWithBroker:(BKController *)controller
+                     inContext:(NSManagedObjectContext *)context
 {
     NSString *lowercaseDescription = self.description.lowercaseString;
     NSString *defaultPrimaryKey = [NSString stringWithFormat:@"%@ID", lowercaseDescription];
     
-    [broker.entityMap registerEntityNamed:[self description]
-                           withPrimaryKey:defaultPrimaryKey
-                  andMapNetworkProperties:nil
-                        toLocalProperties:nil
-                                inContext:context];
+    [controller.entityMap registerEntityNamed:[self description]
+                               withPrimaryKey:defaultPrimaryKey
+                      andMapNetworkProperties:nil
+                            toLocalProperties:nil
+                                    inContext:context];
 }
 
-- (BOOL)hasBeenDeleted
+- (BOOL)bkr_hasBeenDeleted
 {    
     /**
      Sometimes CoreData will fault a particular instance, while there is still
