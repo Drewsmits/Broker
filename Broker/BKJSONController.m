@@ -64,6 +64,18 @@
     //
     for (NSString *property in json) {
         //
+        // Bail if this property is not yet implemented
+        //
+        NSString *setter = [NSString stringWithFormat:@"set%@", [property uppercaseString]];
+        if (![managedObject respondsToSelector:NSSelectorFromString(setter)]) {
+            BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!\
+                      It's not in your data model.",
+                      property,
+                      entityDescription.internalEntityDescription.name);
+            continue;
+        }
+        
+        //
         // Get the NSObject value
         //
         id value = json[property];
