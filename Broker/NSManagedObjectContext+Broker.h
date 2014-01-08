@@ -12,7 +12,7 @@
 
 @interface NSManagedObjectContext (Broker)
 
-- (NSManagedObject *)findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
+- (NSManagedObject *)bkr_findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
                                             primaryKeyValue:(id)value;
 
 @end

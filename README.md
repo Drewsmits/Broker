@@ -4,20 +4,20 @@
 
 ***
 
-Broker maps remote resources to local Core Data resources via JSON responses. Using a few simple design standards, you can automatically map JSON attributes to NSManagedObject attributes with one line of code.
+Broker maps remote resources to local Core Data resources via JSON responses. Using a few simple design standards, you can automatically map JSON attributes to NSManagedObject attributes with little effort.
 
 All this fun stuff is done with a few rules.
 
-1. Name your local object attributes the same as remote attributes. For example, if your remote Employee has a "firstName" attribute, don't name your local NSManagedObject Employee attribute "first_name". You can map a remote to a local attribute, but it's extra code.
-2. Use a unique identifier. Each object you want to persist should have a unique attribute to easily identify it. For example, Employee might have an employeeId. Without this, there isn't a way to safely gaurantee one single persisted object.
+1. Name your local object attributes the same as remote attributes. For example, if your remote Employee has a "firstName" attribute, don't name your local NSManagedObject Employee attribute "first_name". If you want, Broker has the flexibility to map remote names to local ones, but why add the extra code?
+2. Use a unique object identifier. Each object you want to persist should have a unique attribute to easily identify it. For example, Employee might have an employeeId. Without this, there isn't a way to safely guarantee one single persisted object.
 
 ## Broker and JSON API Design
 
-Broker is built to handle specific styles of JSON responses. Certain types of responses are not handled in order to keep the project simple.
+Broker is built to handle specific styles of JSON responses.
 
 ### List of things
 
-Broker **can** process a list of similar things. In this case our JSON is a list of Employees.
+Broker **can** process a list of similar things. For example, a JSON response containing a list of Employee objects.
 
 	[
 	    {
@@ -51,7 +51,7 @@ Broker **cannot** process a mixed list of things, like Employee's and Department
 	    },
 	]
 
-Instead, you should return similar objects it as nested lists.
+Instead, you should return similar objects it as nested lists, which you can process separately.
 
 	[
 	    {
@@ -85,7 +85,7 @@ Broker **can** process a single thing. For example, a single Employee.
 	
 ### A Nested Thing on a Thing
 
-Broker **can** process a nested thing. For example, an Employee with a department.
+Broker **can** process a nested thing. For example, an Employee with a Department.
 
 	{
 	    "name": "Andrew",
@@ -117,14 +117,12 @@ Broker **can** process a nested list of things on a thing. For example, a Depart
 
 ### Unique Objects
 
-Broker uses a "primaryKey" convention to enforce object uniqueness. NSManagedObjects must have a primary key to be registered with Broker. For example, an Employee could have a unique `employeeId` attribute. Once we have a primary key, we can use a simple find or create pattern to guarantee uniqueness. 
+Broker uses a "primary key" convention to enforce object uniqueness. NSManagedObjects must have a primary key to be registered with Broker. For example, an Employee could have a unique `employeeId` attribute. Once we have a primary key, we can use a simple find or create pattern to guarantee uniqueness. 
 
 **DISCLAIMER**: If you are working with JSON where you might have more than a few thousand entities at once, the find-or-create pattern in it's current form will be slow. I'm working on a faster pattern.
 
 ## Getting Started
 
-Here is a quick guide to getting up and running.
-
-### Register NSManagedObjects with Broker
+## Installation
 
 

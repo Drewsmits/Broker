@@ -28,45 +28,6 @@
 
 @implementation BrokerTests
 
-//- (void)setUp {
-//    [super setUp];
-//    
-//    // Build Model
-//    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:DataModelURL()];
-//    XCTAssertNotNil(model, @"Managed Object Model should exist");
-//    
-//    // Build persistent store coordinator
-//    self.coord = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
-//    
-//    // Build Store
-//    NSError *error = nil;
-//    self.store = [self.coord addPersistentStoreWithType:NSSQLiteStoreType
-//                                          configuration:nil
-//                                                    URL:DataStoreURL()
-//                                                options:nil
-//                                                  error:&error];
-//
-//    // Build context
-//    self.context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-//    [self.context setPersistentStoreCoordinator:self.coord];
-//    
-//    // Controller
-//    self.entityController = [BKEntityController entityController];
-//}
-//
-//- (void)tearDown
-//{    
-//    self.context = nil;
-//    
-//    NSError *error = nil;
-//    XCTAssertTrue([self.coord removePersistentStore:self.store error:&error],
-//                  @"couldn't remove persistent store: %@", error);
-//    
-//    DeleteDataStore();
-//    
-//    [super tearDown];
-//}
-
 #pragma mark - Registration
 
 //

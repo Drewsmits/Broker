@@ -11,7 +11,7 @@
 
 @implementation NSManagedObjectContext (Broker)
 
-- (NSManagedObject *)findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
+- (NSManagedObject *)bkr_findOrCreateObjectForEntityDescription:(BKEntityDescription *)description
                                             primaryKeyValue:(id)value
 {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];

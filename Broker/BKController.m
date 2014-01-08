@@ -72,13 +72,12 @@
 - (void)processJSON:(id)json
     forRelationship:(NSString *)relationshipName
            onObject:(NSManagedObject *)object
-          inContext:(NSManagedObjectContext *)context
     completionBlock:(void (^)())completionBlock
 {
     NSManagedObjectID *objectId = object.objectID;
     
     // Operation
-    NSOperation *operation = [self operationForContext:context
+    NSOperation *operation = [self operationForContext:object.managedObjectContext
                                          withJSONBlock:^(NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
                                              NSManagedObject *backgroundObject = [backgroundContext objectWithID:objectId];
@@ -124,6 +123,9 @@
         // Background context
         NSManagedObjectContext *backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         backgroundContext.parentContext = context;
+        
+        // Memory optimization
+        backgroundContext.undoManager = nil;
         
         // Grab a new JSON controller
         BKJSONController *jsonController = [BKJSONController JSONControllerWithContext:backgroundContext

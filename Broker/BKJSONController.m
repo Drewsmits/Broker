@@ -60,8 +60,8 @@
     //
     // Find target object, or create a new one if it doesn't exist
     //
-    NSManagedObject *managedObject = [self.context findOrCreateObjectForEntityDescription:entityDescription
-                                                                          primaryKeyValue:primaryKey];
+    NSManagedObject *managedObject = [self.context bkr_findOrCreateObjectForEntityDescription:entityDescription
+                                                                              primaryKeyValue:primaryKey];
     
     //
     // For each property in the JSON, if it is a relationship, process the relationship.

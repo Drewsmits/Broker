@@ -33,8 +33,6 @@
 + (NSManagedObject *)createNewDepartment:(NSManagedObjectContext *)context;
 + (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 
-+ (void)writeFakeJSON;
-
 NSString *PathForTestResource(NSString *resouce);
 
 NSURL *URLForTestResource(NSString *resouce);
