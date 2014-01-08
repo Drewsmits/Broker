@@ -51,11 +51,6 @@
     // be created.
     //
     id primaryKey = [entityDescription primaryKeyForJSON:json];
-    if (!primaryKey) {
-        NSAssert(nil, @"No primary key found in JSON for entity \"%@\"! You must\
-                        register the entity with a primary key. An example primary\
-                        key for an Employee object might be \"employeeId\"", entityName);
-    }
     
     //
     // Find target object, or create a new one if it doesn't exist
