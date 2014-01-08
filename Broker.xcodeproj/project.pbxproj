@@ -27,6 +27,7 @@
 		8887A557187DF09900B999F3 /* NSManagedObject+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */; };
 		8887A558187DF09900B999F3 /* NSManagedObjectContext+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */; };
 		8887A58E187E072100B999F3 /* BKController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8887A58D187E072100B999F3 /* BKController.m */; };
+		8887A58F187E0C2400B999F3 /* BKController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8887A58C187E072100B999F3 /* BKController.h */; };
 		DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB0DE49115B8F68D007F382F /* UIKit.framework */; };
 		DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */; };
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
@@ -62,6 +63,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 7;
 			files = (
+				8887A58F187E0C2400B999F3 /* BKController.h in CopyFiles */,
 				8887A551187DF09900B999F3 /* BKAttributeDescription.h in CopyFiles */,
 				8887A552187DF09900B999F3 /* BKEntityDescription.h in CopyFiles */,
 				8887A553187DF09900B999F3 /* BKEntityMap.h in CopyFiles */,
