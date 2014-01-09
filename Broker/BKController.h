@@ -24,7 +24,6 @@
 - (void)processJSON:(id)json
     forRelationship:(NSString *)relationshipName
            onObject:(NSManagedObject *)object
-          inContext:(NSManagedObjectContext *)context
     completionBlock:(void (^)())completionBlock;
 
 - (void)processJSONCollection:(NSArray *)json

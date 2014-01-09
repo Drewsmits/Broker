@@ -16,6 +16,7 @@
 
 // Cats
 #import "NSManagedObjectContext+Broker.h"
+#import "NSString+Broker.h"
 
 @interface BKJSONController ()
 
@@ -66,12 +67,13 @@
         //
         // Bail if this property is not yet implemented
         //
-        NSString *setter = [NSString stringWithFormat:@"set%@", [property uppercaseString]];
+        NSString *setter = [NSString stringWithFormat:@"set%@:", [property bkr_uppercaseFirstLetterOnlyString]];
         if (![managedObject respondsToSelector:NSSelectorFromString(setter)]) {
             BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!\
-                      It's not in your data model.",
+                      Tried to use setter named \"%@\".",
                       property,
-                      entityDescription.internalEntityDescription.name);
+                      entityDescription.internalEntityDescription.name,
+                      setter);
             continue;
         }
         
@@ -158,7 +160,7 @@
         // Single object. Find or create, then set value.
         //
         NSManagedObject *destinationObject = [self processJSONObject:json
-                                                       asEntityNamed:relationshipDescription.entity.name];
+                                                       asEntityNamed:relationshipDescription.destinationEntity.name];
         [object setValue:destinationObject
                   forKey:relationshipName];
     }

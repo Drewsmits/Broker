@@ -8,8 +8,6 @@
 
 #import "BKTestCase.h"
 
-#import "BKAttributeDescription.h"
-
 @interface BKAttributeDescriptionTests : BKTestCase
 
 @end

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		881BDFDB187E283F0005DD08 /* NSString+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = 881BDFDA187E283F0005DD08 /* NSString+Broker.m */; };
+		881BDFDC187E28670005DD08 /* NSString+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 881BDFD9187E283F0005DD08 /* NSString+Broker.h */; };
 		8840C597182C61380025A26E /* TestCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8840C596182C61380025A26E /* TestCounter.m */; };
 		886DB1D01818472700A5AA4E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 886DB1CF1818472700A5AA4E /* XCTest.framework */; };
 		886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */; };
@@ -61,8 +63,9 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 7;
+			dstSubfolderSpec = 16;
 			files = (
+				881BDFDC187E28670005DD08 /* NSString+Broker.h in CopyFiles */,
 				8887A58F187E0C2400B999F3 /* BKController.h in CopyFiles */,
 				8887A551187DF09900B999F3 /* BKAttributeDescription.h in CopyFiles */,
 				8887A552187DF09900B999F3 /* BKEntityDescription.h in CopyFiles */,
@@ -77,6 +80,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		881BDFD9187E283F0005DD08 /* NSString+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Broker.h"; sourceTree = "<group>"; };
+		881BDFDA187E283F0005DD08 /* NSString+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Broker.m"; sourceTree = "<group>"; };
 		8840C595182C61380025A26E /* TestCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestCounter.h; sourceTree = "<group>"; };
 		8840C596182C61380025A26E /* TestCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestCounter.m; sourceTree = "<group>"; };
 		886DB1CF1818472700A5AA4E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -212,6 +217,8 @@
 				DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */,
 				DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */,
 				DB39B5C715BF68C50046FD96 /* NSManagedObjectContext+Broker.m */,
+				881BDFD9187E283F0005DD08 /* NSString+Broker.h */,
+				881BDFDA187E283F0005DD08 /* NSString+Broker.m */,
 				DB4C0E28143D2F4F0090F5E3 /* Supporting Files */,
 			);
 			path = Broker;
@@ -359,6 +366,7 @@
 				8887A58E187E072100B999F3 /* BKController.m in Sources */,
 				DBFF95EC143E568C008511EA /* BKEntityDescription.m in Sources */,
 				DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */,
+				881BDFDB187E283F0005DD08 /* NSString+Broker.m in Sources */,
 				886DB22C1819F8B600A5AA4E /* BKJSONController.m in Sources */,
 				DB39B5C915BF68C50046FD96 /* NSManagedObjectContext+Broker.m in Sources */,
 				DBBC61D91761855C007D0B76 /* BKEntityMap.m in Sources */,
@@ -480,7 +488,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Coverage;
 		};
@@ -590,7 +597,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -617,7 +623,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

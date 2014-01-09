@@ -8,7 +8,6 @@
 
 #import "BKTestCase.h"
 #import "Employee.h"
-#import "NSManagedObject+Broker.h"
 
 @interface NSManagedObjectBrokerTests : BKTestCase
 
