@@ -55,6 +55,12 @@
                 andMapNetworkProperties:nil
                       toLocalProperties:nil
                               inContext:self.testStore.managedObjectContext];
+    
+    [self.entityMap registerEntityNamed:@"ContactInfo"
+                         withPrimaryKey:nil
+                andMapNetworkProperties:nil
+                      toLocalProperties:nil
+                              inContext:self.testStore.managedObjectContext];
 }
 
 #pragma mark - Tests
@@ -201,5 +207,26 @@
     XCTAssertEqualObjects([employee valueForKey:kEmployeePrimaryKey], @5678, @"Attributes should be set correctly");
 //    STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
 }
+
+- (void)testEmployeeWithContactInfo
+{
+    [self registerEntities];
+    
+    id json = JsonFromFile(@"employee_nested.json");
+    
+    [self.jsonController processJSONObject:json
+                             asEntityNamed:kEmployee];
+    
+    NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
+                                                           inContext:self.testStore.managedObjectContext];
+    
+    XCTAssertEqual(allEmployees.count, 1U, @"Should have one employee");
+    
+    Employee *employee = [allEmployees firstObject];
+    
+    XCTAssertNotNil(employee.contactInfo, @"Should have contact info");
+
+}
+
 
 @end

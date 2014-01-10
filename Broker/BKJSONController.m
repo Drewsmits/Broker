@@ -70,7 +70,7 @@
         NSString *localProperty = [entityDescription localPropertyNameForProperty:jsonProperty];
         
         //
-        // Bail if this property is not yet implemented
+        // Skip if this property is not yet implemented
         //
         NSString *setter = [NSString stringWithFormat:@"set%@:", [localProperty bkr_uppercaseFirstLetterOnlyString]];
         if (![managedObject respondsToSelector:NSSelectorFromString(setter)]) {
@@ -79,28 +79,27 @@
                       localProperty,
                       entityDescription.internalEntityDescription.name,
                       setter);
-            break;
-        }
-        
-        //
-        // Get the NSObject value
-        //
-        id value = json[jsonProperty];
-        id object = [entityDescription objectFromValue:value forProperty:localProperty];
-        
-        if ([entityDescription isPropertyRelationship:localProperty]) {
-            //
-            // Process as a relationship on parent object.
-            //
-            [self processJSON:object
-              forRelationship:localProperty
-                     onObject:managedObject];
         } else {
             //
-            // Flat attribute. Simply set the value.
+            // Get the NSObject value
             //
-            [managedObject setValue:object
-                             forKey:localProperty];
+            id value = json[jsonProperty];
+            id object = [entityDescription objectFromValue:value forProperty:localProperty];
+            
+            if ([entityDescription isPropertyRelationship:localProperty]) {
+                //
+                // Process as a relationship on parent object.
+                //
+                [self processJSON:object
+                  forRelationship:localProperty
+                         onObject:managedObject];
+            } else {
+                //
+                // Flat attribute. Simply set the value.
+                //
+                [managedObject setValue:object
+                                 forKey:localProperty];
+            }
         }
     }
     return managedObject;
