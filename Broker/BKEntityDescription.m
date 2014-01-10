@@ -43,7 +43,7 @@
 /**
  Dictionary used for fast key finding
  */
-@property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
+@property (nonatomic, strong, readwrite) NSMutableDictionary *localToNetworkPropertiesMap;
 
 @end
 

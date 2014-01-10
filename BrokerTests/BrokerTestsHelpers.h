@@ -29,7 +29,7 @@
 @interface BrokerTestsHelpers : NSObject
 
 + (NSManagedObjectID *)createNewEmployee:(NSManagedObjectContext *)context;
-+ (NSManagedObjectID *)createNewFilledOutEmployee:(NSManagedObjectContext *)context;
++ (NSManagedObject *)createNewFilledOutEmployee:(NSManagedObjectContext *)context;
 + (NSManagedObject *)createNewDepartment:(NSManagedObjectContext *)context;
 + (NSArray *)findAllEntitiesNamed:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 

@@ -40,11 +40,11 @@
  Dictionary used for fast key finding
  */
 @property (nonatomic, strong, readonly) NSMutableDictionary *networkToLocalPropertiesMap;
-//
-///**
-// Dictionary used for fast key finding
-// */
-//@property (nonatomic, strong) NSMutableDictionary *localToNetworkPropertiesMap;
+
+/**
+ Dictionary used for fast key finding
+ */
+@property (nonatomic, strong, readonly) NSMutableDictionary *localToNetworkPropertiesMap;
 
 /**
  Creates a new BKEntityPropertiesDescription

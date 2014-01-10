@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		881BDFDB187E283F0005DD08 /* NSString+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = 881BDFDA187E283F0005DD08 /* NSString+Broker.m */; };
 		881BDFDC187E28670005DD08 /* NSString+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 881BDFD9187E283F0005DD08 /* NSString+Broker.h */; };
+		88317D1A18804F4C003C6BCF /* NSManagedObjectContextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 88317D1918804F4C003C6BCF /* NSManagedObjectContextTests.m */; };
+		88317D1C188053B0003C6BCF /* BKEntityMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 88317D1B188053B0003C6BCF /* BKEntityMapTests.m */; };
 		8840C597182C61380025A26E /* TestCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8840C596182C61380025A26E /* TestCounter.m */; };
 		886DB1D01818472700A5AA4E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 886DB1CF1818472700A5AA4E /* XCTest.framework */; };
 		886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */; };
@@ -35,7 +37,6 @@
 		DB4C0E26143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
 		DB4C0E37143D2F4F0090F5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E25143D2F4F0090F5E3 /* Foundation.framework */; };
 		DB4C0E40143D2F4F0090F5E3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DB4C0E3E143D2F4F0090F5E3 /* InfoPlist.strings */; };
-		DB4C0E43143D2F4F0090F5E3 /* BrokerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E42143D2F4F0090F5E3 /* BrokerTests.m */; };
 		DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */; };
 		DB4C0E59143D34E50090F5E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
@@ -82,6 +83,8 @@
 /* Begin PBXFileReference section */
 		881BDFD9187E283F0005DD08 /* NSString+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Broker.h"; sourceTree = "<group>"; };
 		881BDFDA187E283F0005DD08 /* NSString+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Broker.m"; sourceTree = "<group>"; };
+		88317D1918804F4C003C6BCF /* NSManagedObjectContextTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSManagedObjectContextTests.m; sourceTree = "<group>"; };
+		88317D1B188053B0003C6BCF /* BKEntityMapTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEntityMapTests.m; sourceTree = "<group>"; };
 		8840C595182C61380025A26E /* TestCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestCounter.h; sourceTree = "<group>"; };
 		8840C596182C61380025A26E /* TestCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestCounter.m; sourceTree = "<group>"; };
 		886DB1CF1818472700A5AA4E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -112,8 +115,6 @@
 		DB4C0E32143D2F4F0090F5E3 /* BrokerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrokerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB4C0E3D143D2F4F0090F5E3 /* BrokerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BrokerTests-Info.plist"; sourceTree = "<group>"; };
 		DB4C0E3F143D2F4F0090F5E3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		DB4C0E41143D2F4F0090F5E3 /* BrokerTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BrokerTests.h; sourceTree = "<group>"; };
-		DB4C0E42143D2F4F0090F5E3 /* BrokerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BrokerTests.m; sourceTree = "<group>"; };
 		DB4C0E54143D334C0090F5E3 /* BKAttributeDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = BKAttributeDescription.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BKAttributeDescription.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DB4C0E58143D34E50090F5E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -239,15 +240,15 @@
 				886DB248181B3CBB00A5AA4E /* BKControllerTests.m */,
 				886DB2201819F11C00A5AA4E /* BKEntityControllerTests.m */,
 				886DB22F181A016D00A5AA4E /* BKEntityDescriptionTests.m */,
+				88317D1B188053B0003C6BCF /* BKEntityMapTests.m */,
 				886DB22D1819FCD800A5AA4E /* BKJSONControllerTests.m */,
 				886DB2271819F55F00A5AA4E /* BKTestCase.h */,
 				886DB2251819F53600A5AA4E /* BKTestCase.m */,
 				886DB2281819F72800A5AA4E /* BKTestConstants.h */,
 				DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */,
-				DB4C0E41143D2F4F0090F5E3 /* BrokerTests.h */,
-				DB4C0E42143D2F4F0090F5E3 /* BrokerTests.m */,
 				886DB2771821E7F200A5AA4E /* Helpers */,
 				886DB2F41824311B00A5AA4E /* NSManagedObjectBrokerTests.m */,
+				88317D1918804F4C003C6BCF /* NSManagedObjectContextTests.m */,
 				DB4C0E3C143D2F4F0090F5E3 /* Supporting Files */,
 				DBFF95D4143E187D008511EA /* TestResources.bundle */,
 			);
@@ -378,15 +379,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				886DB22E1819FCD800A5AA4E /* BKJSONControllerTests.m in Sources */,
+				88317D1A18804F4C003C6BCF /* NSManagedObjectContextTests.m in Sources */,
 				886DB249181B3CBB00A5AA4E /* BKControllerTests.m in Sources */,
 				886DB2F51824311B00A5AA4E /* NSManagedObjectBrokerTests.m in Sources */,
 				886DB2211819F11C00A5AA4E /* BKEntityControllerTests.m in Sources */,
 				886DB2F718246CA600A5AA4E /* BKAttributeDescriptionTests.m in Sources */,
 				886DB230181A016D00A5AA4E /* BKEntityDescriptionTests.m in Sources */,
+				88317D1C188053B0003C6BCF /* BKEntityMapTests.m in Sources */,
 				886DB2261819F53600A5AA4E /* BKTestCase.m in Sources */,
 				886DB27A1821E84E00A5AA4E /* Employee.m in Sources */,
 				886DB2241819F18300A5AA4E /* BKTestStore.m in Sources */,
-				DB4C0E43143D2F4F0090F5E3 /* BrokerTests.m in Sources */,
 				DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */,
 				DBFF95D3143E17D9008511EA /* BrokerTestsHelpers.m in Sources */,
 				8840C597182C61380025A26E /* TestCounter.m in Sources */,

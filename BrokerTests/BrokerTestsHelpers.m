@@ -34,7 +34,7 @@
     return employee.objectID;
 }
 
-+ (NSManagedObjectID *)createNewFilledOutEmployee:(NSManagedObjectContext *)context {
++ (NSManagedObject *)createNewFilledOutEmployee:(NSManagedObjectContext *)context {
     NSManagedObject *employee = [NSEntityDescription insertNewObjectForEntityForName:@"Employee" 
                                                               inManagedObjectContext:context];
     
@@ -43,7 +43,7 @@
     [employee setValue:@"Bacon" forKey:@"lastname"];
     
     [context save:nil];
-    return employee.objectID;
+    return employee;
 }
 
 + (NSManagedObject *)createNewDepartment:(NSManagedObjectContext *)context {
