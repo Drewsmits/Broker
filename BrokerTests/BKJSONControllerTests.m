@@ -82,6 +82,21 @@
                           @"Engineering", @"Department should have the correct primary key");
 }
 
+- (void)testEmployeeCollectionJson
+{
+    [self registerEntities];
+    
+    id json = JsonFromFile(@"department_employees_100.json");
+    
+    [self.jsonController processJSONCollection:json
+                               asEntitiesNamed:kEmployee];
+    
+    NSArray *employees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
+                                                        inContext:self.testStore.managedObjectContext];
+    
+    XCTAssertEqual(employees.count, 100U, @"Should have the right amount of employee objects");
+}
+
 - (void)testNoPrimaryKey
 {
     //
@@ -139,7 +154,7 @@
     XCTAssertEqual(employees.count, 6U, @"Department should have the right amount of employees");
 }
 
-- (void)testNestedDepartmentEmployeesJSON
+- (void)testDepartmentEmployeesRelationshipJSON
 {
     [self registerEntities];
     
