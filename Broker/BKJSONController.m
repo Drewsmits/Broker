@@ -79,7 +79,7 @@
                       localProperty,
                       entityDescription.internalEntityDescription.name,
                       setter);
-            continue;
+            break;
         }
         
         //
