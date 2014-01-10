@@ -36,10 +36,10 @@
     
     BKEntityDescription *description = [BKEntityDescription descriptionForObject:department];
     
-    XCTAssertNotNil([description descriptionForLocalProperty:kDepartmentPrimaryKey], @"Should have a description for the attribute");
-    XCTAssertNotNil([description descriptionForLocalProperty:kName], @"Should have a description for the attribute");
-    XCTAssertNotNil([description descriptionForLocalProperty:kDogs], @"Should have a description for the attribute");
-    XCTAssertNotNil([description descriptionForLocalProperty:kEmployees], @"Should have a description for the attribute");
+    XCTAssertNotNil([description descriptionForProperty:kDepartmentPrimaryKey], @"Should have a description for the attribute");
+    XCTAssertNotNil([description descriptionForProperty:kName], @"Should have a description for the attribute");
+    XCTAssertNotNil([description descriptionForProperty:kDogs], @"Should have a description for the attribute");
+    XCTAssertNotNil([description descriptionForProperty:kEmployees], @"Should have a description for the attribute");
 
     XCTAssertTrue([description isPropertyRelationship:kDogs], @"Dogs property should be a relationship");
     XCTAssertTrue([description isPropertyRelationship:kEmployees], @"Dogs property should be a relationship");

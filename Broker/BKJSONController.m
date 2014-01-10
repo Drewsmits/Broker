@@ -63,15 +63,20 @@
     // For each property in the JSON, if it is a relationship, process the relationship.
     // Otherwise it's just a flat attribute, so set the value.
     //
-    for (NSString *property in json) {
+    for (NSString *jsonProperty in json) {
+        //
+        // Get the local NSManagedObject property name.
+        //
+        NSString *localProperty = [entityDescription localPropertyNameForProperty:jsonProperty];
+        
         //
         // Bail if this property is not yet implemented
         //
-        NSString *setter = [NSString stringWithFormat:@"set%@:", [property bkr_uppercaseFirstLetterOnlyString]];
+        NSString *setter = [NSString stringWithFormat:@"set%@:", [localProperty bkr_uppercaseFirstLetterOnlyString]];
         if (![managedObject respondsToSelector:NSSelectorFromString(setter)]) {
             BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!\
                       Tried to use setter named \"%@\".",
-                      property,
+                      localProperty,
                       entityDescription.internalEntityDescription.name,
                       setter);
             continue;
@@ -80,22 +85,22 @@
         //
         // Get the NSObject value
         //
-        id value = json[property];
-        id object = [entityDescription objectFromValue:value forProperty:property];
+        id value = json[jsonProperty];
+        id object = [entityDescription objectFromValue:value forProperty:localProperty];
         
-        if ([entityDescription isPropertyRelationship:property]) {
+        if ([entityDescription isPropertyRelationship:localProperty]) {
             //
             // Process as a relationship on parent object.
             //
             [self processJSON:object
-              forRelationship:property
+              forRelationship:localProperty
                      onObject:managedObject];
         } else {
             //
             // Flat attribute. Simply set the value.
             //
             [managedObject setValue:object
-                             forKey:property];
+                             forKey:localProperty];
         }
     }
     return managedObject;

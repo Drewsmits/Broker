@@ -70,30 +70,9 @@
 - (NSPropertyDescription *)descriptionForProperty:(NSString *)property;
 
 /**
-  Returns the entity's property description for the local property name
- */
-- (NSPropertyDescription *)descriptionForLocalProperty:(NSString *)property;
-
-/**
-  Returns the entity's property description for the network property name
- */
-- (NSPropertyDescription *)descriptionForNetworkProperty:(NSString *)property;
-
-/**
  Returns the entity's attribute description for the property
  */
 - (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)property;
-
-/**
-  Returns the entity's attribute description for the local property name
- */
-- (BKAttributeDescription *)attributeDescriptionForLocalProperty:(NSString *)property;
-
-/**
-  Returns the attribute description for the network property name on the entity.
-  Returns nil if property not in model, or if property is not a attribute.
- */
-- (BKAttributeDescription *)attributeDescriptionForNetworkProperty:(NSString *)property;
 
 /**
   Returns the relationship description for the local property relationship name
@@ -107,14 +86,13 @@
  */
 - (BOOL)isPropertyRelationship:(NSString *)property;
 
-///**
-//  Returns the destination entity name for the relationship name
-// */
-//- (NSString *)destinationEntityNameForRelationship:(NSString *)relationship;
-
 - (id)objectFromValue:(id)value
           forProperty:(NSString *)property;
 
 - (id)primaryKeyForJSON:(NSDictionary *)JSON;
+
+- (NSString *)localPropertyNameForProperty:(NSString *)property;
+
+- (NSString *)networkPropertyNameForProperty:(NSString *)property;
 
 @end

@@ -131,33 +131,12 @@
 
 - (NSPropertyDescription *)descriptionForProperty:(NSString *)property
 {
-    NSPropertyDescription *desc = [self descriptionForLocalProperty:property];
-    
+    NSPropertyDescription *desc = self.propertiesDescriptions[property];
     if (!desc) {
-        desc = [self descriptionForNetworkProperty:property];
+        BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.",
+                  property,
+                  self.internalEntityDescription.name);
     }
-    
-    if (!desc) {
-        BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.", property, self.internalEntityDescription.name);
-    }
-
-    return desc;
-}
-
-- (NSPropertyDescription *)descriptionForLocalProperty:(NSString *)property
-{
-    return self.propertiesDescriptions[property];
-}
-
-- (NSPropertyDescription *)descriptionForNetworkProperty:(NSString *)networkProperty
-{    
-    NSString *localProperty     = self.networkToLocalPropertiesMap[networkProperty];
-    NSPropertyDescription *desc = [self descriptionForLocalProperty:localProperty];
-
-    if (!desc) {
-        BrokerLog(@"\"%@\" is not a known network property on entity \"%@\"", networkProperty, self.internalEntityDescription.name);
-    }
-    
     return desc;
 }
 
@@ -167,26 +146,9 @@
     if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
         return description;
     } else {
-        return nil;
-    }
-}
-
-- (BKAttributeDescription *)attributeDescriptionForLocalProperty:(NSString *)property
-{
-    id description = [self descriptionForLocalProperty:property];
-    if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
-        return description;
-    } else {
-        return nil;
-    }
-}
-
-- (BKAttributeDescription *)attributeDescriptionForNetworkProperty:(NSString *)property
-{
-    id description = [self descriptionForNetworkProperty:property];
-    if (description && [description isKindOfClass:[BKAttributeDescription class]]) {
-        return description;
-    } else {
+        BrokerLog(@"No description for property \"%@\" found on entity \"%@\"!  It's not in your data model.",
+                  property,
+                  self.internalEntityDescription.name);
         return nil;
     }
 }
@@ -207,12 +169,6 @@
     id description = [self.propertiesDescriptions objectForKey:property];
     return (description && [description isKindOfClass:[NSRelationshipDescription class]]);
 }
-
-//- (NSString *)destinationEntityNameForRelationship:(NSString *)relationship
-//{
-//    NSRelationshipDescription *desc = [self relationshipDescriptionForProperty:relationship];
-//    return desc.destinationEntity.name;
-//}
 
 #pragma mark - Transform
 
@@ -236,10 +192,23 @@
 - (id)primaryKeyForJSON:(NSDictionary *)JSON
 {
     if (!self.primaryKey) return nil;
-    id value = JSON[self.primaryKey];
+    NSString *networkPrimaryKey = [self networkPropertyNameForProperty:self.primaryKey];
+    id value = JSON[networkPrimaryKey];
     id object = [self objectFromValue:value
                           forProperty:self.primaryKey];
     return object;
+}
+
+- (NSString *)localPropertyNameForProperty:(NSString *)property
+{
+    NSString *localPropertyName = self.networkToLocalPropertiesMap[property];
+    return localPropertyName ? localPropertyName : property;
+}
+
+- (NSString *)networkPropertyNameForProperty:(NSString *)property
+{
+    NSString *networkPropertyName = self.localToNetworkPropertiesMap[property];
+    return networkPropertyName ? networkPropertyName : property;
 }
 
 @end

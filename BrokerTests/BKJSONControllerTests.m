@@ -10,6 +10,8 @@
 
 #import <Broker/Broker.h>
 
+#import "Employee.h"
+
 #import "BrokerTestsHelpers.h"
 
 @interface BKJSONControllerTests : BKTestCase
@@ -155,5 +157,34 @@
     XCTAssertEqual(employees.count, 100U, @"Should have the right amount of employee objects");
 }
 
+- (void)testFlatEmployeeWithNetworkPropertyJSONProcessing
+{
+    [self.entityMap registerEntityNamed:kEmployee
+                         withPrimaryKey:kEmployeePrimaryKey
+                andMapNetworkProperties:@[@"id"]
+                      toLocalProperties:@[kEmployeePrimaryKey]
+                              inContext:self.testStore.managedObjectContext];
+
+    id json = JsonFromFile(@"employee_network_property.json");
+
+    [self.jsonController processJSONObject:json
+                             asEntityNamed:kEmployee];
+    
+    NSArray *allEmployees = [BrokerTestsHelpers findAllEntitiesNamed:kEmployee
+                                                           inContext:self.testStore.managedObjectContext];
+    
+    XCTAssertEqual(allEmployees.count, 1U, @"Should have one employee");
+    
+    Employee *employee = [allEmployees firstObject];
+
+//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//    [formatter setDateFormat:kEmployeeStartDateFormat];
+//    NSDate *date = [formatter dateFromString:@"2011/10/06 00:51:10 -0700"];
+
+    XCTAssertEqualObjects([employee valueForKey:@"firstname"], @"Andrew", @"Attributes should be set correctly");
+    XCTAssertEqualObjects([employee valueForKey:@"lastname"], @"Smith", @"Attributes should be set correctly");
+    XCTAssertEqualObjects([employee valueForKey:kEmployeePrimaryKey], @5678, @"Attributes should be set correctly");
+//    STAssertEqualObjects([employee valueForKey:@"startDate"], date, @"Attributes should be set correctly");
+}
 
 @end
