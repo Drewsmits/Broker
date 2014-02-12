@@ -43,6 +43,16 @@
                          asEntityNamed:(NSString *)entityName
 {
     //
+    // We expect a dictionary
+    //
+    NSAssert([json isKindOfClass:[NSDictionary class]],
+             @"Expected JSON to be an NSDictionary");
+    if (![json isKindOfClass:[NSDictionary class]]) {
+        BrokerLog(@"Expected JSON to be an NSDictionary for entity \"%@\"", entityName);
+        return nil;
+    }
+    
+    //
     // Get the entity description
     //
     BKEntityDescription *entityDescription = [self.entityMap entityDescriptionForEntityName:entityName];
@@ -108,6 +118,15 @@
 - (NSArray *)processJSONCollection:(NSArray *)json
                    asEntitiesNamed:(NSString *)entityName
 {
+    //
+    // We expect an array
+    //
+    NSAssert([json isKindOfClass:[NSArray class]],
+             @"Expected JSON to be an NSArray");
+    if (![json isKindOfClass:[NSArray class]]) {
+        BrokerLog(@"Expected JSON to be an NSArray for entity \"%@\"", entityName);
+        return nil;
+    }
     //
     // An array of entities. Find or create each.
     //

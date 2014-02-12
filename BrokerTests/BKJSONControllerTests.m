@@ -225,7 +225,27 @@
     Employee *employee = [allEmployees firstObject];
     
     XCTAssertNotNil(employee.contactInfo, @"Should have contact info");
+}
 
+- (void)testMalformedJSON
+{
+    [self registerEntities];
+    
+    id json = JsonFromFile(@"malformed_json.json");
+    
+    
+    XCTAssertThrows([self.jsonController processJSONObject:json asEntityNamed:kEmployee],
+                    @"Processing unexpected JSON should throw.");
+}
+
+- (void)testWrongJson
+{
+    [self registerEntities];
+    
+    id json = JsonFromFile(@"department_nested.json");
+    
+    XCTAssertNoThrow([self.jsonController processJSONObject:json asEntityNamed:kEmployee],
+                     @"Processing unexpected JSON should not crash");
 }
 
 

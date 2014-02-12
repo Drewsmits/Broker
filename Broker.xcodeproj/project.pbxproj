@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8806106918ABF3280057AC6D /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
 		881BDFDB187E283F0005DD08 /* NSString+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = 881BDFDA187E283F0005DD08 /* NSString+Broker.m */; };
 		881BDFDC187E28670005DD08 /* NSString+Broker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 881BDFD9187E283F0005DD08 /* NSString+Broker.h */; };
 		88317D1A18804F4C003C6BCF /* NSManagedObjectContextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 88317D1918804F4C003C6BCF /* NSManagedObjectContextTests.m */; };
@@ -40,7 +41,6 @@
 		DB4C0E57143D334C0090F5E3 /* BKAttributeDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = DB4C0E55143D334C0090F5E3 /* BKAttributeDescription.m */; };
 		DB4C0E59143D34E50090F5E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
 		DB5997E8159916B100AB65C9 /* NSManagedObject+Broker.m in Sources */ = {isa = PBXBuildFile; fileRef = DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */; };
-		DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E22143D2F4F0090F5E3 /* libBroker.a */; };
 		DBBC61D91761855C007D0B76 /* BKEntityMap.m in Sources */ = {isa = PBXBuildFile; fileRef = DBBC61D71761855C007D0B76 /* BKEntityMap.m */; };
 		DBFF95C9143D8D80008511EA /* BrokerTestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DBFF95C7143D8D80008511EA /* BrokerTestModel.xcdatamodeld */; };
 		DBFF95CD143D9060008511EA /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4C0E58143D34E50090F5E3 /* CoreData.framework */; };
@@ -144,11 +144,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8806106918ABF3280057AC6D /* libBroker.a in Frameworks */,
 				886DB1D01818472700A5AA4E /* XCTest.framework in Frameworks */,
 				DB0DE49215B8F68E007F382F /* UIKit.framework in Frameworks */,
 				DB4C0E37143D2F4F0090F5E3 /* Foundation.framework in Frameworks */,
 				DBFF95CD143D9060008511EA /* CoreData.framework in Frameworks */,
-				DB6B69AC14573D9200CCAE96 /* libBroker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
