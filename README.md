@@ -26,7 +26,7 @@ Create and configure a new BKController. This should be a long lived object, per
 
 	BKController *controller = [BKController controller];
 
-Register your `NSManagedObject` with the controller in your main Core Data context. What this does is temporarily creates an `Employee` object in your context, traverses all it's properties and relationships, and builds an internal description of what makes an `Employee` object based on `NSEntityDescription` and `NSAttributeDescription`. These descriptions are used to transform JSON into the registered entity.
+Register your `NSManagedObject` with the controller in your main Core Data context. What this does is temporarily creates an `Employee` object in your context, traverses all it's properties and relationships, and builds an internal description of what makes an `Employee` object based on `NSEntityDescription` and `NSAttributeDescription`. These descriptions are used to transform JSON into the registered entity. This example assumes you have an `Emoloyee` object in your Core Data model with at least an `employeeId` attribute.
 
     [controller.entityMap registerEntityNamed:@"Employee"
                                withPrimaryKey:@"employeeId"
@@ -159,12 +159,8 @@ Broker **can** process a nested list of things on a thing. For example, a Depart
 
 ### Unique Objects
 
-Broker uses a "primary key" convention to enforce object uniqueness. NSManagedObjects must have a primary key to be registered with Broker. For example, an Employee could have a unique `employeeId` attribute. Once we have a primary key, we can use a simple find or create pattern to guarantee uniqueness. 
+Broker uses a "primary key" convention to enforce object uniqueness. NSManagedObjects must have a primary key to be registered with Broker. For example, an Employee could have a unique `employeeId` attribute. Once we have a primary key, we can use a simple find or create pattern to guarantee uniqueness. Without specifying a primary key, you could end up with duplicate objects.
 
 **DISCLAIMER**: If you are working with JSON where you might have more than a few thousand entities at once, the find-or-create pattern in it's current form will be slow. I'm working on a faster pattern.
-
-## Getting Started
-
-## Installation
 
 
