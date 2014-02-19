@@ -1,15 +1,57 @@
 # Broker
 
-**Broker is currently undergoing some changes. Look for a release for the next stable version**
-
-***
-
-Broker maps remote resources to local Core Data resources via JSON responses. Using a few simple design standards, you can automatically map JSON attributes to NSManagedObject attributes with little effort.
+Broker maps remote resources to local Core Data resources via JSON responses. Using a few simple design standards, you can automatically map JSON attributes to `NSManagedObject` attributes with little effort.
 
 All this fun stuff is done with a few rules.
 
-1. Name your local object attributes the same as remote attributes. For example, if your remote Employee has a "firstName" attribute, don't name your local NSManagedObject Employee attribute "first_name". If you want, Broker has the flexibility to map remote names to local ones, but why add the extra code?
+1. Name your local object attributes the same as remote attributes. For example, if your remote Employee has a "firstName" attribute, don't name your local `NSManagedObject` Employee attribute "first_name". If you want, Broker has the flexibility to map remote names to local ones, but why add the extra code?
 2. Use a unique object identifier. Each object you want to persist should have a unique attribute to easily identify it. For example, Employee might have an employeeId. Without this, there isn't a way to safely guarantee one single persisted object.
+
+## Installation
+
+Broker follows standard patterns for iOS static library design.
+
+1. Add the `Broker.xcodeproj` file to your project.
+2. Add `Broker` as a target dependency in your targets `Build Phase` tab.
+3. Add `libBroker.a` to your targets `Link Binary With Libraries` build phase.
+4. Build your app.
+
+Now you should be able to import Broker headers following this pattern.
+
+	#import <Broker/Broker.h>
+
+## Getting Started
+
+Create and configure a new BKController. This should be a long lived object, perhaps stored on your App Delegate or an otherwise appropriate location.
+
+	BKController *controller = [BKController controller];
+
+Register your `NSManagedObject` with the controller in your main Core Data context. What this does is temporarily creates an `Employee` object in your context, traverses all it's properties and relationships, and builds an internal description of what makes an `Employee` object based on `NSEntityDescription` and `NSAttributeDescription`. These descriptions are used to transform JSON into the registered entity.
+
+    [controller.entityMap registerEntityNamed:@"Employee"
+                               withPrimaryKey:@"employeeId"
+                      andMapNetworkProperties:@"id"
+                            toLocalProperties:@"employeeId"
+                                    inContext:context];
+
+Note that we are mapping a network property, `id`, to a local property, `employeeId`. Sometimes your API may use different attribute names than what you have in your Core Data. Broker allows you to map between the two.
+
+Now you are ready to process some JSON. By passing in the main `NSManagedObjectContext` into the `BKController`, you are spinning up a child context in which all the work will be done. After the work is done, the context pushes it's changes to the main context. From there, you can choose to either save or not, but this example includes a proper save pattern.
+
+	- (void)processEmployeeJSON:(id)json 
+		withController:(BKController *)controller
+		 inContext:(NSManagedObjectContext *)context
+	{
+			__weak NSManagedObjectContext *weakContext = context;
+		    [controller processJSONObject:json
+                        	asEntityNamed:@"Employee"
+                          		inContext:context
+                      	  completionBlock:^{
+                           [weakContext performBlock:^{
+       						 [context save:nil];
+    					   }];
+                       }];
+	}
 
 ## Broker and JSON API Design
 
