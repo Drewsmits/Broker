@@ -248,5 +248,20 @@
                      @"Processing unexpected JSON should not crash");
 }
 
+- (void)testEmployeeWithNullValue
+{
+    [self registerEntities];
+    
+    Employee *employee = (Employee *)[BrokerTestsHelpers createNewFilledOutEmployee:self.testStore.managedObjectContext];
+    employee.employeeID = @(5678);
+    
+    id json = JsonFromFile(@"employee_null_value.json");
+    
+    [self.jsonController processJSONObject:json
+                             asEntityNamed:kEmployee];
+    
+    XCTAssertNil(employee.lastname, @"Last name should be nil when a NULL is present in the JSON");
+}
+
 
 @end

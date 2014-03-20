@@ -55,6 +55,11 @@
 {    
     NSAttributeType type = [self.internalAttributeDescription attributeType];
     
+    // Check for null value
+    if (value == (id)[NSNull null] || value == nil) {
+        return nil;
+    }
+    
     switch (type) {
         case NSUndefinedAttributeType:
             return nil;

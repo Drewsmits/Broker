@@ -83,4 +83,18 @@
     XCTAssertEqualObjects(object, @(integer), @"Object for value with int 64 attribute type should be correct");
 }
 
+- (void)testNillValue
+{
+    NSAttributeDescription *description = [NSAttributeDescription new];
+    description.attributeType = NSStringAttributeType;
+    
+    BKAttributeDescription *bkDescription = [BKAttributeDescription descriptionWithAttributeDescription:description];
+
+    id object = [bkDescription objectForValue:nil];
+    XCTAssertNil(object, @"Object should be nil for nil value");
+    
+    object = [bkDescription objectForValue:NULL];
+    XCTAssertNil(object, @"Object should be NULL for nil value");
+}
+
 @end
