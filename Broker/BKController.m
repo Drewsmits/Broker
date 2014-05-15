@@ -113,6 +113,22 @@
     [self.queue addOperation:operation];
 }
 
+- (void)processJSON:(id)json
+          workBlock:(void (^)(NSManagedObjectContext *childContext, BKJSONController *jsonController))workBlock
+          inContext:(NSManagedObjectContext *)context
+    completionBlock:(void (^)())completionBlock
+{
+    // Operation
+    NSOperation *operation = [self operationForContext:context
+                                         withJSONBlock:workBlock];
+    
+    // Finish
+    operation.completionBlock = completionBlock;
+    
+    // Queue it up
+    [self.queue addOperation:operation];
+}
+
 #pragma mark -
 
 - (NSOperation *)operationForContext:(NSManagedObjectContext *)context
