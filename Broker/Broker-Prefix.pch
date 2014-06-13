@@ -4,20 +4,4 @@
 
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
-    #import <CoreData/CoreData.h>
-#endif
-
-/**
- BROKER_LOG is defined as a preprocessor macro. Release builds automatically silence
- logs and skips assertions.
- */
-#if defined(DEBUG) && defined(BROKER_LOG) && BROKER_LOG == 1
-        #define BrokerLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
-        #define BrokerWarningLog(...) NSLog(@"\n!!!!\n%s %@\n!!!!\n", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
-#else
-    #define BrokerLog(...) do { } while (0)
-    #define BrokerWarningLog(...) do { } while (0)
-    #ifndef NS_BLOCK_ASSERTIONS
-        #define NS_BLOCK_ASSERTIONS
-    #endif
 #endif

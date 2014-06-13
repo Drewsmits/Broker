@@ -81,6 +81,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		880179C6194B9EF200DCE26B /* BrokerLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BrokerLog.h; sourceTree = "<group>"; };
 		881BDFD9187E283F0005DD08 /* NSString+Broker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Broker.h"; sourceTree = "<group>"; };
 		881BDFDA187E283F0005DD08 /* NSString+Broker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Broker.m"; sourceTree = "<group>"; };
 		88317D1918804F4C003C6BCF /* NSManagedObjectContextTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSManagedObjectContextTests.m; sourceTree = "<group>"; };
@@ -214,6 +215,7 @@
 				886DB2291819F8B600A5AA4E /* BKJSONController.h */,
 				886DB22A1819F8B600A5AA4E /* BKJSONController.m */,
 				886DB24C181B3E0700A5AA4E /* Broker.h */,
+				880179C6194B9EF200DCE26B /* BrokerLog.h */,
 				DB5997E5159916B100AB65C9 /* NSManagedObject+Broker.h */,
 				DB5997E6159916B100AB65C9 /* NSManagedObject+Broker.m */,
 				DB39B5C615BF68C50046FD96 /* NSManagedObjectContext+Broker.h */,
@@ -443,11 +445,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Broker/Broker-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-					"BROKER_LOG=1",
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -528,11 +525,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Broker/Broker-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-					"BROKER_LOG=0",
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -556,7 +548,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Broker/Broker-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

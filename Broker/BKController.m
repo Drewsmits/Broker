@@ -12,6 +12,7 @@
 #import "BKJSONController.h"
 #import "BKEntityDescription.h"
 #import "BKAttributeDescription.h"
+#import "BrokerLog.h"
 
 #define BROKER_INTERNAL_QUEUE @"com.broker.queue"
 

@@ -24,6 +24,7 @@
 //
 
 #import "BKJSONController.h"
+#import "BrokerLog.h"
 
 // Models
 #import "BKEntityDescription.h"

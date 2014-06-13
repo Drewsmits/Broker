@@ -24,6 +24,7 @@
 //
 
 #import "BKAttributeDescription.h"
+#import "BrokerLog.h"
 
 @interface BKAttributeDescription ()
 
