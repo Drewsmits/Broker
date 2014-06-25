@@ -9,9 +9,9 @@
 #ifndef Broker_BrokerLog_h
 #define Broker_BrokerLog_h
 
-#define BROKER_LOG 1
+#define BROKER_LOG 0
 
-#if defined(DEBUG) && defined(BROKER_LOG)
+#if DEBUG && BROKER_LOG
     #define BrokerLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
     #define BrokerWarningLog(...) NSLog(@"\n!!!!\n%s %@\n!!!!\n", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
 #else
