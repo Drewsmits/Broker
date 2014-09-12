@@ -99,8 +99,7 @@
             return [self.dateFormatter dateFromString:value];
             break;
         case NSBinaryDataAttributeType:
-            NSAssert(YES, @"Not implemented yet");
-            return nil;
+            return [NSKeyedArchiver archivedDataWithRootObject:value];
             break;
         case NSTransformableAttributeType:
             NSAssert(YES, @"Not implemented yet");
