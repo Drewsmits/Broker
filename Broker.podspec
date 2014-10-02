@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "Broker"
-  s.version      = “0.0.2”
-  s.summary      = "A lightweight network layer built on NSURLSession."
+  s.version      = “0.0.3”
+  s.summary      = "Broker maps remote resources to local Core Data resources via JSON responses."
   s.license      = 'MIT'
   s.author       = { 
     "Andrew Smith" => "drewsmits@gmail.com"
