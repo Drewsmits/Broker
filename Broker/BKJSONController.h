@@ -52,6 +52,13 @@
                          asEntityNamed:(NSString *)entityName;
 
 /**
+ @returns The object object you passed in will be returned with the properties set
+ from the JSON
+ */
+- (NSManagedObject *)processJSONObject:(NSDictionary *)json
+                              onObject:(NSManagedObject *)managedObject;
+
+/**
  Process the JSON as a list of objects of the type indicated by the entity name.
  
  @returns An array of created or updated objects from the JSON array.

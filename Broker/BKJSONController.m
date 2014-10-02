@@ -87,6 +87,28 @@
     NSManagedObject *managedObject = [self.context bkr_findOrCreateObjectForEntityDescription:entityDescription
                                                                               primaryKeyValue:primaryKey];
     
+    return [self processJSONObject:json
+                          onObject:managedObject];
+}
+
+- (NSManagedObject *)processJSONObject:(NSDictionary *)json
+                              onObject:(NSManagedObject *)managedObject
+{
+    //
+    // We expect a dictionary
+    //
+    NSAssert([json isKindOfClass:[NSDictionary class]],
+             @"Expected JSON to be an NSDictionary");
+    if (![json isKindOfClass:[NSDictionary class]]) {
+        BrokerLog(@"Expected JSON to be an NSDictionary for entity \"%@\"", entityName);
+        return nil;
+    }
+    
+    //
+    // Get the entity description
+    //
+    BKEntityDescription *entityDescription = [self.entityMap entityDescriptionForEntityName:managedObject.entity.name];
+    
     //
     // For each property in the JSON, if it is a relationship, process the relationship.
     // Otherwise it's just a flat attribute, so set the value.
@@ -112,7 +134,8 @@
             // Get the NSObject value
             //
             id value = json[jsonProperty];
-            id object = [entityDescription objectFromValue:value forProperty:localProperty];
+            id object = [entityDescription objectFromValue:value
+                                               forProperty:localProperty];
             
             if ([entityDescription isPropertyRelationship:localProperty]) {
                 //

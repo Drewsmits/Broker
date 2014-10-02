@@ -88,6 +88,24 @@
                           @"Engineering", @"Department should have the correct primary key");
 }
 
+- (void)testFlatJSONOnNSManagedObject
+{
+    [self registerEntities];
+    
+    NSManagedObject *department = [BrokerTestsHelpers createNewDepartment:self.testStore.managedObjectContext];
+    
+    id json = JsonFromFile(@"department_flat.json");
+    
+    [self.jsonController processJSONObject:json
+                                  onObject:department];
+        
+    XCTAssertEqualObjects([department valueForKey:kDepartmentPrimaryKey],
+                          @(1234), @"Department should have the correct primary key");
+    
+    XCTAssertEqualObjects([department valueForKey:kName],
+                          @"Engineering", @"Department should have the correct primary key");
+}
+
 - (void)testEmployeeCollectionJson
 {
     [self registerEntities];

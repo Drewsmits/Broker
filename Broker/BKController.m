@@ -14,7 +14,7 @@
 #import "BKAttributeDescription.h"
 #import "BrokerLog.h"
 
-#define BROKER_INTERNAL_QUEUE @"com.broker.queue"
+static NSString * const BROKER_INTERNAL_QUEUE = @"com.broker.queue";
 
 @interface BKController ()
 
