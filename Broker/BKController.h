@@ -52,7 +52,7 @@
  */
 - (void)processJSONObject:(NSDictionary *)json
                  onObject:(NSManagedObject *)object
-      completionBlock:(void (^)())completionBlock;
+          completionBlock:(void (^)())completionBlock;
 
 /**
  

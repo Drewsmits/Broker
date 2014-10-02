@@ -61,7 +61,7 @@ static NSString * const BROKER_INTERNAL_QUEUE = @"com.broker.queue";
                                          withJSONBlock:^(id jsonCopy,
                                                          NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
-                                             [jsonController processJSONObject:json
+                                             [jsonController processJSONObject:jsonCopy
                                                                  asEntityNamed:entityName];
                                          }];
     
@@ -76,7 +76,29 @@ static NSString * const BROKER_INTERNAL_QUEUE = @"com.broker.queue";
                  onObject:(NSManagedObject *)object
           completionBlock:(void (^)())completionBlock
 {
+    NSManagedObjectID *objectId = object.objectID;
+
+    NSOperation *operation = [self operationForContext:object.managedObjectContext
+                                                  JSON:json
+                                         withJSONBlock:^(id jsonCopy,
+                                                         NSManagedObjectContext *backgroundContext,
+                                                         BKJSONController *jsonController) {
+                                             //
+                                             // Use a newly fetched object from the background context so we don't modify
+                                             // the passed in object, which could come from god knows where.
+                                             //
+                                             NSManagedObject *backgroundObject = [backgroundContext objectWithID:objectId];
+                                             
+                                             [jsonController processJSONObject:jsonCopy
+                                                                      onObject:backgroundObject];
+                                         }];
     
+    // Finish
+    operation.completionBlock = completionBlock;
+    
+    // Queue it up
+    [self.queue addOperation:operation];
+
 }
 
 - (void)processJSON:(id)json
@@ -92,8 +114,13 @@ static NSString * const BROKER_INTERNAL_QUEUE = @"com.broker.queue";
                                          withJSONBlock:^(id jsonCopy,
                                                          NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
+                                             //
+                                             // Use a newly fetched object from the background context so we don't modify
+                                             // the passed in object, which could come from god knows where.
+                                             //
                                              NSManagedObject *backgroundObject = [backgroundContext objectWithID:objectId];
-                                             [jsonController processJSON:json
+                                             
+                                             [jsonController processJSON:jsonCopy
                                                          forRelationship:relationshipName
                                                                 onObject:backgroundObject];
                                          }];
@@ -116,7 +143,7 @@ static NSString * const BROKER_INTERNAL_QUEUE = @"com.broker.queue";
                                          withJSONBlock:^(id jsonCopy,
                                                          NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
-                                             [jsonController processJSONCollection:json
+                                             [jsonController processJSONCollection:jsonCopy
                                                                    asEntitiesNamed:entityName];
                                          }];
     
