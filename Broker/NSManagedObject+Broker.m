@@ -32,11 +32,8 @@
 + (void)bkr_registerWithBroker:(BKController *)controller
                      inContext:(NSManagedObjectContext *)context
 {
-    NSString *lowercaseDescription = self.description.lowercaseString;
-    NSString *defaultPrimaryKey = [NSString stringWithFormat:@"%@ID", lowercaseDescription];
-    
-    [controller.entityMap registerEntityNamed:[self description]
-                               withPrimaryKey:defaultPrimaryKey
+    [controller.entityMap registerEntityNamed:NSStringFromClass(self)
+                               withPrimaryKey:nil
                       andMapNetworkProperties:nil
                             toLocalProperties:nil
                                     inContext:context];

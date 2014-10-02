@@ -34,16 +34,37 @@
 
 + (instancetype)controller;
 
+/**
+ Parses the JSON into an NSManagedObject matching the entity name in the context provided. For example, if you have 
+ registered an NSManagedObject of type Employee, and you pass in {"employeeId" : 1234}, this will find/create an
+ Employee object in the context with the given employeeId property set. If there isn't a primary key set, the find or 
+ create pattern is simply a create, and a new object is created.
+ */
 - (void)processJSONObject:(NSDictionary *)json
             asEntityNamed:(NSString *)entityName
                 inContext:(NSManagedObjectContext *)context
           completionBlock:(void (^)())completionBlock;
 
+/**
+ Parses the JSON into an NSManagedObject matching the entity name in the context provided. For example, if you have
+ registered an NSManagedObject of type Employee, and you pass in {"employeeId" : 1234}, this will find/create an
+ Employee object in the context with the given employeeId property set.
+ */
+- (void)processJSONObject:(NSDictionary *)json
+                 onObject:(NSManagedObject *)object
+      completionBlock:(void (^)())completionBlock;
+
+/**
+ 
+ */
 - (void)processJSON:(id)json
     forRelationship:(NSString *)relationshipName
            onObject:(NSManagedObject *)object
     completionBlock:(void (^)())completionBlock;
 
+/**
+ 
+ */
 - (void)processJSONCollection:(NSArray *)json
               asEntitiesNamed:(NSString *)entityName
                     inContext:(NSManagedObjectContext *)context
@@ -60,7 +81,7 @@
  *  @param completionBlock The completion block to be run after everything is complete
  */
 - (void)processJSON:(id)json
-          workBlock:(void (^)(NSManagedObjectContext *childContext, BKJSONController *jsonController))workBlock
+          workBlock:(void (^)(id jsonCopy, NSManagedObjectContext *childContext, BKJSONController *jsonController))workBlock
           inContext:(NSManagedObjectContext *)context
     completionBlock:(void (^)())completionBlock;
 

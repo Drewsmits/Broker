@@ -57,7 +57,9 @@
           completionBlock:(void (^)())completionBlock
 {
     NSOperation *operation = [self operationForContext:context
-                                         withJSONBlock:^(NSManagedObjectContext *backgroundContext,
+                                                  JSON:json
+                                         withJSONBlock:^(id jsonCopy,
+                                                         NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
                                              [jsonController processJSONObject:json
                                                                  asEntityNamed:entityName];
@@ -70,6 +72,13 @@
     [self.queue addOperation:operation];
 }
 
+- (void)processJSONObject:(NSDictionary *)json
+                 onObject:(NSManagedObject *)object
+          completionBlock:(void (^)())completionBlock
+{
+    
+}
+
 - (void)processJSON:(id)json
     forRelationship:(NSString *)relationshipName
            onObject:(NSManagedObject *)object
@@ -79,7 +88,9 @@
     
     // Operation
     NSOperation *operation = [self operationForContext:object.managedObjectContext
-                                         withJSONBlock:^(NSManagedObjectContext *backgroundContext,
+                                                  JSON:json
+                                         withJSONBlock:^(id jsonCopy,
+                                                         NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
                                              NSManagedObject *backgroundObject = [backgroundContext objectWithID:objectId];
                                              [jsonController processJSON:json
@@ -101,7 +112,9 @@
 {
     // Operation
     NSOperation *operation = [self operationForContext:context
-                                         withJSONBlock:^(NSManagedObjectContext *backgroundContext,
+                                                  JSON:json
+                                         withJSONBlock:^(id jsonCopy,
+                                                         NSManagedObjectContext *backgroundContext,
                                                          BKJSONController *jsonController) {
                                              [jsonController processJSONCollection:json
                                                                    asEntitiesNamed:entityName];
@@ -115,12 +128,13 @@
 }
 
 - (void)processJSON:(id)json
-          workBlock:(void (^)(NSManagedObjectContext *childContext, BKJSONController *jsonController))workBlock
+          workBlock:(void (^)(id jsonCopy, NSManagedObjectContext *childContext, BKJSONController *jsonController))workBlock
           inContext:(NSManagedObjectContext *)context
     completionBlock:(void (^)())completionBlock
 {
     // Operation
     NSOperation *operation = [self operationForContext:context
+                                                  JSON:json
                                          withJSONBlock:workBlock];
     
     // Finish
@@ -133,7 +147,9 @@
 #pragma mark -
 
 - (NSOperation *)operationForContext:(NSManagedObjectContext *)context
-                       withJSONBlock:(void (^)(NSManagedObjectContext *childContext,
+                                JSON:(id)json
+                       withJSONBlock:(void (^)(id jsonCopy,
+                                               NSManagedObjectContext *childContext,
                                                BKJSONController *jsonController))block
 {
     NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
@@ -149,7 +165,8 @@
                                                                              entityMap:self.entityMap];
         
         // Perform work
-        if (block) block(backgroundContext, jsonController);
+        id jsonCopy = [json copy];
+        if (block) block(jsonCopy, backgroundContext, jsonController);
         
         // Save background context. Does not automatically save parent context.
         NSError *error;

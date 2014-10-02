@@ -59,6 +59,12 @@
 - (NSArray *)processJSONCollection:(NSArray *)json
                    asEntitiesNamed:(NSString *)entityName;
 
+/**
+ Proces the JSON as a relationship object, which is either a to-one or to-many. 
+ @param json the JSON to process
+ @oaram relationshipName the name of the relationship on the object
+ @param object the destination object for which the processed JSON is targeted for.
+ */
 - (void)processJSON:(id)json
     forRelationship:(NSString *)relationshipName
            onObject:(NSManagedObject *)object;

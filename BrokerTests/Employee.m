@@ -8,6 +8,9 @@
 
 #import "Employee.h"
 
+#import "NSManagedObject+Broker.h"
+#import "BKController.h"
+#import "BKEntityMap.h"
 
 @implementation Employee
 
@@ -17,5 +20,15 @@
 @dynamic startDate;
 @dynamic contactInfo;
 @dynamic department;
+
++ (void)bkr_registerWithBroker:(BKController *)controller
+                     inContext:(NSManagedObjectContext *)context
+{
+    [controller.entityMap registerEntityNamed:NSStringFromClass(self)
+                               withPrimaryKey:@"employeeID"
+                      andMapNetworkProperties:nil
+                            toLocalProperties:nil
+                                    inContext:context];
+}
 
 @end

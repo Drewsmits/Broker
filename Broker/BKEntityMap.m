@@ -33,8 +33,6 @@
 
 @property (nonatomic, strong, readwrite) NSMutableDictionary *entityDescriptions;
 
-- (BKEntityDescription *)entityDescriptionForEntityName:(NSString *)entityName;
-
 @end
 
 @implementation BKEntityMap

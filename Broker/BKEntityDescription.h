@@ -27,6 +27,9 @@
 
 @interface BKEntityDescription : NSObject
 
+/**
+ The internal NSEntityDescription that is used to help map JSON to local properties.
+ */
 @property (nonatomic, strong, readonly) NSEntityDescription *internalEntityDescription;
 
 /**
@@ -47,7 +50,7 @@
 @property (nonatomic, strong, readonly) NSMutableDictionary *localToNetworkPropertiesMap;
 
 /**
- Creates a new BKEntityPropertiesDescription
+ @returns A new BKEntityPropertiesDescription
  */
 + (instancetype)descriptionForObject:(NSManagedObject *)object;
 
@@ -70,29 +73,43 @@
 - (NSPropertyDescription *)descriptionForProperty:(NSString *)property;
 
 /**
- Returns the entity's attribute description for the property
+ @returns the entity's attribute description for the property
  */
 - (BKAttributeDescription *)attributeDescriptionForProperty:(NSString *)property;
 
 /**
-  Returns the relationship description for the local property relationship name
+  @returns the relationship description for the local property relationship name
   on the entity.  Returns nil if property is not in the model, or if property is
   not a relationship.
  */
 - (NSRelationshipDescription *)relationshipDescriptionForProperty:(NSString *)property;
 
 /**
-  Returns true if the property is a relationship
+  @returns true if the property is a relationship
  */
 - (BOOL)isPropertyRelationship:(NSString *)property;
 
+/**
+ @returns the object from the input value for the given property. For instance, if you have an NSString property, "firstName"
+ on an Employee object, the value that gets passed in will return the proper NSString object. This is a necessary step
+ due to the fact that the value could be another nested object, or a relationship, or an NSSNumber that requires the
+ correct type.
+ */
 - (id)objectFromValue:(id)value
           forProperty:(NSString *)property;
 
+/**
+ @returns the primary key value for the JSON. For instance, if you mapped set a primary key of "employeeId" on your Employee object
+ when you registered it with a broker controller, this would return the "employeeId" field for the json, if present.
+ */
 - (id)primaryKeyForJSON:(NSDictionary *)JSON;
 
+/**
+ @returns the local property name for the property. This looks at the map you created of network property names to local
+ properties and returns the local one. For instance, you may register "id" for your local property "employeeId". Passing
+ in "id" would return "employeeId", allowing you to map remote JSON to local NSManagendObject properties.
+ */
 - (NSString *)localPropertyNameForProperty:(NSString *)property;
 
-- (NSString *)networkPropertyNameForProperty:(NSString *)property;
 
 @end

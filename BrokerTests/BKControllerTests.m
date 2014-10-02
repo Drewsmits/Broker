@@ -36,13 +36,6 @@
                                          inContext:self.testStore.managedObjectContext];
     
     // Employee
-    //    [self.controller.entityMap registerEntityNamed:kEmployee
-    //                                withPrimaryKey:kEmployeePrimaryKey
-    //                       andMapNetworkProperties:nil
-    //                             toLocalProperties:nil
-    //                                     inContext:self.testStore.managedObjectContext];
-    
-    // Employee
     [Employee bkr_registerWithBroker:self.controller
                            inContext:self.testStore.managedObjectContext];
 }
